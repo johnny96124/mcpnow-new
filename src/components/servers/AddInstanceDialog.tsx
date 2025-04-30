@@ -104,7 +104,7 @@ export const AddInstanceDialog: React.FC<AddInstanceDialogProps> = ({
             />
           </div>
 
-          <Separator />
+          <Separator className="my-1" />
 
           {isStdio ? (
             <div className="grid gap-2">
