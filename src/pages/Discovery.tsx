@@ -323,10 +323,18 @@ const Discovery = () => {
             <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-4">
               {visibleServers.map(server => <Card key={server.id} className="flex flex-col overflow-hidden hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-800 cursor-pointer group relative" onClick={() => handleViewDetails(server)}>
                   <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                  
                   <CardHeader className="pb-2 space-y-0 px-5 pt-5">
                     <div className="flex justify-between items-start gap-2 mb-1">
                       <div className="flex items-start gap-3">
-                        <ServerLogo name={server.name} className="w-12 h-12" />
+                        <div className="relative">
+                          <ServerLogo name={server.name} className="w-12 h-12" />
+                          {installedServers[server.id] && (
+                            <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                              <CheckCircle className="h-4 w-4 text-blue-600" />
+                            </div>
+                          )}
+                        </div>
                         <div className="flex flex-col">
                           <CardTitle className="text-lg font-semibold text-foreground group-hover:text-blue-600 transition-colors">
                             {server.name}
@@ -368,33 +376,13 @@ const Discovery = () => {
                         </div>
                       </div>
                       
-                      {installedServers[server.id] ? <Button variant="outline" size="sm" className={`
-                            h-8
-                            ${installedButtonHover[server.id] ? "text-blue-600 bg-blue-50 border-blue-200 hover:bg-blue-100" : "text-green-600 bg-green-50 border-green-200 hover:bg-green-100"}
-                          `} onClick={e => {
-                  e.stopPropagation();
-                  handleNavigateToServers();
-                }} onMouseEnter={() => setInstalledButtonHover(prev => ({
-                  ...prev,
-                  [server.id]: true
-                }))} onMouseLeave={() => setInstalledButtonHover(prev => ({
-                  ...prev,
-                  [server.id]: false
-                }))}>
-                          {installedButtonHover[server.id] ? <>
-                              <Check className="h-3.5 w-3.5 mr-1" />
-                              View
-                            </> : <>
-                              <CheckCircle className="h-3.5 w-3.5 mr-1" />
-                              Added
-                            </>}
-                        </Button> : <Button size="sm" onClick={e => {
-                  e.stopPropagation();
-                  handleAddServer(server.id);
-                }} className="bg-blue-600 hover:bg-blue-700 h-8 relative z-10">
-                          <Plus className="h-3.5 w-3.5 mr-1" />
-                          Add
-                        </Button>}
+                      <Button size="sm" onClick={e => {
+                        e.stopPropagation();
+                        handleAddServer(server.id);
+                      }} className="bg-blue-600 hover:bg-blue-700 h-8 relative z-10">
+                        <Plus className="h-3.5 w-3.5 mr-1" />
+                        Add
+                      </Button>
                     </div>
                   </CardFooter>
                 </Card>)}
@@ -416,7 +404,14 @@ const Discovery = () => {
           {selectedServer && <div className="h-full flex flex-col">
               <DialogHeader className="border-b pb-4">
                 <div className="flex items-center gap-4">
-                  <ServerLogo name={selectedServer.name} className="w-12 h-12" />
+                  <div className="relative">
+                    <ServerLogo name={selectedServer.name} className="w-12 h-12" />
+                    {installedServers[selectedServer.id] && (
+                      <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                        <CheckCircle className="h-4 w-4 text-blue-600" />
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <DialogTitle className="text-xl font-semibold">
                       {selectedServer.name}
