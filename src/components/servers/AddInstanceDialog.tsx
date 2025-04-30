@@ -21,7 +21,7 @@ export interface InstanceFormValues {
   name: string;
   url: string;
   args: string;
-  description?: string; // Made description optional
+  description?: string; // Optional description
   env?: Record<string, string>;
   headers?: Record<string, string>;
   instanceId?: string;
@@ -81,18 +81,14 @@ export const AddInstanceDialog: React.FC<AddInstanceDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
-        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {editMode ? `Edit ${serverDefinition.name}` : `Configure ${serverDefinition.name}`}
-            {isCustom && <Badge variant="outline">Custom</Badge>}
+            {isCustom && <Badge variant="outline" className="ml-2">Custom</Badge>}
           </DialogTitle>
         </DialogHeader>
-
-        <div className="grid gap-4 py-4">
+        
+        <div className="grid gap-4 py-2">
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -104,7 +100,7 @@ export const AddInstanceDialog: React.FC<AddInstanceDialogProps> = ({
             />
           </div>
 
-          <Separator />
+          <Separator className="my-2" />
 
           {isStdio ? (
             <div className="grid gap-2">
@@ -143,7 +139,7 @@ export const AddInstanceDialog: React.FC<AddInstanceDialogProps> = ({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="pt-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
