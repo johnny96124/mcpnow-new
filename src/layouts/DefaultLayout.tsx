@@ -19,7 +19,6 @@ const DefaultLayout = ({ children }: DefaultLayoutProps) => {
     toast({
       title: `Instance created: ${data.name}`,
       description: "The instance was successfully created.",
-      type: "success"
     });
     closeAddInstanceDialog();
   };
