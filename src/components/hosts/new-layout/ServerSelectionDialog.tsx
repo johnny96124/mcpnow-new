@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -11,8 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ServerLogo } from "@/components/servers/ServerLogo";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
-import { Search, Check, ChevronLeft, Plus } from "lucide-react";
+import { Search, Check, ChevronLeft, Plus, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ServerSelectionDialogProps {
   open: boolean;
@@ -37,6 +37,10 @@ export function ServerSelectionDialog({
     name: "",
     url: "",
     headers: [{ key: "", value: "" }]
+  });
+  const [installedServers, setInstalledServers] = useState<Record<string, boolean>>({
+    "server-1": true,
+    "server-3": true
   });
 
   // Mock data
@@ -219,11 +223,25 @@ export function ServerSelectionDialog({
       enabled: false
     };
     
+    // Mark server as installed
+    setInstalledServers(prev => ({
+      ...prev,
+      [selectedServer.id]: true
+    }));
+    
     onAddServers([newInstance]);
     onOpenChange(false);
   };
 
   const handleAddSelectedInstances = () => {
+    // Mark selected instances as installed
+    selectedInstances.forEach(instance => {
+      setInstalledServers(prev => ({
+        ...prev,
+        [instance.id]: true
+      }));
+    });
+    
     onAddServers(selectedInstances);
     onOpenChange(false);
   };
@@ -276,7 +294,23 @@ export function ServerSelectionDialog({
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex items-start space-x-3">
-                          <ServerLogo name={server.name} className="mt-1" />
+                          <div className="relative">
+                            <ServerLogo name={server.name} className="mt-1" />
+                            {installedServers[server.id] && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                                      <CheckCircle className="h-4 w-4 text-blue-600" />
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Server already added</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                          </div>
                           <div>
                             <div className="flex items-center space-x-2">
                               <h3 className="font-medium">{server.name}</h3>
@@ -341,9 +375,25 @@ export function ServerSelectionDialog({
                   >
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
-                        <div className="h-5 w-5 border rounded flex items-center justify-center">
-                          {selectedInstances.find(i => i.id === instance.id) && (
-                            <Check className="h-3 w-3 text-primary" />
+                        <div className="relative h-5 w-5">
+                          <div className="h-5 w-5 border rounded flex items-center justify-center">
+                            {selectedInstances.find(i => i.id === instance.id) && (
+                              <Check className="h-3 w-3 text-primary" />
+                            )}
+                          </div>
+                          {installedServers[instance.id] && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm scale-75">
+                                    <CheckCircle className="h-3 w-3 text-blue-600" />
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Server already added</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           )}
                         </div>
                         <div>

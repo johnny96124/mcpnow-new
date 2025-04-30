@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Search, Clock, ExternalLink, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,8 @@ import { AddInstanceDialog } from "@/components/servers/AddInstanceDialog";
 import { AddServerDialog } from "@/components/new-layout/AddServerDialog";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { CheckCircle } from "lucide-react";
 
 interface ServerSelectionDialogProps {
   open: boolean;
@@ -76,6 +77,13 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
     
   const hasSearchResults = filteredExistingInstances.length > 0 || filteredServerDefinitions.length > 0;
   
+  // Mock data for installed servers tracking 
+  const [installedServers, setInstalledServers] = useState<Record<string, boolean>>({
+    "instance-1": true, 
+    "instance-2": true,
+    "def-http-sse": true
+  });
+  
   // Clear state when dialog closes
   useEffect(() => {
     if (!open) {
@@ -97,6 +105,13 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   // Handle existing instance selection
   const handleAddExistingInstance = (instance: EnhancedServerInstance) => {
     onAddServers([instance]);
+    
+    // Mark as installed
+    setInstalledServers(prev => ({
+      ...prev,
+      [instance.id]: true
+    }));
+    
     toast({
       title: "Server added",
       description: `${instance.name} has been added to your profile`
@@ -121,6 +136,14 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
       enabled: false
     };
 
+    // Mark the server definition as installed
+    if (selectedServer) {
+      setInstalledServers(prev => ({
+        ...prev,
+        [selectedServer.id]: true
+      }));
+    }
+
     onAddServers([newInstance]);
     toast({
       title: "Server instance created",
@@ -133,6 +156,13 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   // Handle custom server addition
   const handleAddCustomServer = (server: ServerInstance) => {
     onAddServers([server]);
+    
+    // Mark as installed
+    setInstalledServers(prev => ({
+      ...prev,
+      [server.id]: true
+    }));
+    
     toast({
       title: "Custom server added",
       description: `${server.name} has been added to your profile`
@@ -207,7 +237,23 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                           className="flex items-start justify-between p-4 border rounded-lg"
                         >
                           <div className="flex items-start space-x-4">
-                            <ServerLogo name={instance.name} className="flex-shrink-0" />
+                            <div className="relative">
+                              <ServerLogo name={instance.name} className="flex-shrink-0" />
+                              {installedServers[instance.id] && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                                        <CheckCircle className="h-4 w-4 text-blue-600" />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Server already added</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                            </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <h4 className="font-medium text-sm truncate">{instance.name}</h4>
@@ -253,7 +299,23 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                           className="flex items-start justify-between p-4 border rounded-lg"
                         >
                           <div className="flex items-start space-x-4">
-                            <ServerLogo name={server.name} className="flex-shrink-0" />
+                            <div className="relative">
+                              <ServerLogo name={server.name} className="flex-shrink-0" />
+                              {installedServers[server.id] && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                                        <CheckCircle className="h-4 w-4 text-blue-600" />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Server already added</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                            </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <h4 className="font-medium text-sm truncate">{server.name}</h4>

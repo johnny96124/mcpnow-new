@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -10,7 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X } from "lucide-react";
+import { X, CheckCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AddServerDialogProps {
   open: boolean;
@@ -24,6 +26,8 @@ export const AddServerDialog = ({ open, onOpenChange, onAddServer }: AddServerDi
     url: "",
     type: "HTTP_SSE"
   });
+  
+  const [installedServers, setInstalledServers] = useState<Record<string, boolean>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -39,6 +43,12 @@ export const AddServerDialog = ({ open, onOpenChange, onAddServer }: AddServerDi
       connectionDetails: serverData.url,
       enabled: false
     };
+    
+    // Mark server as installed
+    setInstalledServers(prev => ({
+      ...prev,
+      [newServer.id]: true
+    }));
     
     onAddServer(newServer);
     setServerData({
@@ -56,7 +66,24 @@ export const AddServerDialog = ({ open, onOpenChange, onAddServer }: AddServerDi
           <span className="sr-only">Close</span>
         </DialogClose>
         <DialogHeader>
-          <DialogTitle>Add Custom Server</DialogTitle>
+          <div className="flex items-center">
+            <DialogTitle>Add Custom Server</DialogTitle>
+            {/* This is where the installed icon would appear if we had an ID to check against */}
+            {false && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="ml-2 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                      <CheckCircle className="h-4 w-4 text-blue-600" />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Server already added</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
