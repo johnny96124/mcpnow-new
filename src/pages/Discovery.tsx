@@ -23,6 +23,7 @@ import { AddToProfileDialog } from "@/components/discovery/AddToProfileDialog";
 import { useHostProfiles } from "@/hooks/useHostProfiles";
 import { ServerToolsList } from "@/components/discovery/ServerToolsList";
 import { ServerLogo } from "@/components/servers/ServerLogo";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const ITEMS_PER_PAGE = 12;
 interface EnhancedServerDefinition extends ServerDefinition {
@@ -330,9 +331,18 @@ const Discovery = () => {
                         <div className="relative">
                           <ServerLogo name={server.name} className="w-12 h-12" />
                           {installedServers[server.id] && (
-                            <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
-                              <CheckCircle className="h-4 w-4 text-blue-600" />
-                            </div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                                    <CheckCircle className="h-4 w-4 text-blue-600" />
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Server already added</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           )}
                         </div>
                         <div className="flex flex-col">
@@ -407,9 +417,18 @@ const Discovery = () => {
                   <div className="relative">
                     <ServerLogo name={selectedServer.name} className="w-12 h-12" />
                     {installedServers[selectedServer.id] && (
-                      <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
-                        <CheckCircle className="h-4 w-4 text-blue-600" />
-                      </div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                              <CheckCircle className="h-4 w-4 text-blue-600" />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Server already added</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                   </div>
                   <div>
