@@ -132,6 +132,7 @@ export function ServerSelectionDialog({
     setFilteredServers(filtered);
   }, [allServers, showAddedOnly, searchQuery]);
 
+  // Handle server selection
   const handleServerSelect = (server: any) => {
     setSelectedServer(server);
     
