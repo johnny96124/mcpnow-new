@@ -23,6 +23,7 @@ import { AddToProfileDialog } from "@/components/discovery/AddToProfileDialog";
 import { useHostProfiles } from "@/hooks/useHostProfiles";
 import { ServerToolsList } from "@/components/discovery/ServerToolsList";
 import { ServerLogo } from "@/components/servers/ServerLogo";
+
 const ITEMS_PER_PAGE = 12;
 interface EnhancedServerDefinition extends ServerDefinition {
   views?: number;
@@ -411,29 +412,22 @@ const Discovery = () => {
       </ScrollArea>
       
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white dark:bg-gray-900">
+        <DialogContent className="max-w-4xl overflow-hidden">
           {selectedServer && <div className="h-full flex flex-col">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
-                <div className="flex justify-between items-start">
-                  <div className="flex items-start gap-4">
-                    <ServerLogo name={selectedServer.name} className="w-14 h-14 bg-white/10 border-white/20" />
-                    <div className="space-y-1">
-                      <DialogTitle className="text-xl font-bold leading-tight text-white">
-                        {selectedServer.name}
-                      </DialogTitle>
-                      
-                      <div className="flex flex-wrap items-center gap-2 mt-2">
-                        <EndpointLabel type={selectedServer.type} />
-                        {selectedServer.isOfficial && <OfficialBadge />}
-                      </div>
+              <DialogHeader className="border-b pb-4">
+                <div className="flex items-center gap-4">
+                  <ServerLogo name={selectedServer.name} className="w-12 h-12" />
+                  <div>
+                    <DialogTitle className="text-xl font-semibold">
+                      {selectedServer.name}
+                    </DialogTitle>
+                    <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                      <EndpointLabel type={selectedServer.type} />
+                      {selectedServer.isOfficial && <OfficialBadge />}
                     </div>
                   </div>
-                  
-                  <DialogClose className="rounded-full p-1.5 hover:bg-white/20 transition-colors">
-                    <X className="h-5 w-5" />
-                  </DialogClose>
                 </div>
-              </div>
+              </DialogHeader>
               
               <div className="h-[500px] overflow-auto">
                 <div className="p-6 space-y-6">
