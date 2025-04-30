@@ -81,14 +81,14 @@ export const AddInstanceDialog: React.FC<AddInstanceDialogProps> = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader className="pb-4">
-          <DialogTitle className="flex items-center gap-2 text-foreground">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
             {editMode ? `Edit ${serverDefinition.name}` : `Configure ${serverDefinition.name}`}
             {isCustom && <Badge variant="outline" className="ml-2">Custom</Badge>}
           </DialogTitle>
         </DialogHeader>
         
-        <div className="grid gap-4">
+        <div className="grid gap-4 py-2">
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -139,7 +139,7 @@ export const AddInstanceDialog: React.FC<AddInstanceDialogProps> = ({
           </div>
         </div>
 
-        <DialogFooter className="pt-4">
+        <DialogFooter className="pt-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
