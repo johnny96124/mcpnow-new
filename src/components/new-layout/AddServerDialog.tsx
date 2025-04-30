@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, CheckCircle } from "lucide-react";
+import { X, CheckCircle, Plus } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AddServerDialogProps {
@@ -128,7 +128,8 @@ export const AddServerDialog = ({ open, onOpenChange, onAddServer }: AddServerDi
             Cancel
           </Button>
           <Button onClick={handleAddServer} disabled={!serverData.name}>
-            Add Server
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            Add
           </Button>
         </DialogFooter>
       </DialogContent>
