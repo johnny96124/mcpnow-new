@@ -58,6 +58,16 @@ export const AddServerDialog = ({ open, onOpenChange, onAddServer }: AddServerDi
     });
   };
 
+  // Check if a server is installed based on name and URL
+  const isServerInstalled = () => {
+    // This would need to be adapted based on how you track installed servers
+    // For now, we'll just use a simple check for demonstration
+    return Object.keys(installedServers).some(id => 
+      id.startsWith('custom-') && 
+      installedServers[id] === true
+    );
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -68,8 +78,7 @@ export const AddServerDialog = ({ open, onOpenChange, onAddServer }: AddServerDi
         <DialogHeader>
           <div className="flex items-center">
             <DialogTitle>Add Custom Server</DialogTitle>
-            {/* This is where the installed icon would appear if we had an ID to check against */}
-            {false && (
+            {isServerInstalled() && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
