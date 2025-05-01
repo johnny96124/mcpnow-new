@@ -35,8 +35,6 @@ export function ShareServerDialog({
 }: ShareServerDialogProps) {
   const [isCopied, setIsCopied] = useState(false);
   const [selectedConfig, setSelectedConfig] = useState<string>("no-config");
-  const [shareUrl, setShareUrl] = useState<string>("");
-  const [isLinkGenerated, setIsLinkGenerated] = useState(false);
   const { toast } = useToast();
   
   // Generate configuration options with additional mock data
@@ -82,31 +80,24 @@ export function ShareServerDialog({
   }
 
   // Determine the correct ID to use for the share URL based on selected config
-  const generateShareUrl = () => {
-    let url = "";
+  const getShareUrl = () => {
     if (selectedConfig === "no-config") {
       // Use the definition ID for sharing without config
       const definitionId = 'definitionId' in server ? server.definitionId : server.id;
-      url = `https://mcpnow.app/discover/${definitionId || 'server'}`;
+      return `https://mcpnow.app/discover/${definitionId || 'server'}`;
     } else if (selectedConfig === "config-dev" || selectedConfig === "config-prod") {
       // Mock URLs for demo configs
-      url = `https://mcpnow.app/discover/instance/${selectedConfig}`;
+      return `https://mcpnow.app/discover/instance/${selectedConfig}`;
     } else if (selectedConfig === "instance-1" || selectedConfig === "instance-2") {
       // Mock URLs for demo instances
-      url = `https://mcpnow.app/discover/instance/${selectedConfig}`;
+      return `https://mcpnow.app/discover/instance/${selectedConfig}`;
     } else {
       // Use the server instance ID for sharing with config
-      url = `https://mcpnow.app/discover/instance/${selectedConfig}`;
+      return `https://mcpnow.app/discover/instance/${selectedConfig}`;
     }
-    
-    setShareUrl(url);
-    setIsLinkGenerated(true);
-    
-    toast({
-      title: "Link generated!",
-      description: "Your share link is ready to copy",
-    });
   };
+  
+  const shareUrl = getShareUrl();
   
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
@@ -130,16 +121,8 @@ export function ShareServerDialog({
     if (open) {
       setSelectedConfig("no-config");
       setIsCopied(false);
-      setIsLinkGenerated(false);
-      setShareUrl("");
     }
   }, [open]);
-
-  // When config changes, reset generated link state
-  useEffect(() => {
-    setIsLinkGenerated(false);
-    setShareUrl("");
-  }, [selectedConfig]);
 
   // Use serverDefinition if provided, otherwise check if server itself is a ServerDefinition
   const description = serverDefinition?.description || 
@@ -201,45 +184,33 @@ export function ShareServerDialog({
                 ))}
               </SelectContent>
             </Select>
-            
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={generateShareUrl}
-              className="flex items-center gap-1.5"
-            >
-              <Share className="h-4 w-4" />
-              Generate Link
-            </Button>
           </div>
           
-          {isLinkGenerated && (
-            <div className="bg-muted/40 border rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm truncate mr-2 flex-1 overflow-hidden">
-                  {shareUrl}
-                </div>
-                <Button 
-                  variant="secondary"
-                  size="sm"
-                  className={`gap-1.5 w-24 flex-shrink-0 ${isCopied ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800' : ''}`}
-                  onClick={handleCopyUrl}
-                >
-                  {isCopied ? (
-                    <>
-                      <Check className="h-4 w-4" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4" />
-                      Copy
-                    </>
-                  )}
-                </Button>
+          <div className="bg-muted/40 border rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm truncate mr-2 flex-1 overflow-hidden">
+                {shareUrl}
               </div>
+              <Button 
+                variant="secondary"
+                size="sm"
+                className={`gap-1.5 w-24 flex-shrink-0 ${isCopied ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800' : ''}`}
+                onClick={handleCopyUrl}
+              >
+                {isCopied ? (
+                  <>
+                    <Check className="h-4 w-4" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-4 w-4" />
+                    Copy
+                  </>
+                )}
+              </Button>
             </div>
-          )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
