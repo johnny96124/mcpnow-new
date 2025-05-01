@@ -80,6 +80,7 @@ const Discovery = () => {
   const [selectedDefinition, setSelectedDefinition] = useState<ServerDefinition | null>(null);
   const [activeDetailTab, setActiveDetailTab] = useState("overview");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [copiedCardId, setCopiedCardId] = useState<string | null>(null);
   const {
     toast
   } = useToast();
@@ -210,6 +211,21 @@ const Discovery = () => {
   };
   const handleNavigateToServers = () => {
     navigate("/servers");
+  };
+  const handleCopyServerName = (e: React.MouseEvent, server: EnhancedServerDefinition) => {
+    e.stopPropagation(); // Prevent card click event
+    navigator.clipboard.writeText(server.name).then(() => {
+      setCopiedCardId(server.id);
+      toast({
+        title: "Name copied!",
+        description: `${server.name} copied to clipboard`,
+      });
+      
+      // Reset the copied state after a delay
+      setTimeout(() => {
+        setCopiedCardId(null);
+      }, 2000);
+    });
   };
   const formatNumber = (num: number) => {
     if (num >= 1000000) {
@@ -345,9 +361,31 @@ const Discovery = () => {
                             </TooltipProvider>}
                         </div>
                         <div className="flex flex-col">
-                          <CardTitle className="text-lg font-semibold text-foreground group-hover:text-blue-600 transition-colors">
-                            {server.name}
-                          </CardTitle>
+                          <div className="flex items-center gap-1 relative group">
+                            <CardTitle className="text-lg font-semibold text-foreground group-hover:text-blue-600 transition-colors">
+                              {server.name}
+                            </CardTitle>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button 
+                                    onClick={(e) => handleCopyServerName(e, server)} 
+                                    className="opacity-0 group-hover:opacity-100 transition-opacity ml-1 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                                    aria-label="Copy server name"
+                                  >
+                                    {copiedCardId === server.id ? (
+                                      <Check className="h-4 w-4 text-green-500" />
+                                    ) : (
+                                      <Copy className="h-4 w-4 text-gray-500 hover:text-blue-500" />
+                                    )}
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{copiedCardId === server.id ? 'Copied!' : 'Copy name'}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
                           <div className="flex items-center gap-1.5 mt-1">
                             <EndpointLabel type={server.type} />
                             {server.isOfficial && <OfficialBadge />}
