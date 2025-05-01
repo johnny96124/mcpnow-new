@@ -37,7 +37,7 @@ export function ShareServerDialog({
   const [selectedConfig, setSelectedConfig] = useState<string>("no-config");
   const { toast } = useToast();
   
-  // Generate configuration options
+  // Generate configuration options with additional mock data
   const configOptions: ConfigOption[] = [
     { id: "no-config", label: "No Config", value: "no-config" }
   ];
@@ -49,6 +49,34 @@ export function ShareServerDialog({
       label: server.name,
       value: server.id
     });
+    
+    // Add some mock options for demonstration
+    configOptions.push(
+      { 
+        id: "config-dev", 
+        label: `${server.name} - Dev Environment`, 
+        value: "config-dev" 
+      },
+      { 
+        id: "config-prod", 
+        label: `${server.name} - Production`, 
+        value: "config-prod" 
+      }
+    );
+  } else {
+    // Add mock options for definition
+    configOptions.push(
+      { 
+        id: "instance-1", 
+        label: `${server.name} - Default Instance`, 
+        value: "instance-1" 
+      },
+      { 
+        id: "instance-2", 
+        label: `${server.name} - Custom Config`, 
+        value: "instance-2" 
+      }
+    );
   }
 
   // Determine the correct ID to use for the share URL based on selected config
@@ -57,6 +85,12 @@ export function ShareServerDialog({
       // Use the definition ID for sharing without config
       const definitionId = 'definitionId' in server ? server.definitionId : server.id;
       return `https://mcpnow.app/discover/${definitionId || 'server'}`;
+    } else if (selectedConfig === "config-dev" || selectedConfig === "config-prod") {
+      // Mock URLs for demo configs
+      return `https://mcpnow.app/discover/instance/${selectedConfig}`;
+    } else if (selectedConfig === "instance-1" || selectedConfig === "instance-2") {
+      // Mock URLs for demo instances
+      return `https://mcpnow.app/discover/instance/${selectedConfig}`;
     } else {
       // Use the server instance ID for sharing with config
       return `https://mcpnow.app/discover/instance/${selectedConfig}`;
@@ -131,7 +165,7 @@ export function ShareServerDialog({
                       <span>No Config</span>
                     </div>
                   ) : (
-                    server.name
+                    configOptions.find(option => option.value === selectedConfig)?.label || server.name
                   )}
                 </SelectValue>
               </SelectTrigger>
@@ -182,3 +216,4 @@ export function ShareServerDialog({
     </Dialog>
   );
 }
+
