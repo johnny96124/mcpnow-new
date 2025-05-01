@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FileText, Server, AlertTriangle, CheckCircle, Info, Plus, ChevronDown, ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2 } from "lucide-react";
+import { FileText, Server, AlertTriangle, CheckCircle, Info, Plus, ChevronDown, ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Separator } from "@/components/ui/separator";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { ShareProfileDialog } from "./ShareProfileDialog";
+
 interface HostDetailViewProps {
   host: Host;
   profiles: Profile[];
@@ -52,11 +54,13 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [serverSelectionDialogOpen, setServerSelectionDialogOpen] = useState(false);
   const [deleteHostDialogOpen, setDeleteHostDialogOpen] = useState(false);
+  const [shareProfileDialogOpen, setShareProfileDialogOpen] = useState(false);
   const {
     toast
   } = useToast();
   const selectedProfile = profiles.find(p => p.id === selectedProfileId);
   const profileServers = serverInstances.filter(server => selectedProfile?.instances.includes(server.id));
+  
   const handleServerStatusChange = (serverId: string, enabled: boolean) => {
     onServerStatusChange(serverId, enabled ? host.connectionStatus === "connected" ? 'connecting' : 'stopped' : 'stopped');
     if (enabled) {
@@ -84,12 +88,15 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
       }, 2000);
     }
   };
+  
   const getServerLoad = (serverId: string) => {
     return Math.floor(Math.random() * 90) + 10;
   };
+  
   const showConfigFile = () => {
     setConfigDialogOpen(true);
   };
+  
   const handleAddServers = (servers: ServerInstance[]) => {
     if (selectedProfile && servers.length > 0) {
       if (onAddServersToProfile) {
@@ -104,10 +111,16 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
       }
     }
   };
+  
   const handleConfirmDeleteHost = () => {
     onDeleteHost(host.id);
     setDeleteHostDialogOpen(false);
   };
+  
+  const handleShareProfile = () => {
+    setShareProfileDialogOpen(true);
+  };
+  
   if (host.configStatus === "unknown") {
     return <div className="space-y-6">
         <Card className="bg-white">
@@ -146,6 +159,7 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
         </Card>
       </div>;
   }
+  
   return <div className="space-y-6">
       <Card className="bg-white">
         <CardContent className="p-6">
@@ -191,7 +205,12 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">Server Profile</h3>
                 
-                {profileServers.length > 0}
+                {profileServers.length > 0 && (
+                  <Button variant="outline" size="sm" onClick={handleShareProfile}>
+                    <Share className="h-4 w-4 mr-2" />
+                    Share Profile
+                  </Button>
+                )}
               </div>
               
               <div className="flex items-center">
@@ -262,8 +281,17 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Share Profile Dialog */}
+      <ShareProfileDialog 
+        open={shareProfileDialogOpen}
+        onOpenChange={setShareProfileDialogOpen}
+        profile={selectedProfile}
+        servers={profileServers}
+      />
     </div>;
 };
+
 function Search(props: React.SVGProps<SVGSVGElement>) {
   return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="8" />
