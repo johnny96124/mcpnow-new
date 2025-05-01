@@ -194,13 +194,13 @@ export function ShareServerDialog({
               <Button 
                 variant="secondary"
                 size="sm"
-                className="gap-1.5 w-24 flex-shrink-0"
+                className={`gap-1.5 w-24 flex-shrink-0 ${isCopied ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800' : ''}`}
                 onClick={handleCopyUrl}
               >
                 {isCopied ? (
                   <>
                     <Check className="h-4 w-4" />
-                    Copied
+                    Copied!
                   </>
                 ) : (
                   <>
