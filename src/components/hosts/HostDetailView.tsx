@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { 
   FileText, Server, AlertTriangle, 
@@ -252,32 +251,44 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
           
           <Separator className="my-6" />
           
-          {/* Profile and servers section */}
+          {/* Profile and servers section - Improved Design */}
           <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <ProfileDropdown 
-                  profiles={profiles} 
-                  currentProfileId={selectedProfileId} 
-                  onProfileChange={onProfileChange}
-                  onCreateProfile={onCreateProfile}
-                  onDeleteProfile={onDeleteProfile}
-                />
+            <div className="flex flex-col space-y-4 mb-6">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Server Profile</h3>
+                
+                {profileServers.length > 0 && (
+                  <Button 
+                    onClick={() => setServerSelectionDialogOpen(true)} 
+                    variant="outline"
+                    size="sm"
+                    className="whitespace-nowrap"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Servers
+                  </Button>
+                )}
               </div>
-              {/* Only show Add Servers button when there is at least one server */}
-              {profileServers.length > 0 && (
-                <Button 
-                  onClick={() => setServerSelectionDialogOpen(true)} 
-                  className="whitespace-nowrap"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Servers
-                </Button>
-              )}
+              
+              <div className="flex items-center">
+                <div className="p-1.5 bg-primary/5 border rounded-lg flex-1 flex items-center">
+                  <ProfileDropdown 
+                    profiles={profiles} 
+                    currentProfileId={selectedProfileId} 
+                    onProfileChange={onProfileChange}
+                    onCreateProfile={onCreateProfile}
+                    onDeleteProfile={onDeleteProfile}
+                  />
+                </div>
+              </div>
             </div>
             
+            <Separator className="mb-6" />
+            
+            <h3 className="text-lg font-medium mb-4">Connected Servers</h3>
+            
             {profileServers.length > 0 ? (
-              <div className="rounded-md border mt-4">
+              <div className="rounded-md border">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b bg-muted/50">
@@ -308,7 +319,9 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
                 </table>
               </div>
             ) : (
-              <ServerListEmpty onAddServers={() => setServerSelectionDialogOpen(true)} />
+              <div className="mt-4">
+                <ServerListEmpty onAddServers={() => setServerSelectionDialogOpen(true)} />
+              </div>
             )}
           </div>
         </CardContent>
