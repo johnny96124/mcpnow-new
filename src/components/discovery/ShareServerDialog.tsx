@@ -119,11 +119,12 @@ export function ShareServerDialog({
         description: "Share link has been copied to clipboard",
       });
       
-      // Close dialog immediately after copying
-      onOpenChange(false);
-      
-      // Reset copied state after dialog closes
-      setTimeout(() => setIsCopied(false), 300);
+      // Close dialog after copying
+      setTimeout(() => {
+        onOpenChange(false);
+        // Reset copied state after dialog closes
+        setTimeout(() => setIsCopied(false), 300);
+      }, 1000);
     });
   };
 
@@ -148,7 +149,7 @@ export function ShareServerDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-6">
+      <DialogContent className="sm:max-w-xl md:max-w-2xl p-6">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-xl">Share Server</DialogTitle>
           <DialogDescription>
