@@ -1,4 +1,5 @@
 
+import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,6 @@ import { ServerToolsList } from "@/components/discovery/ServerToolsList";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Calendar, Globe, Info, Share, Tag, UserRound, Wrench, X } from "lucide-react";
 import { ServerInstance, serverDefinitions } from "@/data/mockData";
-import { useState } from "react";
 import { ShareServerDialog } from "@/components/discovery/ShareServerDialog";
 
 interface ServerDetailsDialogProps {

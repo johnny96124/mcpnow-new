@@ -17,7 +17,7 @@ import { ServerInstance, ServerDefinition } from "@/data/mockData";
 interface ShareServerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  server: ServerInstance;
+  server: ServerInstance | ServerDefinition;
   serverDefinition?: ServerDefinition | null;
 }
 
@@ -30,9 +30,11 @@ export function ShareServerDialog({
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
 
+  // Determine the correct ID to use for the share URL
+  const definitionId = 'definitionId' in server ? server.definitionId : server.id;
+  
   // Create a share URL that would point to a landing page for this server
-  // In a real app, this would likely include query parameters or path parameters for the server ID
-  const shareUrl = `https://mcpnow.app/discover/${server.definitionId || 'server'}`;
+  const shareUrl = `https://mcpnow.app/discover/${definitionId || 'server'}`;
   
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
@@ -51,6 +53,10 @@ export function ShareServerDialog({
     });
   };
 
+  // Use serverDefinition if provided, otherwise check if server itself is a ServerDefinition
+  const description = serverDefinition?.description || 
+                     ('description' in server ? server.description : "A powerful server that enhances your development workflow");
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -67,7 +73,7 @@ export function ShareServerDialog({
           <div className="space-y-1">
             <h3 className="font-semibold text-lg">{server.name}</h3>
             <p className="text-sm text-muted-foreground line-clamp-3">
-              {serverDefinition?.description || "A powerful server that enhances your development workflow"}
+              {description}
             </p>
           </div>
         </div>

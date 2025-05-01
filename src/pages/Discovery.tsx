@@ -231,7 +231,8 @@ const Discovery = () => {
     if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
     return `${Math.floor(diffDays / 365)} years ago`;
   };
-  return <div className="animate-fade-in">
+  return (
+    <div className="animate-fade-in">
       <div className="mb-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-8 text-white relative overflow-hidden">
         <div className="max-w-3xl relative z-10">
           <h1 className="text-3xl font-bold mb-2">Discovery</h1>
@@ -589,6 +590,8 @@ const Discovery = () => {
           serverDefinition={selectedServer}
         />
       )}
-    </div>;
+    </div>
+  );
 };
+
 export default Discovery;
