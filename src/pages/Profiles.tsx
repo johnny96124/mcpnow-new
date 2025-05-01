@@ -5,6 +5,7 @@ import {
   PlusCircle,
   Search,
   ServerIcon,
+  Share
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,7 @@ import { DeleteProfileDialog } from "@/components/profiles/DeleteProfileDialog";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { NoSearchResults } from "@/components/hosts/NoSearchResults";
+import { ShareProfileDialog } from "@/components/profiles/ShareProfileDialog";
 
 const Profiles = () => {
   const [localProfiles, setLocalProfiles] = useState<Profile[]>([]);
@@ -26,6 +28,8 @@ const Profiles = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [profileToShare, setProfileToShare] = useState<Profile | null>(null);
   const { toast } = useToast();
 
   const clearSearch = () => {
@@ -171,6 +175,11 @@ const Profiles = () => {
     profile.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleShareProfile = (profile: Profile) => {
+    setProfileToShare(profile);
+    setIsShareDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -255,22 +264,32 @@ const Profiles = () => {
                 </CardContent>
                 <Separator />
                 <CardFooter className="flex justify-between pt-3 mt-auto">
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="text-destructive"
+                      onClick={() => handleDeleteClick(profile)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleEditProfile(profile)}
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                  </div>
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="text-destructive"
-                    onClick={() => handleDeleteClick(profile)}
+                    onClick={() => handleShareProfile(profile)}
                   >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    Delete
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleEditProfile(profile)}
-                  >
-                    <Edit className="h-4 w-4 mr-1" />
-                    Edit
+                    <Share className="h-4 w-4 mr-1" />
+                    Share
                   </Button>
                 </CardFooter>
               </Card>
@@ -334,6 +353,15 @@ const Profiles = () => {
           onOpenChange={setIsDeleteDialogOpen}
           profileName={profileToDelete.name}
           onConfirmDelete={handleConfirmDelete}
+        />
+      )}
+
+      {profileToShare && (
+        <ShareProfileDialog
+          open={isShareDialogOpen}
+          onOpenChange={setIsShareDialogOpen}
+          profile={profileToShare}
+          serverInstances={serverInstances}
         />
       )}
     </div>
