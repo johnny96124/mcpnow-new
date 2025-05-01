@@ -150,34 +150,36 @@ export function ShareServerDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl md:max-w-3xl">
-        <DialogHeader>
-          <DialogTitle>Share Server</DialogTitle>
+      <DialogContent className="sm:max-w-3xl md:max-w-4xl p-6">
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-xl">Share Server</DialogTitle>
           <DialogDescription>
             Share this server with others who might find it useful
           </DialogDescription>
         </DialogHeader>
         
-        <div className="flex items-start gap-4 py-4">
+        <div className="flex flex-col sm:flex-row items-start gap-4 py-4">
           <ServerLogo name={server.name} className="w-12 h-12 flex-shrink-0" />
           
-          <div className="space-y-1 min-w-0">
+          <div className="space-y-1 min-w-0 flex-grow">
             <h3 className="font-semibold text-lg">{server.name}</h3>
-            <p className="text-sm text-muted-foreground line-clamp-3">
+            <p className="text-sm text-muted-foreground line-clamp-2">
               {description}
             </p>
           </div>
         </div>
         
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-sm font-medium">Sharing with:</span>
+        <div className="space-y-5 mt-2">
+          <div className="flex flex-col space-y-2">
+            <label htmlFor="config-select" className="text-sm font-medium">
+              Share with configuration:
+            </label>
             
             <Select
               value={selectedConfig}
               onValueChange={setSelectedConfig}
             >
-              <SelectTrigger className="w-[250px] h-9">
+              <SelectTrigger id="config-select" className="w-full h-10">
                 <SelectValue placeholder="Select configuration">
                   {selectedConfig === "no-config" ? (
                     <div className="flex items-center gap-2">
@@ -204,29 +206,29 @@ export function ShareServerDialog({
                 ))}
               </SelectContent>
             </Select>
-            
-            <Button 
-              variant="default"
-              size="sm"
-              className="gap-1.5 ml-auto"
-              onClick={generateShareUrl}
-              disabled={isGeneratingLink}
-            >
-              <Share className="h-4 w-4" />
-              Generate Link
-            </Button>
           </div>
           
-          {shareUrl && (
-            <div className="bg-muted/40 border rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm truncate mr-2 flex-1 overflow-hidden">
+          {shareUrl ? (
+            <div className="space-y-3">
+              <div className="bg-muted/40 border rounded-md p-3 flex items-center">
+                <div className="text-sm truncate mr-3 flex-1 overflow-hidden font-mono">
                   {shareUrl}
                 </div>
+              </div>
+              
+              <div className="flex justify-end gap-3">
+                <Button 
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShareUrl(null)}
+                >
+                  Reset
+                </Button>
+                
                 <Button 
                   variant="secondary"
                   size="sm"
-                  className={`gap-1.5 w-24 flex-shrink-0 ${isCopied ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800' : ''}`}
+                  className={`gap-1.5 ${isCopied ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800' : ''}`}
                   onClick={handleCopyUrl}
                 >
                   {isCopied ? (
@@ -242,6 +244,19 @@ export function ShareServerDialog({
                   )}
                 </Button>
               </div>
+            </div>
+          ) : (
+            <div className="flex justify-end">
+              <Button 
+                variant="default"
+                size="sm"
+                className="gap-1.5"
+                onClick={generateShareUrl}
+                disabled={isGeneratingLink}
+              >
+                <Share className="h-4 w-4" />
+                Generate Link
+              </Button>
             </div>
           )}
         </div>
