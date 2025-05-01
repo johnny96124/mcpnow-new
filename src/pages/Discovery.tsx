@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Calendar, Check, CheckCircle, ChevronLeft, Clock, Download, Eye, ExternalLink, FolderOpen, Globe, Info, Link2, Loader2, Search, Star, Tag, UserRound, Users, Watch, Wrench, X, Plus } from "lucide-react";
+import { Calendar, Check, CheckCircle, ChevronLeft, Clock, Copy, Download, Eye, ExternalLink, FolderOpen, Globe, Info, Link2, Loader2, Search, Share, Star, Tag, UserRound, Users, Watch, Wrench, X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +24,7 @@ import { useHostProfiles } from "@/hooks/useHostProfiles";
 import { ServerToolsList } from "@/components/discovery/ServerToolsList";
 import { ServerLogo } from "@/components/servers/ServerLogo";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ShareServerDialog } from "@/components/discovery/ShareServerDialog";
 
 const ITEMS_PER_PAGE = 12;
 interface EnhancedServerDefinition extends ServerDefinition {
@@ -79,6 +80,7 @@ const Discovery = () => {
   const [addInstanceOpen, setAddInstanceOpen] = useState(false);
   const [selectedDefinition, setSelectedDefinition] = useState<ServerDefinition | null>(null);
   const [activeDetailTab, setActiveDetailTab] = useState("overview");
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const {
     toast
   } = useToast();
@@ -413,33 +415,47 @@ const Discovery = () => {
         <DialogContent className="max-w-4xl overflow-hidden">
           {selectedServer && <div className="h-full flex flex-col">
               <DialogHeader className="border-b pb-4">
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <ServerLogo name={selectedServer.name} className="w-12 h-12" />
-                    {installedServers[selectedServer.id] && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
-                              <CheckCircle className="h-4 w-4 text-blue-600" />
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Server already added</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    )}
-                  </div>
-                  <div>
-                    <DialogTitle className="text-xl font-semibold">
-                      {selectedServer.name}
-                    </DialogTitle>
-                    <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                      <EndpointLabel type={selectedServer.type} />
-                      {selectedServer.isOfficial && <OfficialBadge />}
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <ServerLogo name={selectedServer.name} className="w-12 h-12" />
+                      {installedServers[selectedServer.id] && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                                <CheckCircle className="h-4 w-4 text-blue-600" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Server already added</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
+                    <div>
+                      <DialogTitle className="text-xl font-semibold">
+                        {selectedServer.name}
+                      </DialogTitle>
+                      <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                        <EndpointLabel type={selectedServer.type} />
+                        {selectedServer.isOfficial && <OfficialBadge />}
+                      </div>
                     </div>
                   </div>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="rounded-full hover:bg-slate-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShareDialogOpen(true);
+                    }}
+                  >
+                    <Share className="h-4 w-4" />
+                  </Button>
                 </div>
               </DialogHeader>
               
@@ -564,6 +580,15 @@ const Discovery = () => {
       </Dialog>
       
       <AddInstanceDialog open={addInstanceOpen} onOpenChange={setAddInstanceOpen} serverDefinition={selectedDefinition} onCreateInstance={handleCreateInstance} availableHosts={availableHosts} />
+      
+      {selectedServer && (
+        <ShareServerDialog 
+          open={shareDialogOpen} 
+          onOpenChange={setShareDialogOpen}
+          server={selectedServer}
+          serverDefinition={selectedServer}
+        />
+      )}
     </div>;
 };
 export default Discovery;
