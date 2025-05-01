@@ -35,8 +35,6 @@ export function ShareServerDialog({
 }: ShareServerDialogProps) {
   const [isCopied, setIsCopied] = useState(false);
   const [selectedConfig, setSelectedConfig] = useState<string>("no-config");
-  const [shareUrl, setShareUrl] = useState<string>("");
-  const [isLinkGenerated, setIsLinkGenerated] = useState(false);
   const { toast } = useToast();
   
   // Generate configuration options with additional mock data
@@ -81,8 +79,8 @@ export function ShareServerDialog({
     );
   }
 
-  // Determine the correct ID to use for the share URL based on selected config
-  const generateShareUrl = () => {
+  // Generate and copy share URL in one action
+  const handleGenerateAndCopy = () => {
     let url = "";
     if (selectedConfig === "no-config") {
       // Use the definition ID for sharing without config
@@ -99,21 +97,13 @@ export function ShareServerDialog({
       url = `https://mcpnow.app/discover/instance/${selectedConfig}`;
     }
     
-    setShareUrl(url);
-    setIsLinkGenerated(true);
-    
-    toast({
-      title: "Link generated!",
-      description: "Your share link is ready to copy",
-    });
-  };
-  
-  const handleCopyUrl = () => {
-    navigator.clipboard.writeText(shareUrl).then(() => {
+    // Copy to clipboard
+    navigator.clipboard.writeText(url).then(() => {
       setIsCopied(true);
       toast({
         title: "Link copied!",
-        description: "Share link has been copied to clipboard",
+        description: "Share link has been generated and copied to clipboard",
+        type: "success"
       });
       
       // Close dialog after copying
@@ -121,7 +111,7 @@ export function ShareServerDialog({
         onOpenChange(false);
         // Reset copied state after dialog closes
         setTimeout(() => setIsCopied(false), 300);
-      }, 1000);
+      }, 1500);
     });
   };
 
@@ -130,16 +120,8 @@ export function ShareServerDialog({
     if (open) {
       setSelectedConfig("no-config");
       setIsCopied(false);
-      setIsLinkGenerated(false);
-      setShareUrl("");
     }
   }, [open]);
-
-  // When config changes, reset generated link state
-  useEffect(() => {
-    setIsLinkGenerated(false);
-    setShareUrl("");
-  }, [selectedConfig]);
 
   // Use serverDefinition if provided, otherwise check if server itself is a ServerDefinition
   const description = serverDefinition?.description || 
@@ -205,41 +187,34 @@ export function ShareServerDialog({
             <Button
               variant="secondary"
               size="sm"
-              onClick={generateShareUrl}
-              className="flex items-center gap-1.5"
+              onClick={handleGenerateAndCopy}
+              className={`flex items-center gap-1.5 ${isCopied ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800' : ''}`}
             >
-              <Share className="h-4 w-4" />
-              Generate Link
+              {isCopied ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Share className="h-4 w-4" />
+                  Share & Copy Link
+                </>
+              )}
             </Button>
           </div>
           
-          {isLinkGenerated && (
-            <div className="bg-muted/40 border rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm truncate mr-2 flex-1 overflow-hidden">
-                  {shareUrl}
-                </div>
-                <Button 
-                  variant="secondary"
-                  size="sm"
-                  className={`gap-1.5 w-24 flex-shrink-0 ${isCopied ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800' : ''}`}
-                  onClick={handleCopyUrl}
-                >
-                  {isCopied ? (
-                    <>
-                      <Check className="h-4 w-4" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4" />
-                      Copy
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          )}
+          <div className="text-sm text-muted-foreground">
+            {isCopied ? (
+              <p className="text-green-600 dark:text-green-400">
+                The share link has been copied to your clipboard!
+              </p>
+            ) : (
+              <p>
+                Select a configuration and click "Share & Copy Link" to generate and copy a shareable link
+              </p>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
