@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { 
   FileText, Server, AlertTriangle, 
@@ -285,7 +286,19 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
             
             <Separator className="mb-6" />
             
-            <h3 className="text-lg font-medium mb-4">Connected Servers</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-medium">Connected Servers</h3>
+              
+              <Button 
+                onClick={() => setServerSelectionDialogOpen(true)} 
+                variant="outline"
+                size="sm"
+                className="whitespace-nowrap"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Servers
+              </Button>
+            </div>
             
             {profileServers.length > 0 ? (
               <div className="rounded-md border">
