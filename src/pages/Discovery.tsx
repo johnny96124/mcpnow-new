@@ -25,7 +25,6 @@ import { ServerToolsList } from "@/components/discovery/ServerToolsList";
 import { ServerLogo } from "@/components/servers/ServerLogo";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ShareServerDialog } from "@/components/discovery/ShareServerDialog";
-
 const ITEMS_PER_PAGE = 12;
 interface EnhancedServerDefinition extends ServerDefinition {
   views?: number;
@@ -231,8 +230,7 @@ const Discovery = () => {
     if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
     return `${Math.floor(diffDays / 365)} years ago`;
   };
-  return (
-    <div className="animate-fade-in">
+  return <div className="animate-fade-in">
       <div className="mb-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-8 text-white relative overflow-hidden">
         <div className="max-w-3xl relative z-10">
           <h1 className="text-3xl font-bold mb-2">Discovery</h1>
@@ -333,8 +331,7 @@ const Discovery = () => {
                       <div className="flex items-start gap-3">
                         <div className="relative">
                           <ServerLogo name={server.name} className="w-12 h-12" />
-                          {installedServers[server.id] && (
-                            <TooltipProvider>
+                          {installedServers[server.id] && <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
@@ -345,8 +342,7 @@ const Discovery = () => {
                                   <p>Server already added</p>
                                 </TooltipContent>
                               </Tooltip>
-                            </TooltipProvider>
-                          )}
+                            </TooltipProvider>}
                         </div>
                         <div className="flex flex-col">
                           <CardTitle className="text-lg font-semibold text-foreground group-hover:text-blue-600 transition-colors">
@@ -390,9 +386,9 @@ const Discovery = () => {
                       </div>
                       
                       <Button size="sm" onClick={e => {
-                        e.stopPropagation();
-                        handleAddServer(server.id);
-                      }} className="bg-blue-600 hover:bg-blue-700 h-8 relative z-10">
+                  e.stopPropagation();
+                  handleAddServer(server.id);
+                }} className="bg-blue-600 hover:bg-blue-700 h-8 relative z-10">
                         <Plus className="h-3.5 w-3.5 mr-1" />
                         Add
                       </Button>
@@ -420,8 +416,7 @@ const Discovery = () => {
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <ServerLogo name={selectedServer.name} className="w-12 h-12" />
-                      {installedServers[selectedServer.id] && (
-                        <TooltipProvider>
+                      {installedServers[selectedServer.id] && <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
@@ -432,8 +427,7 @@ const Discovery = () => {
                               <p>Server already added</p>
                             </TooltipContent>
                           </Tooltip>
-                        </TooltipProvider>
-                      )}
+                        </TooltipProvider>}
                     </div>
                     <div className="flex items-center justify-between flex-1">
                       <div>
@@ -446,15 +440,10 @@ const Discovery = () => {
                         </div>
                       </div>
                       
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-8"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShareDialogOpen(true);
-                        }}
-                      >
+                      <Button variant="outline" size="sm" onClick={e => {
+                    e.stopPropagation();
+                    setShareDialogOpen(true);
+                  }} className="h-8 mx-[20px]">
                         <Share className="h-4 w-4 mr-1.5" />
                         Share
                       </Button>
@@ -585,16 +574,7 @@ const Discovery = () => {
       
       <AddInstanceDialog open={addInstanceOpen} onOpenChange={setAddInstanceOpen} serverDefinition={selectedDefinition} onCreateInstance={handleCreateInstance} availableHosts={availableHosts} />
       
-      {selectedServer && (
-        <ShareServerDialog 
-          open={shareDialogOpen} 
-          onOpenChange={setShareDialogOpen}
-          server={selectedServer}
-          serverDefinition={selectedServer}
-        />
-      )}
-    </div>
-  );
+      {selectedServer && <ShareServerDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen} server={selectedServer} serverDefinition={selectedServer} />}
+    </div>;
 };
-
 export default Discovery;
