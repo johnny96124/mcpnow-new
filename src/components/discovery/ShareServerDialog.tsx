@@ -103,19 +103,6 @@ export function ShareServerDialog({
             </Button>
           </div>
         </div>
-        
-        <DialogFooter className="mt-4 sm:justify-between">
-          <div className="text-sm text-muted-foreground">
-            Recipients will see server details and download options
-          </div>
-          <Button 
-            variant="default" 
-            onClick={handleCopyUrl}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            {isCopied ? "Copied!" : "Copy and Share"}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
