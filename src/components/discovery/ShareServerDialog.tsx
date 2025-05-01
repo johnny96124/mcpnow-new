@@ -59,7 +59,7 @@ export function ShareServerDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-xl md:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Share Server</DialogTitle>
           <DialogDescription>
@@ -80,7 +80,7 @@ export function ShareServerDialog({
         
         <div className="bg-muted/40 border rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm truncate mr-2 flex-1">
+            <div className="text-sm truncate mr-2 flex-1 overflow-hidden">
               {shareUrl}
             </div>
             <Button 
