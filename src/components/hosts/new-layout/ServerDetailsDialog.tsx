@@ -45,12 +45,26 @@ export function ServerDetailsDialog({
           <div className="h-full flex flex-col">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
               <div className="flex justify-between items-start">
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 flex-1">
                   <ServerLogo name={server.name} className="w-14 h-14 bg-white/10 border-white/20" />
-                  <div className="space-y-1">
-                    <DialogTitle className="text-xl font-bold leading-tight text-white">
-                      {server.name}
-                    </DialogTitle>
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center justify-between">
+                      <DialogTitle className="text-xl font-bold leading-tight text-white">
+                        {server.name}
+                      </DialogTitle>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="rounded-full text-white hover:bg-white/20 h-9 w-9"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShareDialogOpen(true);
+                        }}
+                      >
+                        <Share className="h-4 w-4" />
+                      </Button>
+                    </div>
                     
                     <div className="flex flex-wrap items-center gap-2 mt-2">
                       <EndpointLabel type={definition?.type || "STDIO"} />
@@ -61,23 +75,9 @@ export function ServerDetailsDialog({
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="rounded-full text-white hover:bg-white/20 h-9 w-9"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShareDialogOpen(true);
-                    }}
-                  >
-                    <Share className="h-4 w-4" />
-                  </Button>
-                  
-                  <DialogClose className="rounded-full p-1.5 hover:bg-white/20 transition-colors">
-                    <X className="h-5 w-5" />
-                  </DialogClose>
-                </div>
+                <DialogClose className="rounded-full p-1.5 hover:bg-white/20 transition-colors ml-2">
+                  <X className="h-5 w-5" />
+                </DialogClose>
               </div>
             </div>
             

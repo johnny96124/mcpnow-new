@@ -435,28 +435,30 @@ const Discovery = () => {
                         </TooltipProvider>
                       )}
                     </div>
-                    <div>
-                      <DialogTitle className="text-xl font-semibold">
-                        {selectedServer.name}
-                      </DialogTitle>
-                      <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                        <EndpointLabel type={selectedServer.type} />
-                        {selectedServer.isOfficial && <OfficialBadge />}
+                    <div className="flex items-center justify-between flex-1">
+                      <div>
+                        <DialogTitle className="text-xl font-semibold">
+                          {selectedServer.name}
+                        </DialogTitle>
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                          <EndpointLabel type={selectedServer.type} />
+                          {selectedServer.isOfficial && <OfficialBadge />}
+                        </div>
                       </div>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="rounded-full hover:bg-slate-100"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShareDialogOpen(true);
+                        }}
+                      >
+                        <Share className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                  
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="rounded-full hover:bg-slate-100"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShareDialogOpen(true);
-                    }}
-                  >
-                    <Share className="h-4 w-4" />
-                  </Button>
                 </div>
               </DialogHeader>
               

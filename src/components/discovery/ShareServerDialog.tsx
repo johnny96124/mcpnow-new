@@ -68,9 +68,9 @@ export function ShareServerDialog({
         </DialogHeader>
         
         <div className="flex items-start gap-4 py-4">
-          <ServerLogo name={server.name} className="w-12 h-12" />
+          <ServerLogo name={server.name} className="w-12 h-12 flex-shrink-0" />
           
-          <div className="space-y-1">
+          <div className="space-y-1 min-w-0">
             <h3 className="font-semibold text-lg">{server.name}</h3>
             <p className="text-sm text-muted-foreground line-clamp-3">
               {description}
@@ -80,13 +80,13 @@ export function ShareServerDialog({
         
         <div className="bg-muted/40 border rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm truncate mr-2">
+            <div className="text-sm truncate mr-2 flex-1">
               {shareUrl}
             </div>
             <Button 
               variant="secondary"
               size="sm"
-              className="gap-1.5 w-24"
+              className="gap-1.5 w-24 flex-shrink-0"
               onClick={handleCopyUrl}
             >
               {isCopied ? (
