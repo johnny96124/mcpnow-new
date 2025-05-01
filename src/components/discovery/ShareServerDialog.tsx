@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   Dialog, 
@@ -150,7 +149,7 @@ export function ShareServerDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl md:max-w-4xl p-6">
+      <DialogContent className="sm:max-w-xl md:max-w-2xl p-6">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-xl">Share Server</DialogTitle>
           <DialogDescription>
@@ -210,21 +209,14 @@ export function ShareServerDialog({
           
           {shareUrl ? (
             <div className="space-y-3">
+              <h4 className="text-sm font-medium">Shareable Link:</h4>
               <div className="bg-muted/40 border rounded-md p-3 flex items-center">
                 <div className="text-sm truncate mr-3 flex-1 overflow-hidden font-mono">
                   {shareUrl}
                 </div>
               </div>
               
-              <div className="flex justify-end gap-3">
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShareUrl(null)}
-                >
-                  Reset
-                </Button>
-                
+              <div className="flex justify-end">
                 <Button 
                   variant="secondary"
                   size="sm"
