@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle, ExternalLink, Info, Loader2, Server, UsersRound, Download, X, Database, HelpCircle, ChevronDown, ChevronUp, Computer, Settings2, Layers } from 'lucide-react';
+import { CheckCircle, ExternalLink, Info, Loader2, Server, UsersRound, Download, X, Database, HelpCircle, ChevronDown, ChevronUp, Computer, Settings2, Layers, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -11,7 +11,8 @@ import { useServerContext } from '@/context/ServerContext';
 import { EndpointLabel } from '@/components/status/EndpointLabel';
 import { OfficialBadge } from '@/components/discovery/OfficialBadge';
 import { ServerLogo } from '@/components/servers/ServerLogo';
-import type { ServerDefinition, EndpointType } from '@/data/mockData';
+import { ShareProfileDialog } from '@/components/profiles/ShareProfileDialog';
+import type { ServerDefinition, EndpointType, Profile } from '@/data/mockData';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const formatDownloadCount = (count: number): string => {
@@ -32,6 +33,8 @@ const Dashboard = () => {
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const [isUserFlowOpen, setIsUserFlowOpen] = useState(true);
   const [selectedTab, setSelectedTab] = useState("visual");
+  const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [isShareProfileOpen, setIsShareProfileOpen] = useState(false);
   const {
     openAddInstanceDialog
   } = useServerContext();
@@ -191,6 +194,11 @@ const Dashboard = () => {
     setIsDialogOpen(true);
   };
 
+  const handleShareProfile = (profile: Profile) => {
+    setSelectedProfile(profile);
+    setIsShareProfileOpen(true);
+  };
+
   const handleInstall = (serverId: string) => {
     const server = trendingServers.find(item => item.id === serverId);
     if (!server) return;
@@ -327,15 +335,38 @@ const Dashboard = () => {
                 <CardTitle className="text-lg font-medium">Created Profiles</CardTitle>
                 <CardDescription>{activeProfiles} of {profiles.length} profiles enabled</CardDescription>
               </div>
-              <Database className="h-5 w-5 text-muted-foreground" />
+              <div className="flex items-center gap-2">
+                <Database className="h-5 w-5 text-muted-foreground" />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8" 
+                  onClick={() => handleShareProfile(profiles[0])}
+                >
+                  <Share2 className="h-4 w-4 text-muted-foreground hover:text-primary" />
+                </Button>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
               <div className="space-y-2">
                 {profiles.slice(0, 3).map(profile => <div key={profile.id} className="flex items-center justify-between p-2 bg-muted/50 rounded-md">
                     <span className="font-medium">{profile.name}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${profile.enabled ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'}`}>
-                      {profile.enabled ? 'Enabled' : 'Disabled'}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${profile.enabled ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'}`}>
+                        {profile.enabled ? 'Enabled' : 'Disabled'}
+                      </span>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-6 w-6 opacity-60 hover:opacity-100" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleShareProfile(profile);
+                        }}
+                      >
+                        <Share2 className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>)}
                 {profiles.length > 3 && <p className="text-xs text-muted-foreground text-center">
                     +{profiles.length - 3} more profiles
@@ -587,6 +618,16 @@ const Dashboard = () => {
           </CollapsibleContent>
         </Collapsible>
       </div>
+
+      {/* Share Profile Dialog */}
+      {selectedProfile && (
+        <ShareProfileDialog 
+          open={isShareProfileOpen}
+          onOpenChange={setIsShareProfileOpen}
+          profile={selectedProfile}
+          serverInstances={serverInstances}
+        />
+      )}
     </div>
   );
 };
