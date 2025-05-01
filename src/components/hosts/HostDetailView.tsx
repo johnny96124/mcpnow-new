@@ -1,10 +1,5 @@
-
 import React, { useState } from "react";
-import { 
-  FileText, Server, AlertTriangle, 
-  CheckCircle, Info, Plus, ChevronDown, 
-  ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2
-} from "lucide-react";
+import { FileText, Server, AlertTriangle, CheckCircle, Info, Plus, ChevronDown, ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,10 +9,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { StatusIndicator } from "@/components/status/StatusIndicator";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  Host, Profile, ServerInstance, 
-  ConnectionStatus, serverDefinitions, EndpointType 
-} from "@/data/mockData";
+import { Host, Profile, ServerInstance, ConnectionStatus, serverDefinitions, EndpointType } from "@/data/mockData";
 import { ConfigHighlightDialog } from "./ConfigHighlightDialog";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { ServerListEmpty } from "./ServerListEmpty";
@@ -25,22 +17,8 @@ import { ServerItem } from "./ServerItem";
 import { ServerSelectionDialog } from "./ServerSelectionDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose
-} from "@/components/ui/dialog";
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 interface HostDetailViewProps {
   host: Host;
   profiles: Profile[];
@@ -56,7 +34,6 @@ interface HostDetailViewProps {
   onDeleteProfile: (profileId: string) => void;
   onAddServersToProfile?: (servers: ServerInstance[]) => void;
 }
-
 export const HostDetailView: React.FC<HostDetailViewProps> = ({
   host,
   profiles,
@@ -75,26 +52,18 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [serverSelectionDialogOpen, setServerSelectionDialogOpen] = useState(false);
   const [deleteHostDialogOpen, setDeleteHostDialogOpen] = useState(false);
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const selectedProfile = profiles.find(p => p.id === selectedProfileId);
-  
-  const profileServers = serverInstances.filter(
-    server => selectedProfile?.instances.includes(server.id)
-  );
-
+  const profileServers = serverInstances.filter(server => selectedProfile?.instances.includes(server.id));
   const handleServerStatusChange = (serverId: string, enabled: boolean) => {
-    onServerStatusChange(
-      serverId, 
-      enabled ? host.connectionStatus === "connected" ? 'connecting' : 'stopped' : 'stopped'
-    );
-    
+    onServerStatusChange(serverId, enabled ? host.connectionStatus === "connected" ? 'connecting' : 'stopped' : 'stopped');
     if (enabled) {
       toast({
         title: "Connecting to server",
         description: "Attempting to establish connection"
       });
-      
       setTimeout(() => {
         const success = Math.random() > 0.3;
         if (success) {
@@ -115,15 +84,12 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
       }, 2000);
     }
   };
-
   const getServerLoad = (serverId: string) => {
     return Math.floor(Math.random() * 90) + 10;
   };
-
   const showConfigFile = () => {
     setConfigDialogOpen(true);
   };
-
   const handleAddServers = (servers: ServerInstance[]) => {
     if (selectedProfile && servers.length > 0) {
       if (onAddServersToProfile) {
@@ -134,20 +100,16 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
           description: `${servers.length} server(s) added to ${selectedProfile.name}`,
           type: "success"
         });
-      
         onSaveProfileChanges();
       }
     }
   };
-
   const handleConfirmDeleteHost = () => {
     onDeleteHost(host.id);
     setDeleteHostDialogOpen(false);
   };
-
   if (host.configStatus === "unknown") {
-    return (
-      <div className="space-y-6">
+    return <div className="space-y-6">
         <Card className="bg-white">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -158,10 +120,7 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
                 <div>
                   <h2 className="text-xl font-semibold">{host.name}</h2>
                   <div className="flex items-center gap-2">
-                    <StatusIndicator 
-                      status="inactive" 
-                      label="Needs Configuration" 
-                    />
+                    <StatusIndicator status="inactive" label="Needs Configuration" />
                   </div>
                 </div>
               </div>
@@ -185,12 +144,9 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
             </div>
           </CardContent>
         </Card>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="space-y-6">
+  return <div className="space-y-6">
       <Card className="bg-white">
         <CardContent className="p-6">
           {/* Host header section */}
@@ -202,22 +158,7 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
               <div>
                 <h2 className="text-xl font-semibold">{host.name}</h2>
                 <div className="flex items-center gap-2">
-                  <StatusIndicator 
-                    status={
-                      host.connectionStatus === "connected" 
-                        ? "active" 
-                        : host.connectionStatus === "misconfigured" 
-                          ? "error" 
-                          : "inactive"
-                    } 
-                    label={
-                      host.connectionStatus === "connected" 
-                        ? "Connected" 
-                        : host.connectionStatus === "misconfigured" 
-                          ? "Misconfigured" 
-                          : "Disconnected"
-                    } 
-                  />
+                  <StatusIndicator status={host.connectionStatus === "connected" ? "active" : host.connectionStatus === "misconfigured" ? "error" : "inactive"} label={host.connectionStatus === "connected" ? "Connected" : host.connectionStatus === "misconfigured" ? "Misconfigured" : "Disconnected"} />
                 </div>
               </div>
             </div>
@@ -229,19 +170,11 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {host.configPath && (
-                    <DropdownMenuItem 
-                      className="cursor-pointer"
-                      onClick={showConfigFile}
-                    >
+                  {host.configPath && <DropdownMenuItem className="cursor-pointer" onClick={showConfigFile}>
                       <FileText className="h-4 w-4 mr-2" />
                       View Config
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem 
-                    className="text-red-600 cursor-pointer"
-                    onClick={() => setDeleteHostDialogOpen(true)}
-                  >
+                    </DropdownMenuItem>}
+                  <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={() => setDeleteHostDialogOpen(true)}>
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete Host
                   </DropdownMenuItem>
@@ -258,28 +191,12 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-medium">Server Profile</h3>
                 
-                {profileServers.length > 0 && (
-                  <Button 
-                    onClick={() => setServerSelectionDialogOpen(true)} 
-                    variant="outline"
-                    size="sm"
-                    className="whitespace-nowrap"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Servers
-                  </Button>
-                )}
+                {profileServers.length > 0}
               </div>
               
               <div className="flex items-center">
                 <div className="p-1.5 bg-primary/5 border rounded-lg flex-1 flex items-center">
-                  <ProfileDropdown 
-                    profiles={profiles} 
-                    currentProfileId={selectedProfileId} 
-                    onProfileChange={onProfileChange}
-                    onCreateProfile={onCreateProfile}
-                    onDeleteProfile={onDeleteProfile}
-                  />
+                  <ProfileDropdown profiles={profiles} currentProfileId={selectedProfileId} onProfileChange={onProfileChange} onCreateProfile={onCreateProfile} onDeleteProfile={onDeleteProfile} />
                 </div>
               </div>
             </div>
@@ -289,19 +206,13 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium">Connected Servers</h3>
               
-              <Button 
-                onClick={() => setServerSelectionDialogOpen(true)} 
-                variant="outline"
-                size="sm"
-                className="whitespace-nowrap"
-              >
+              <Button onClick={() => setServerSelectionDialogOpen(true)} variant="outline" size="sm" className="whitespace-nowrap">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Servers
               </Button>
             </div>
             
-            {profileServers.length > 0 ? (
-              <div className="rounded-md border">
+            {profileServers.length > 0 ? <div className="rounded-md border">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b bg-muted/50">
@@ -313,44 +224,24 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {profileServers.map(server => (
-                      <ServerItem 
-                        key={server.id}
-                        server={server}
-                        hostConnectionStatus={host.connectionStatus}
-                        onStatusChange={handleServerStatusChange}
-                        load={getServerLoad(server.id)}
-                        onRemoveFromProfile={(serverId) => {
-                          toast({
-                            title: "Server removed",
-                            description: `${server.name} has been removed from this profile`,
-                          });
-                        }}
-                      />
-                    ))}
+                    {profileServers.map(server => <ServerItem key={server.id} server={server} hostConnectionStatus={host.connectionStatus} onStatusChange={handleServerStatusChange} load={getServerLoad(server.id)} onRemoveFromProfile={serverId => {
+                  toast({
+                    title: "Server removed",
+                    description: `${server.name} has been removed from this profile`
+                  });
+                }} />)}
                   </tbody>
                 </table>
-              </div>
-            ) : (
-              <div className="mt-4">
+              </div> : <div className="mt-4">
                 <ServerListEmpty onAddServers={() => setServerSelectionDialogOpen(true)} />
-              </div>
-            )}
+              </div>}
           </div>
         </CardContent>
       </Card>
       
-      <ServerSelectionDialog 
-        open={serverSelectionDialogOpen} 
-        onOpenChange={setServerSelectionDialogOpen}
-        onAddServers={handleAddServers}
-      />
+      <ServerSelectionDialog open={serverSelectionDialogOpen} onOpenChange={setServerSelectionDialogOpen} onAddServers={handleAddServers} />
       
-      <ConfigHighlightDialog
-        open={configDialogOpen}
-        onOpenChange={setConfigDialogOpen}
-        configPath={host.configPath || ""}
-      />
+      <ConfigHighlightDialog open={configDialogOpen} onOpenChange={setConfigDialogOpen} configPath={host.configPath || ""} />
 
       {/* Delete Host Confirmation Dialog */}
       <Dialog open={deleteHostDialogOpen} onOpenChange={setDeleteHostDialogOpen}>
@@ -371,26 +262,11 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
+    </div>;
 };
-
 function Search(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
+  return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="8" />
       <path d="m21 21-4.3-4.3" />
-    </svg>
-  );
+    </svg>;
 }
