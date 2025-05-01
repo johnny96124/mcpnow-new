@@ -447,15 +447,16 @@ const Discovery = () => {
                       </div>
                       
                       <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="rounded-full hover:bg-slate-100"
+                        variant="outline" 
+                        size="sm" 
+                        className="h-8"
                         onClick={(e) => {
                           e.stopPropagation();
                           setShareDialogOpen(true);
                         }}
                       >
-                        <Share className="h-4 w-4" />
+                        <Share2 className="h-4 w-4 mr-1.5" />
+                        Share
                       </Button>
                     </div>
                   </div>

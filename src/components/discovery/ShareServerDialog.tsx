@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ServerLogo } from "@/components/servers/ServerLogo";
-import { Copy, Check, Ban } from "lucide-react";
+import { Copy, Check, Ban, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ServerInstance, ServerDefinition } from "@/data/mockData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -216,4 +216,3 @@ export function ShareServerDialog({
     </Dialog>
   );
 }
-
