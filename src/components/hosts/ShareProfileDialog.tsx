@@ -171,18 +171,25 @@ export function ShareProfileDialog({ open, onOpenChange, profile, servers }: Sha
             </Button>
           ) : (
             <div className="space-y-3">
-              <div className="flex items-center">
-                <div className="bg-muted/50 flex-1 p-2 rounded-l-md flex items-center overflow-hidden">
+              <div className="flex flex-col">
+                <div className="flex items-center mb-2">
                   <LinkIcon className="h-4 w-4 text-muted-foreground mr-2 flex-shrink-0" />
-                  <span className="text-sm truncate">{generatedLink}</span>
+                  <span className="text-sm text-muted-foreground">Generated Link:</span>
                 </div>
-                <Button 
-                  variant="secondary" 
-                  className="rounded-l-none" 
-                  onClick={handleCopyLink}
-                >
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </Button>
+                <div className="flex items-center">
+                  <div className="bg-muted/50 flex-1 p-2 rounded-l-md overflow-hidden">
+                    <div className="truncate text-sm">
+                      {generatedLink}
+                    </div>
+                  </div>
+                  <Button 
+                    variant="secondary" 
+                    className="rounded-l-none" 
+                    onClick={handleCopyLink}
+                  >
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  </Button>
+                </div>
               </div>
               
               <Button 
