@@ -136,40 +136,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     );
   };
 
-  // Format JSON for display
-  const getProfileConfigJSON = () => {
-    const serversConfig: Record<string, any> = {};
-    
-    servers.forEach(server => {
-      const serverConfig: Record<string, any> = {};
-      
-      if ('url' in server && server.url) {
-        // For HTTP_SSE servers
-        serverConfig.url = server.url as string;
-        if ('headers' in server && server.headers) {
-          serverConfig.headers = server.headers as Record<string, string>;
-        }
-      } else {
-        // For STDIO servers
-        serverConfig.command = "npx";
-        if ('arguments' in server && server.arguments) {
-          serverConfig.args = server.arguments;
-        }
-        if ('environment' in server && server.environment) {
-          serverConfig.env = server.environment as Record<string, string>;
-        }
-      }
-      
-      serversConfig[server.name.toLowerCase().replace(/\s+/g, "-")] = serverConfig;
-    });
-    
-    const config = {
-      mcpServers: serversConfig
-    };
-    
-    return JSON.stringify(config, null, 2);
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
@@ -268,26 +234,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 </Collapsible>
               ))}
             </div>
-            
-            {shareMode === "with-config" && (
-              <Collapsible className="border rounded-md">
-                <CollapsibleTrigger asChild>
-                  <div className="p-3 flex justify-between items-center cursor-pointer hover:bg-muted/30">
-                    <div className="font-medium text-sm">Configuration JSON</div>
-                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="p-3 overflow-x-auto">
-                    <pre className="text-xs font-mono bg-muted p-2 rounded-md whitespace-pre-wrap">
-                      {getProfileConfigJSON()}
-                    </pre>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            )}
           </div>
           
           <Separator />
