@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,11 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const [openConfigs, setOpenConfigs] = useState<Record<string, boolean>>({});
   
   const { toast } = useToast();
+
+  // Reset generated link when share mode changes
+  useEffect(() => {
+    setGeneratedLink(null);
+  }, [shareMode]);
 
   const toggleServerConfig = (serverId: string) => {
     setOpenConfigs(prev => ({
@@ -198,7 +203,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                       <Server className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium text-sm">{server.name}</span>
                       <Badge variant="outline" className="text-xs">
-                        {server.connectionDetails.includes('http') ? 'HTTP SSE' : 'STDIO'}
+                        {server.connectionDetails?.includes('http') ? 'HTTP SSE' : 'STDIO'}
                       </Badge>
                     </div>
                     
@@ -256,6 +261,8 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   <Button 
                     onClick={handleCopyLink}
                     className="w-full"
+                    variant="secondary"
+                    style={{ backgroundColor: "white" }}
                   >
                     <Copy className="h-4 w-4 mr-2" />
                     Copy Link
