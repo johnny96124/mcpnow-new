@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Copy, ChevronDown, ChevronUp, Server, Upload } from "lucide-react";
+import { Copy, ChevronDown, ChevronUp, Server, Upload, Share2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -46,7 +46,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     
     // Simulate generating a link with max 15 characters
     setTimeout(() => {
-      // Generate a short mock share URL
+      // Generate a short mock share URL with exactly 15 chars
       const mockShareLink = "ab1cd2ef3gh4ij5";
       setGeneratedLink(mockShareLink);
       setIsGeneratingLink(false);
@@ -70,31 +70,16 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
   };
 
-  const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
-    const details: ServerConfigDetail[] = [];
-    
-    // For HTTP SSE servers, add URL and Headers
-    if (server.connectionDetails?.includes('http')) {
-      if ('url' in server) {
-        details.push({ name: "URL", value: server.url as string });
-      }
-      
-      if ('headers' in server && server.headers) {
-        details.push({ name: "HTTP Headers", value: server.headers as Record<string, string> });
-      }
-    } 
-    // For STDIO servers, add Command Arguments and Environment Variables
-    else {
-      if ('arguments' in server && server.arguments && server.arguments.length > 0) {
-        details.push({ name: "Command Arguments", value: server.arguments });
-      }
-      
-      if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
-        details.push({ name: "Environment Variables", value: server.environment as Record<string, string> });
-      }
-    }
-    
-    return details;
+  const hasHttpSseDetails = (server: ServerInstance): boolean => {
+    return server.connectionDetails?.includes('http') && 
+           (('url' in server && server.url) || 
+            ('headers' in server && server.headers && Object.keys(server.headers).length > 0));
+  };
+  
+  const hasStdioDetails = (server: ServerInstance): boolean => {
+    return !server.connectionDetails?.includes('http') && 
+           (('arguments' in server && server.arguments && server.arguments.length > 0) || 
+            ('environment' in server && server.environment && Object.keys(server.environment).length > 0));
   };
 
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
@@ -184,7 +169,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   key={server.id}
                   open={openConfigs[server.id]} 
                   onOpenChange={() => toggleServerConfig(server.id)}
-                  className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
+                  className="w-full"
                 >
                   <div className="p-3 flex justify-between items-center">
                     <div className="flex items-center gap-3">
@@ -195,7 +180,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                       </Badge>
                     </div>
                     
-                    {shareMode === "with-config" && getServerConfigDetails(server).length > 0 && (
+                    {shareMode === "with-config" && (hasHttpSseDetails(server) || hasStdioDetails(server)) && (
                       <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                           {openConfigs[server.id] ? (
@@ -211,12 +196,63 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   {shareMode === "with-config" && (
                     <CollapsibleContent>
                       <div className="p-3 pt-0 pl-10 space-y-3 text-sm bg-muted/30">
-                        {getServerConfigDetails(server).map((detail, index) => (
-                          <div key={index} className="grid gap-1">
-                            <div className="font-medium text-xs text-muted-foreground">{detail.name}</div>
-                            {renderConfigValue(detail.value)}
-                          </div>
-                        ))}
+                        {/* HTTP SSE specific details */}
+                        {server.connectionDetails.includes('http') && (
+                          <>
+                            {/* URL Section */}
+                            {server.url && (
+                              <div className="grid gap-1">
+                                <div className="font-medium text-xs text-muted-foreground">URL</div>
+                                <div className="font-mono text-sm bg-muted p-1 rounded">{server.url}</div>
+                              </div>
+                            )}
+                            
+                            {/* HTTP Headers Section */}
+                            {server.headers && Object.keys(server.headers).length > 0 && (
+                              <div className="grid gap-1">
+                                <div className="font-medium text-xs text-muted-foreground">HTTP Headers</div>
+                                <div className="space-y-1">
+                                  {Object.entries(server.headers).map(([key, val]) => (
+                                    <div key={key} className="font-mono text-sm">
+                                      <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+                        
+                        {/* STDIO specific details */}
+                        {!server.connectionDetails.includes('http') && (
+                          <>
+                            {/* Command Arguments Section */}
+                            {server.arguments && server.arguments.length > 0 && (
+                              <div className="grid gap-1">
+                                <div className="font-medium text-xs text-muted-foreground">Command Arguments</div>
+                                <div className="space-y-1">
+                                  {server.arguments.map((arg, index) => (
+                                    <div key={index} className="font-mono text-sm bg-muted p-1 rounded">{arg}</div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Environment Variables Section */}
+                            {server.environment && Object.keys(server.environment).length > 0 && (
+                              <div className="grid gap-1">
+                                <div className="font-medium text-xs text-muted-foreground">Environment Variables</div>
+                                <div className="space-y-1">
+                                  {Object.entries(server.environment).map(([key, val]) => (
+                                    <div key={key} className="font-mono text-sm">
+                                      <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
                     </CollapsibleContent>
                   )}
@@ -239,10 +275,8 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
               </Button>
             ) : (
               <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="bg-muted p-2 rounded text-sm font-mono flex-1 truncate overflow-hidden">
-                    {generatedLink}
-                  </div>
+                <div className="bg-muted p-2 rounded text-sm font-mono flex-1 truncate overflow-hidden">
+                  {generatedLink}
                 </div>
                 
                 <Button 
@@ -261,6 +295,3 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     </Dialog>
   );
 };
-
-// Add missing Share2 icon import
-import { Share2 } from "lucide-react";
