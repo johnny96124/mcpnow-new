@@ -1,16 +1,13 @@
 
 import React, { useState } from "react";
-import { Copy, ExternalLink, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
+import { Copy, ChevronDown, ChevronUp, Server, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Profile, ServerInstance } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ServerConfigDetail {
   name: string;
@@ -47,24 +44,16 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
     
-    // Simulate generating a link
+    // Simulate generating a link with max 15 characters
     setTimeout(() => {
-      // Generate a mock share URL with the profile ID and share mode
-      const baseUrl = window.location.origin;
-      const shareData = {
-        profileId: profile.id,
-        mode: shareMode,
-        timestamp: Date.now()
-      };
-      
-      // Generate a mock shareable link
-      const shareLink = `${baseUrl}/share/profile/${btoa(JSON.stringify(shareData))}`;
-      setGeneratedLink(shareLink);
+      // Generate a short mock share URL
+      const mockShareLink = "ab1cd2ef3gh4ij5";
+      setGeneratedLink(mockShareLink);
       setIsGeneratingLink(false);
       
       toast({
         title: "Share link generated",
-        description: "You can now copy or open the link",
+        description: "You can now copy the link",
         type: "success"
       });
     }, 1000);
@@ -81,31 +70,28 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
   };
 
-  const handleOpenLink = () => {
-    if (generatedLink) {
-      window.open(generatedLink, '_blank');
-    }
-  };
-
   const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
     const details: ServerConfigDetail[] = [];
     
+    // For HTTP SSE servers, add URL and Headers
     if (server.connectionDetails?.includes('http')) {
       if ('url' in server) {
         details.push({ name: "URL", value: server.url as string });
       }
-    }
-    
-    if ('headers' in server && server.headers) {
-      details.push({ name: "HTTP Headers", value: server.headers as Record<string, string> });
-    }
-    
-    if ('arguments' in server && server.arguments && server.arguments.length > 0) {
-      details.push({ name: "Command Arguments", value: server.arguments });
-    }
-    
-    if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
-      details.push({ name: "Environment Variables", value: server.environment as Record<string, string> });
+      
+      if ('headers' in server && server.headers) {
+        details.push({ name: "HTTP Headers", value: server.headers as Record<string, string> });
+      }
+    } 
+    // For STDIO servers, add Command Arguments and Environment Variables
+    else {
+      if ('arguments' in server && server.arguments && server.arguments.length > 0) {
+        details.push({ name: "Command Arguments", value: server.arguments });
+      }
+      
+      if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
+        details.push({ name: "Environment Variables", value: server.environment as Record<string, string> });
+      }
     }
     
     return details;
@@ -152,7 +138,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Share Mode Selection - Updated UI based on the provided image */}
+          {/* Share Mode Selection */}
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div 
@@ -259,24 +245,14 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   </div>
                 </div>
                 
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={handleCopyLink}
-                    className="flex-1"
-                    variant="outline"
-                  >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy Link
-                  </Button>
-                  
-                  <Button 
-                    onClick={handleOpenLink}
-                    className="flex-1"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Open Link
-                  </Button>
-                </div>
+                <Button 
+                  onClick={handleCopyLink}
+                  className="w-full"
+                  variant="outline"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Link
+                </Button>
               </div>
             )}
           </div>
@@ -285,3 +261,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     </Dialog>
   );
 };
+
+// Add missing Share2 icon import
+import { Share2 } from "lucide-react";
