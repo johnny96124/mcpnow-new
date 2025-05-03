@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Copy, ExternalLink, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -119,11 +118,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
     
     if (Array.isArray(value)) {
+      // Modified section - render Command Arguments in a single line
       return (
-        <div className="space-y-1">
-          {value.map((item, index) => (
-            <div key={index} className="font-mono text-sm bg-muted p-1 rounded">{item}</div>
-          ))}
+        <div className="font-mono text-sm bg-muted p-1 rounded">
+          {value.join(' ')}
         </div>
       );
     }
