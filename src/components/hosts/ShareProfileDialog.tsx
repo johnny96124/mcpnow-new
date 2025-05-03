@@ -1,5 +1,6 @@
+
 import React, { useState } from "react";
-import { Copy, ExternalLink, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
+import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -48,22 +49,22 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     
     // Simulate generating a link
     setTimeout(() => {
-      // Generate a mock share URL with the profile ID and share mode
-      const baseUrl = window.location.origin;
+      // Generate a shortened mock share URL with the profile ID and share mode
       const shareData = {
-        profileId: profile.id,
-        mode: shareMode,
-        timestamp: Date.now()
+        pid: profile.id,
+        m: shareMode === "with-config" ? "wc" : "nc",
+        t: Date.now().toString().slice(-6)
       };
       
-      // Generate a mock shareable link
-      const shareLink = `${baseUrl}/share/profile/${btoa(JSON.stringify(shareData))}`;
+      // Generate a mock shareable link - limited to 20 characters
+      const shortCode = btoa(JSON.stringify(shareData)).substring(0, 14);
+      const shareLink = `sh.io/${shortCode}`;
       setGeneratedLink(shareLink);
       setIsGeneratingLink(false);
       
       toast({
         title: "Share link generated",
-        description: "You can now copy or open the link",
+        description: "You can now copy the link",
         type: "success"
       });
     }, 1000);
@@ -77,12 +78,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         description: "The share link has been copied to your clipboard",
         type: "success"
       });
-    }
-  };
-
-  const handleOpenLink = () => {
-    if (generatedLink) {
-      window.open(generatedLink, '_blank');
     }
   };
 
@@ -260,19 +255,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 <div className="flex gap-2">
                   <Button 
                     onClick={handleCopyLink}
-                    className="flex-1"
-                    variant="outline"
+                    className="w-full"
                   >
                     <Copy className="h-4 w-4 mr-2" />
                     Copy Link
-                  </Button>
-                  
-                  <Button 
-                    onClick={handleOpenLink}
-                    className="flex-1"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Open Link
                   </Button>
                 </div>
               </div>
