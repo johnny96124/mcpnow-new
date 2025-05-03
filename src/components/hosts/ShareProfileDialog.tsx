@@ -1,13 +1,16 @@
 
 import React, { useState } from "react";
-import { Copy, ChevronDown, ChevronUp, Server, Upload, Share2 } from "lucide-react";
+import { Copy, ExternalLink, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Profile, ServerInstance } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ServerConfigDetail {
   name: string;
@@ -44,16 +47,24 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
     
-    // Simulate generating a link with max 15 characters
+    // Simulate generating a link
     setTimeout(() => {
-      // Generate a short mock share URL with exactly 15 chars
-      const mockShareLink = "ab1cd2ef3gh4ij5";
-      setGeneratedLink(mockShareLink);
+      // Generate a mock share URL with the profile ID and share mode
+      const baseUrl = window.location.origin;
+      const shareData = {
+        profileId: profile.id,
+        mode: shareMode,
+        timestamp: Date.now()
+      };
+      
+      // Generate a mock shareable link
+      const shareLink = `${baseUrl}/share/profile/${btoa(JSON.stringify(shareData))}`;
+      setGeneratedLink(shareLink);
       setIsGeneratingLink(false);
       
       toast({
         title: "Share link generated",
-        description: "You can now copy the link",
+        description: "You can now copy or open the link",
         type: "success"
       });
     }, 1000);
@@ -70,28 +81,34 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
   };
 
-  const hasHttpSseDetails = (server: ServerInstance): boolean => {
-    if (!server.connectionDetails.includes('http')) return false;
-    
-    // Safely check for url property using TypeScript type assertion
-    const serverWithUrl = server as unknown as { url?: string };
-    const serverWithHeaders = server as unknown as { headers?: Record<string, string> };
-    
-    return (serverWithUrl.url !== undefined || 
-           (serverWithHeaders.headers !== undefined && 
-            Object.keys(serverWithHeaders.headers || {}).length > 0));
+  const handleOpenLink = () => {
+    if (generatedLink) {
+      window.open(generatedLink, '_blank');
+    }
   };
-  
-  const hasStdioDetails = (server: ServerInstance): boolean => {
-    if (server.connectionDetails.includes('http')) return false;
+
+  const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
+    const details: ServerConfigDetail[] = [];
     
-    // Safely check for arguments and environment properties
-    const serverWithArgs = server as unknown as { arguments?: string[] };
-    const serverWithEnv = server as unknown as { environment?: Record<string, string> };
+    if (server.connectionDetails?.includes('http')) {
+      if ('url' in server) {
+        details.push({ name: "URL", value: server.url as string });
+      }
+    }
     
-    return ((serverWithArgs.arguments !== undefined && serverWithArgs.arguments.length > 0) || 
-            (serverWithEnv.environment !== undefined && 
-             Object.keys(serverWithEnv.environment || {}).length > 0));
+    if ('headers' in server && server.headers) {
+      details.push({ name: "HTTP Headers", value: server.headers as Record<string, string> });
+    }
+    
+    if ('arguments' in server && server.arguments && server.arguments.length > 0) {
+      details.push({ name: "Command Arguments", value: server.arguments });
+    }
+    
+    if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
+      details.push({ name: "Environment Variables", value: server.environment as Record<string, string> });
+    }
+    
+    return details;
   };
 
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
@@ -135,7 +152,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Share Mode Selection */}
+          {/* Share Mode Selection - Updated UI based on the provided image */}
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div 
@@ -176,109 +193,49 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </div>
             
             <div className="border rounded-md divide-y">
-              {servers.map((server) => {
-                const serverWithUrl = server as unknown as { url?: string };
-                const serverWithHeaders = server as unknown as { headers?: Record<string, string> };
-                const serverWithArgs = server as unknown as { arguments?: string[] };
-                const serverWithEnv = server as unknown as { environment?: Record<string, string> };
-                
-                const hasDetails = hasHttpSseDetails(server) || hasStdioDetails(server);
-                
-                return (
-                  <Collapsible 
-                    key={server.id}
-                    open={!!openConfigs[server.id]} 
-                    onOpenChange={() => toggleServerConfig(server.id)}
-                    className="w-full"
-                  >
-                    <div className="p-3 flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <Server className="h-4 w-4 text-muted-foreground" />
-                        <span className="font-medium text-sm">{server.name}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {server.connectionDetails.includes('http') ? 'HTTP SSE' : 'STDIO'}
-                        </Badge>
-                      </div>
-                      
-                      {shareMode === "with-config" && hasDetails && (
-                        <CollapsibleTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                            {openConfigs[server.id] ? (
-                              <ChevronUp className="h-4 w-4" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4" />
-                            )}
-                          </Button>
-                        </CollapsibleTrigger>
-                      )}
+              {servers.map((server) => (
+                <Collapsible 
+                  key={server.id}
+                  open={openConfigs[server.id]} 
+                  onOpenChange={() => toggleServerConfig(server.id)}
+                  className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
+                >
+                  <div className="p-3 flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      <Server className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium text-sm">{server.name}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {server.connectionDetails.includes('http') ? 'HTTP SSE' : 'STDIO'}
+                      </Badge>
                     </div>
                     
-                    {shareMode === "with-config" && (
-                      <CollapsibleContent>
-                        <div className="p-3 pt-0 pl-10 space-y-3 text-sm bg-muted/30">
-                          {/* HTTP SSE specific details */}
-                          {server.connectionDetails.includes('http') && (
-                            <>
-                              {/* URL Section */}
-                              {serverWithUrl.url && (
-                                <div className="grid gap-1">
-                                  <div className="font-medium text-xs text-muted-foreground">URL</div>
-                                  <div className="font-mono text-sm bg-muted p-1 rounded">{serverWithUrl.url}</div>
-                                </div>
-                              )}
-                              
-                              {/* HTTP Headers Section */}
-                              {serverWithHeaders.headers && Object.keys(serverWithHeaders.headers).length > 0 && (
-                                <div className="grid gap-1">
-                                  <div className="font-medium text-xs text-muted-foreground">HTTP Headers</div>
-                                  <div className="space-y-1">
-                                    {Object.entries(serverWithHeaders.headers).map(([key, val]) => (
-                                      <div key={key} className="font-mono text-sm">
-                                        <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </>
+                    {shareMode === "with-config" && getServerConfigDetails(server).length > 0 && (
+                      <CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                          {openConfigs[server.id] ? (
+                            <ChevronUp className="h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="h-4 w-4" />
                           )}
-                          
-                          {/* STDIO specific details */}
-                          {!server.connectionDetails.includes('http') && (
-                            <>
-                              {/* Command Arguments Section */}
-                              {serverWithArgs.arguments && serverWithArgs.arguments.length > 0 && (
-                                <div className="grid gap-1">
-                                  <div className="font-medium text-xs text-muted-foreground">Command Arguments</div>
-                                  <div className="space-y-1">
-                                    {serverWithArgs.arguments.map((arg, index) => (
-                                      <div key={index} className="font-mono text-sm bg-muted p-1 rounded">{arg}</div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              
-                              {/* Environment Variables Section */}
-                              {serverWithEnv.environment && Object.keys(serverWithEnv.environment).length > 0 && (
-                                <div className="grid gap-1">
-                                  <div className="font-medium text-xs text-muted-foreground">Environment Variables</div>
-                                  <div className="space-y-1">
-                                    {Object.entries(serverWithEnv.environment).map(([key, val]) => (
-                                      <div key={key} className="font-mono text-sm">
-                                        <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-                      </CollapsibleContent>
+                        </Button>
+                      </CollapsibleTrigger>
                     )}
-                  </Collapsible>
-                );
-              })}
+                  </div>
+                  
+                  {shareMode === "with-config" && (
+                    <CollapsibleContent>
+                      <div className="p-3 pt-0 pl-10 space-y-3 text-sm bg-muted/30">
+                        {getServerConfigDetails(server).map((detail, index) => (
+                          <div key={index} className="grid gap-1">
+                            <div className="font-medium text-xs text-muted-foreground">{detail.name}</div>
+                            {renderConfigValue(detail.value)}
+                          </div>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  )}
+                </Collapsible>
+              ))}
             </div>
           </div>
           
@@ -296,18 +253,30 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
               </Button>
             ) : (
               <div className="space-y-3">
-                <div className="bg-muted p-2 rounded text-sm font-mono flex-1 truncate overflow-hidden">
-                  {generatedLink}
+                <div className="flex items-center gap-2">
+                  <div className="bg-muted p-2 rounded text-sm font-mono flex-1 truncate overflow-hidden">
+                    {generatedLink}
+                  </div>
                 </div>
                 
-                <Button 
-                  onClick={handleCopyLink}
-                  className="w-full"
-                  variant="outline"
-                >
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy Link
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleCopyLink}
+                    className="flex-1"
+                    variant="outline"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Link
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleOpenLink}
+                    className="flex-1"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Open Link
+                  </Button>
+                </div>
               </div>
             )}
           </div>
