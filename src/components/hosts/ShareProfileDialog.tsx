@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Copy, ExternalLink, ChevronDown, ChevronUp, Server, Share2 } from "lucide-react";
+import { Copy, ExternalLink, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -10,6 +10,7 @@ import { Profile, ServerInstance } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ServerConfigDetail {
   name: string;
@@ -89,11 +90,13 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
     const details: ServerConfigDetail[] = [];
     
-    if (server.connectionDetails?.includes('http') && 'url' in server) {
-      details.push({ name: "URL", value: server.url as string });
+    if (server.connectionDetails?.includes('http')) {
+      if ('url' in server) {
+        details.push({ name: "URL", value: server.url as string });
+      }
     }
     
-    if ('headers' in server && server.headers && Object.keys(server.headers).length > 0) {
+    if ('headers' in server && server.headers) {
       details.push({ name: "HTTP Headers", value: server.headers as Record<string, string> });
     }
     
@@ -149,35 +152,35 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Share Mode Selection */}
+          {/* Share Mode Selection - Updated UI based on the provided image */}
           <div className="space-y-4">
-            <h3 className="font-medium text-sm text-muted-foreground">Share Mode</h3>
-            
-            <RadioGroup
-              value={shareMode}
-              onValueChange={(value) => setShareMode(value as "with-config" | "without-config")}
-              className="flex flex-col space-y-3"
-            >
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="with-config" id="with-config" />
-                <div className="grid gap-1.5">
-                  <Label htmlFor="with-config" className="font-medium">Share with configuration</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Include all server configuration details like URLs, headers, environment variables, etc.
-                  </p>
+            <div className="grid grid-cols-2 gap-4">
+              <div 
+                className={`border rounded-lg p-6 flex flex-col items-center text-center cursor-pointer transition-all hover:bg-muted/20 ${shareMode === "with-config" ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-muted"}`}
+                onClick={() => setShareMode("with-config")}
+              >
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Upload className="h-5 w-5 text-primary" />
                 </div>
+                <h3 className="font-medium text-base mb-2">分享完整配置 (推荐)</h3>
+                <p className="text-sm text-muted-foreground">
+                  包含所有 Profile 变量和依赖的 Server
+                </p>
               </div>
               
-              <div className="flex items-start space-x-3">
-                <RadioGroupItem value="without-config" id="without-config" />
-                <div className="grid gap-1.5">
-                  <Label htmlFor="without-config" className="font-medium">Share without configuration</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Only include server names without any sensitive configuration details
-                  </p>
+              <div 
+                className={`border rounded-lg p-6 flex flex-col items-center text-center cursor-pointer transition-all hover:bg-muted/20 ${shareMode === "without-config" ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-muted"}`}
+                onClick={() => setShareMode("without-config")}
+              >
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Server className="h-5 w-5 text-primary" />
                 </div>
+                <h3 className="font-medium text-base mb-2">仅分享 Server</h3>
+                <p className="text-sm text-muted-foreground">
+                  只分享服务器配置，不包含 Profile 参数
+                </p>
               </div>
-            </RadioGroup>
+            </div>
           </div>
           
           <Separator />
