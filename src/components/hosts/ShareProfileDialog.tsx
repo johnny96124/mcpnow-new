@@ -1,13 +1,16 @@
 
 import React, { useState } from "react";
-import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
+import { Copy, ExternalLink, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Profile, ServerInstance } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface ServerConfigDetail {
   name: string;
@@ -46,18 +49,22 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     
     // Simulate generating a link
     setTimeout(() => {
-      // Generate a more reasonable length mock share URL
+      // Generate a mock share URL with the profile ID and share mode
       const baseUrl = window.location.origin;
-      const shortHash = Math.random().toString(36).substring(2, 10);
+      const shareData = {
+        profileId: profile.id,
+        mode: shareMode,
+        timestamp: Date.now()
+      };
       
-      // Generate a mock shareable link with shorter hash
-      const shareLink = `${baseUrl}/share/${profile.id}/${shortHash}`;
+      // Generate a mock shareable link
+      const shareLink = `${baseUrl}/share/profile/${btoa(JSON.stringify(shareData))}`;
       setGeneratedLink(shareLink);
       setIsGeneratingLink(false);
       
       toast({
         title: "Share link generated",
-        description: "You can now copy the link",
+        description: "You can now copy or open the link",
         type: "success"
       });
     }, 1000);
@@ -74,28 +81,31 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
   };
 
+  const handleOpenLink = () => {
+    if (generatedLink) {
+      window.open(generatedLink, '_blank');
+    }
+  };
+
   const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
     const details: ServerConfigDetail[] = [];
     
-    // Group parameters by connection type
     if (server.connectionDetails?.includes('http')) {
-      // For HTTP SSE connections, show URL and headers
       if ('url' in server) {
         details.push({ name: "URL", value: server.url as string });
       }
-      
-      if ('headers' in server && server.headers) {
-        details.push({ name: "HTTP Headers", value: server.headers as Record<string, string> });
-      }
-    } else {
-      // For STDIO connections, show arguments and environment variables
-      if ('arguments' in server && server.arguments && server.arguments.length > 0) {
-        details.push({ name: "Command Arguments", value: server.arguments });
-      }
-      
-      if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
-        details.push({ name: "Environment Variables", value: server.environment as Record<string, string> });
-      }
+    }
+    
+    if ('headers' in server && server.headers) {
+      details.push({ name: "HTTP Headers", value: server.headers as Record<string, string> });
+    }
+    
+    if ('arguments' in server && server.arguments && server.arguments.length > 0) {
+      details.push({ name: "Command Arguments", value: server.arguments });
+    }
+    
+    if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
+      details.push({ name: "Environment Variables", value: server.environment as Record<string, string> });
     }
     
     return details;
@@ -249,14 +259,24 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   </div>
                 </div>
                 
-                <Button 
-                  onClick={handleCopyLink}
-                  className="w-full"
-                  variant="outline"
-                >
-                  <Copy className="h-4 w-4 mr-2" />
-                  Copy Link
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handleCopyLink}
+                    className="flex-1"
+                    variant="outline"
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Link
+                  </Button>
+                  
+                  <Button 
+                    onClick={handleOpenLink}
+                    className="flex-1"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Open Link
+                  </Button>
+                </div>
               </div>
             )}
           </div>
