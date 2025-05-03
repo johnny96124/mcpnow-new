@@ -89,19 +89,19 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
     const details: ServerConfigDetail[] = [];
     
-    if (server.url) {
+    if (server.connectionDetails?.includes('http') && 'url' in server) {
       details.push({ name: "URL", value: server.url });
     }
     
-    if (server.headers && Object.keys(server.headers).length > 0) {
+    if ('headers' in server && server.headers && Object.keys(server.headers).length > 0) {
       details.push({ name: "HTTP Headers", value: server.headers });
     }
     
-    if (server.arguments && server.arguments.length > 0) {
+    if ('arguments' in server && server.arguments && server.arguments.length > 0) {
       details.push({ name: "Command Arguments", value: server.arguments });
     }
     
-    if (server.environment && Object.keys(server.environment).length > 0) {
+    if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
       details.push({ name: "Environment Variables", value: server.environment });
     }
     
@@ -143,19 +143,19 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     servers.forEach(server => {
       const serverConfig: Record<string, any> = {};
       
-      if (server.url) {
+      if ('url' in server && server.url) {
         // For HTTP_SSE servers
         serverConfig.url = server.url;
-        if (server.headers) {
+        if ('headers' in server && server.headers) {
           serverConfig.headers = server.headers;
         }
       } else {
         // For STDIO servers
         serverConfig.command = "npx";
-        if (server.arguments) {
+        if ('arguments' in server && server.arguments) {
           serverConfig.args = server.arguments;
         }
-        if (server.environment) {
+        if ('environment' in server && server.environment) {
           serverConfig.env = server.environment;
         }
       }
