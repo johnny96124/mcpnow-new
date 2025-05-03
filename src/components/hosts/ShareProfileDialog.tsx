@@ -137,7 +137,9 @@ export function ShareProfileDialog({ open, onOpenChange, profile, servers }: Sha
           
           {shareOption === "with-config" && (
             <div className="space-y-2">
-              <h3 className="text-sm font-medium">Configuration Data</h3>
+              <div className="flex justify-between items-center">
+                <h3 className="text-sm font-medium">Configuration Data</h3>
+              </div>
               
               <Collapsible open={isJsonExpanded} onOpenChange={setIsJsonExpanded} className="w-full">
                 <CollapsibleTrigger asChild>
