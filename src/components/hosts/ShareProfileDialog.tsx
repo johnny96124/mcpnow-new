@@ -71,15 +71,27 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   };
 
   const hasHttpSseDetails = (server: ServerInstance): boolean => {
-    return server.connectionDetails.includes('http') && 
-           ((server.url !== undefined) || 
-            (server.headers !== undefined && Object.keys(server.headers || {}).length > 0));
+    if (!server.connectionDetails.includes('http')) return false;
+    
+    // Safely check for url property using TypeScript type assertion
+    const serverWithUrl = server as unknown as { url?: string };
+    const serverWithHeaders = server as unknown as { headers?: Record<string, string> };
+    
+    return (serverWithUrl.url !== undefined || 
+           (serverWithHeaders.headers !== undefined && 
+            Object.keys(serverWithHeaders.headers || {}).length > 0));
   };
   
   const hasStdioDetails = (server: ServerInstance): boolean => {
-    return !server.connectionDetails.includes('http') && 
-           ((server.arguments !== undefined && server.arguments.length > 0) || 
-            (server.environment !== undefined && Object.keys(server.environment || {}).length > 0));
+    if (server.connectionDetails.includes('http')) return false;
+    
+    // Safely check for arguments and environment properties
+    const serverWithArgs = server as unknown as { arguments?: string[] };
+    const serverWithEnv = server as unknown as { environment?: Record<string, string> };
+    
+    return ((serverWithArgs.arguments !== undefined && serverWithArgs.arguments.length > 0) || 
+            (serverWithEnv.environment !== undefined && 
+             Object.keys(serverWithEnv.environment || {}).length > 0));
   };
 
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
@@ -164,107 +176,109 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </div>
             
             <div className="border rounded-md divide-y">
-              {servers.map((server) => (
-                <Collapsible 
-                  key={server.id}
-                  open={openConfigs[server.id] || false} 
-                  onOpenChange={() => toggleServerConfig(server.id)}
-                  className="w-full"
-                >
-                  <div className="p-3 flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <Server className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium text-sm">{server.name}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {server.connectionDetails.includes('http') ? 'HTTP SSE' : 'STDIO'}
-                      </Badge>
+              {servers.map((server) => {
+                const serverWithUrl = server as unknown as { url?: string };
+                const serverWithHeaders = server as unknown as { headers?: Record<string, string> };
+                const serverWithArgs = server as unknown as { arguments?: string[] };
+                const serverWithEnv = server as unknown as { environment?: Record<string, string> };
+                
+                const hasDetails = hasHttpSseDetails(server) || hasStdioDetails(server);
+                
+                return (
+                  <Collapsible 
+                    key={server.id}
+                    open={!!openConfigs[server.id]} 
+                    onOpenChange={() => toggleServerConfig(server.id)}
+                    className="w-full"
+                  >
+                    <div className="p-3 flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <Server className="h-4 w-4 text-muted-foreground" />
+                        <span className="font-medium text-sm">{server.name}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {server.connectionDetails.includes('http') ? 'HTTP SSE' : 'STDIO'}
+                        </Badge>
+                      </div>
+                      
+                      {shareMode === "with-config" && hasDetails && (
+                        <CollapsibleTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                            {openConfigs[server.id] ? (
+                              <ChevronUp className="h-4 w-4" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </CollapsibleTrigger>
+                      )}
                     </div>
                     
                     {shareMode === "with-config" && (
-                      (server.connectionDetails.includes('http') && 
-                       ((server.url !== undefined) || 
-                        (server.headers !== undefined && Object.keys(server.headers || {}).length > 0))) || 
-                      (!server.connectionDetails.includes('http') && 
-                       ((server.arguments !== undefined && server.arguments.length > 0) || 
-                        (server.environment !== undefined && Object.keys(server.environment || {}).length > 0)))
-                    ) && (
-                      <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                          {openConfigs[server.id] ? (
-                            <ChevronUp className="h-4 w-4" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4" />
+                      <CollapsibleContent>
+                        <div className="p-3 pt-0 pl-10 space-y-3 text-sm bg-muted/30">
+                          {/* HTTP SSE specific details */}
+                          {server.connectionDetails.includes('http') && (
+                            <>
+                              {/* URL Section */}
+                              {serverWithUrl.url && (
+                                <div className="grid gap-1">
+                                  <div className="font-medium text-xs text-muted-foreground">URL</div>
+                                  <div className="font-mono text-sm bg-muted p-1 rounded">{serverWithUrl.url}</div>
+                                </div>
+                              )}
+                              
+                              {/* HTTP Headers Section */}
+                              {serverWithHeaders.headers && Object.keys(serverWithHeaders.headers).length > 0 && (
+                                <div className="grid gap-1">
+                                  <div className="font-medium text-xs text-muted-foreground">HTTP Headers</div>
+                                  <div className="space-y-1">
+                                    {Object.entries(serverWithHeaders.headers).map(([key, val]) => (
+                                      <div key={key} className="font-mono text-sm">
+                                        <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </>
                           )}
-                        </Button>
-                      </CollapsibleTrigger>
+                          
+                          {/* STDIO specific details */}
+                          {!server.connectionDetails.includes('http') && (
+                            <>
+                              {/* Command Arguments Section */}
+                              {serverWithArgs.arguments && serverWithArgs.arguments.length > 0 && (
+                                <div className="grid gap-1">
+                                  <div className="font-medium text-xs text-muted-foreground">Command Arguments</div>
+                                  <div className="space-y-1">
+                                    {serverWithArgs.arguments.map((arg, index) => (
+                                      <div key={index} className="font-mono text-sm bg-muted p-1 rounded">{arg}</div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Environment Variables Section */}
+                              {serverWithEnv.environment && Object.keys(serverWithEnv.environment).length > 0 && (
+                                <div className="grid gap-1">
+                                  <div className="font-medium text-xs text-muted-foreground">Environment Variables</div>
+                                  <div className="space-y-1">
+                                    {Object.entries(serverWithEnv.environment).map(([key, val]) => (
+                                      <div key={key} className="font-mono text-sm">
+                                        <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </CollapsibleContent>
                     )}
-                  </div>
-                  
-                  {shareMode === "with-config" && (
-                    <CollapsibleContent>
-                      <div className="p-3 pt-0 pl-10 space-y-3 text-sm bg-muted/30">
-                        {/* HTTP SSE specific details */}
-                        {server.connectionDetails.includes('http') && (
-                          <>
-                            {/* URL Section */}
-                            {server.url && (
-                              <div className="grid gap-1">
-                                <div className="font-medium text-xs text-muted-foreground">URL</div>
-                                <div className="font-mono text-sm bg-muted p-1 rounded">{server.url}</div>
-                              </div>
-                            )}
-                            
-                            {/* HTTP Headers Section */}
-                            {server.headers && Object.keys(server.headers).length > 0 && (
-                              <div className="grid gap-1">
-                                <div className="font-medium text-xs text-muted-foreground">HTTP Headers</div>
-                                <div className="space-y-1">
-                                  {Object.entries(server.headers).map(([key, val]) => (
-                                    <div key={key} className="font-mono text-sm">
-                                      <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        )}
-                        
-                        {/* STDIO specific details */}
-                        {!server.connectionDetails.includes('http') && (
-                          <>
-                            {/* Command Arguments Section */}
-                            {server.arguments && server.arguments.length > 0 && (
-                              <div className="grid gap-1">
-                                <div className="font-medium text-xs text-muted-foreground">Command Arguments</div>
-                                <div className="space-y-1">
-                                  {server.arguments.map((arg, index) => (
-                                    <div key={index} className="font-mono text-sm bg-muted p-1 rounded">{arg}</div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                            
-                            {/* Environment Variables Section */}
-                            {server.environment && Object.keys(server.environment).length > 0 && (
-                              <div className="grid gap-1">
-                                <div className="font-medium text-xs text-muted-foreground">Environment Variables</div>
-                                <div className="space-y-1">
-                                  {Object.entries(server.environment).map(([key, val]) => (
-                                    <div key={key} className="font-mono text-sm">
-                                      <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </CollapsibleContent>
-                  )}
-                </Collapsible>
-              ))}
+                  </Collapsible>
+                );
+              })}
             </div>
           </div>
           
