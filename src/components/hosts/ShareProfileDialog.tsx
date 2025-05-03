@@ -90,11 +90,11 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     const details: ServerConfigDetail[] = [];
     
     if (server.connectionDetails?.includes('http') && 'url' in server) {
-      details.push({ name: "URL", value: server.url });
+      details.push({ name: "URL", value: server.url as string });
     }
     
     if ('headers' in server && server.headers && Object.keys(server.headers).length > 0) {
-      details.push({ name: "HTTP Headers", value: server.headers });
+      details.push({ name: "HTTP Headers", value: server.headers as Record<string, string> });
     }
     
     if ('arguments' in server && server.arguments && server.arguments.length > 0) {
@@ -102,7 +102,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
     
     if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
-      details.push({ name: "Environment Variables", value: server.environment });
+      details.push({ name: "Environment Variables", value: server.environment as Record<string, string> });
     }
     
     return details;
@@ -145,9 +145,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       
       if ('url' in server && server.url) {
         // For HTTP_SSE servers
-        serverConfig.url = server.url;
+        serverConfig.url = server.url as string;
         if ('headers' in server && server.headers) {
-          serverConfig.headers = server.headers;
+          serverConfig.headers = server.headers as Record<string, string>;
         }
       } else {
         // For STDIO servers
@@ -156,7 +156,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           serverConfig.args = server.arguments;
         }
         if ('environment' in server && server.environment) {
-          serverConfig.env = server.environment;
+          serverConfig.env = server.environment as Record<string, string>;
         }
       }
       
