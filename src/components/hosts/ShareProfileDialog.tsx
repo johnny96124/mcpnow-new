@@ -71,15 +71,15 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   };
 
   const hasHttpSseDetails = (server: ServerInstance): boolean => {
-    return server.connectionDetails?.includes('http') && 
-           (('url' in server && server.url) || 
-            ('headers' in server && server.headers && Object.keys(server.headers).length > 0));
+    return server.connectionDetails.includes('http') && 
+           ((server.url !== undefined) || 
+            (server.headers !== undefined && Object.keys(server.headers || {}).length > 0));
   };
   
   const hasStdioDetails = (server: ServerInstance): boolean => {
-    return !server.connectionDetails?.includes('http') && 
-           (('arguments' in server && server.arguments && server.arguments.length > 0) || 
-            ('environment' in server && server.environment && Object.keys(server.environment).length > 0));
+    return !server.connectionDetails.includes('http') && 
+           ((server.arguments !== undefined && server.arguments.length > 0) || 
+            (server.environment !== undefined && Object.keys(server.environment || {}).length > 0));
   };
 
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
@@ -167,7 +167,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
               {servers.map((server) => (
                 <Collapsible 
                   key={server.id}
-                  open={openConfigs[server.id]} 
+                  open={openConfigs[server.id] || false} 
                   onOpenChange={() => toggleServerConfig(server.id)}
                   className="w-full"
                 >
@@ -180,7 +180,14 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                       </Badge>
                     </div>
                     
-                    {shareMode === "with-config" && (hasHttpSseDetails(server) || hasStdioDetails(server)) && (
+                    {shareMode === "with-config" && (
+                      (server.connectionDetails.includes('http') && 
+                       ((server.url !== undefined) || 
+                        (server.headers !== undefined && Object.keys(server.headers || {}).length > 0))) || 
+                      (!server.connectionDetails.includes('http') && 
+                       ((server.arguments !== undefined && server.arguments.length > 0) || 
+                        (server.environment !== undefined && Object.keys(server.environment || {}).length > 0)))
+                    ) && (
                       <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                           {openConfigs[server.id] ? (
