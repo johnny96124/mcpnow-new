@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -12,19 +11,16 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
-
 interface ServerConfigDetail {
   name: string;
   value: string | string[] | Record<string, string> | undefined;
 }
-
 interface ShareProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   profile: Profile;
   servers: ServerInstance[];
 }
-
 export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   open,
   onOpenChange,
@@ -43,14 +39,12 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   useEffect(() => {
     setGeneratedLink(null);
   }, [shareMode]);
-
   const toggleServerConfig = (serverId: string) => {
     setOpenConfigs(prev => ({
       ...prev,
       [serverId]: !prev[serverId]
     }));
   };
-
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
 
@@ -75,7 +69,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }, 1000);
   };
-
   const handleCopyLink = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink);
@@ -86,7 +79,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }
   };
-
   const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
     const details: ServerConfigDetail[] = [];
     if (server.connectionDetails?.includes('http')) {
@@ -117,7 +109,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
     return details;
   };
-
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -135,7 +126,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           </div>)}
       </div>;
   };
-
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
@@ -156,9 +146,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   <Upload className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-medium text-base mb-2">Complete Configuration (Recommended)</h3>
-                <p className="text-sm text-muted-foreground">
-                  Includes all profile variables and dependent servers
-                </p>
+                <p className="text-sm text-muted-foreground">Includes all server variables</p>
               </div>
               
               <div className={`border rounded-lg p-6 flex flex-col items-center text-center cursor-pointer transition-all hover:bg-muted/20 ${shareMode === "without-config" ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-muted"}`} onClick={() => setShareMode("without-config")}>
@@ -166,9 +154,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   <Server className="h-5 w-5 text-primary" />
                 </div>
                 <h3 className="font-medium text-base mb-2">No Configuration</h3>
-                <p className="text-sm text-muted-foreground">
-                  Share server configurations without profile parameters
-                </p>
+                <p className="text-sm text-muted-foreground">Share server configurations without server variables</p>
               </div>
             </div>
           </div>
@@ -183,47 +169,30 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </div>
             
             <div className="border rounded-md divide-y">
-              {servers.map(server => (
-                <Collapsible 
-                  key={server.id} 
-                  open={openConfigs[server.id]} 
-                  onOpenChange={() => toggleServerConfig(server.id)} 
-                  className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
-                >
+              {servers.map(server => <Collapsible key={server.id} open={openConfigs[server.id]} onOpenChange={() => toggleServerConfig(server.id)} className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}>
                   <div className="p-3 flex justify-between items-center h-[40px]">
                     <div className="flex items-center gap-3">
                       <Server className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium text-sm">{server.name}</span>
-                      <EndpointLabel 
-                        type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'}
-                      />
+                      <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
                     </div>
                     
-                    {(shareMode === "with-config" && getServerConfigDetails(server).length > 0) ? (
-                      <CollapsibleTrigger asChild>
+                    {shareMode === "with-config" && getServerConfigDetails(server).length > 0 ? <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                           {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </Button>
-                      </CollapsibleTrigger>
-                    ) : (
-                      <div className="w-7 h-7"></div> /* Placeholder to maintain consistent spacing */
-                    )}
+                      </CollapsibleTrigger> : <div className="w-7 h-7"></div> /* Placeholder to maintain consistent spacing */}
                   </div>
                   
-                  {shareMode === "with-config" && (
-                    <CollapsibleContent>
+                  {shareMode === "with-config" && <CollapsibleContent>
                       <div className="p-3 pt-0 pl-10 space-y-3 text-sm bg-muted/30">
-                        {getServerConfigDetails(server).map((detail, index) => (
-                          <div key={index} className="grid gap-1">
+                        {getServerConfigDetails(server).map((detail, index) => <div key={index} className="grid gap-1">
                             <div className="font-medium text-xs text-muted-foreground">{detail.name}</div>
                             {renderConfigValue(detail.value)}
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
-                    </CollapsibleContent>
-                  )}
-                </Collapsible>
-              ))}
+                    </CollapsibleContent>}
+                </Collapsible>)}
             </div>
           </div>
           
