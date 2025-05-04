@@ -41,6 +41,10 @@ interface EnhancedServerDefinition extends ServerDefinition {
   updated?: string;
   trending?: boolean;
   author?: string;
+  requirements?: {
+    type: 'llm' | 'tool' | 'memory';
+    value: string;
+  }[];
 }
 const extendedItems: EnhancedServerDefinition[] = [...discoveryItems.map(item => ({
   ...item,
