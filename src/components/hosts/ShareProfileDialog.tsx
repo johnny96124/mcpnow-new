@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -96,7 +97,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           )}
           
           {/* HTTP Headers */}
-          {'headers' in server && server.headers && Object.keys(server.headers).length > 0 && (
+          {'headers' in server && server.headers && Object.keys(server.headers as Record<string, string>).length > 0 && (
             <div className="grid gap-1">
               <div className="font-medium text-xs text-muted-foreground">HTTP Headers</div>
               <div className="space-y-1">
@@ -126,7 +127,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         )}
         
         {/* Environment Variables */}
-        {'environment' in server && server.environment && Object.keys(server.environment).length > 0 && (
+        {'environment' in server && server.environment && Object.keys(server.environment as Record<string, string>).length > 0 && (
           <div className="grid gap-1">
             <div className="font-medium text-xs text-muted-foreground">Environment Variables</div>
             <div className="space-y-1">
