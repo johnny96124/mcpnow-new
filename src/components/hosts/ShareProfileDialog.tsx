@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -92,7 +91,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           {'url' in server && server.url && (
             <div className="grid gap-1">
               <div className="font-medium text-xs text-muted-foreground">URL</div>
-              <div className="font-mono text-sm bg-muted p-1 rounded">{server.url}</div>
+              <div className="font-mono text-sm bg-muted p-1 rounded">{server.url as string}</div>
             </div>
           )}
           
@@ -121,7 +120,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           <div className="grid gap-1">
             <div className="font-medium text-xs text-muted-foreground">Command Arguments</div>
             <div className="font-mono text-sm bg-muted p-1 rounded">
-              {server.arguments.join(' ')}
+              {(server.arguments as string[]).join(' ')}
             </div>
           </div>
         )}
