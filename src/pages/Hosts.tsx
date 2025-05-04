@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Plus, Info, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -267,6 +268,45 @@ const Hosts = () => {
     setUnifiedHostDialogOpen(true);
   };
 
+  // New function to handle imported profiles
+  const handleImportProfile = (profile: Profile) => {
+    // Add the imported profile to the profiles list
+    setProfilesList(prev => {
+      // Check if profile with same ID already exists
+      if (prev.some(p => p.id === profile.id)) {
+        // Create a new ID to avoid conflicts
+        profile.id = `imported-${Date.now()}`;
+      }
+      return [...prev, profile];
+    });
+    
+    // If there's a selected host, assign the imported profile to it
+    if (selectedHost) {
+      updateProfileInHook(selectedHost.id, profile.id);
+      
+      // Mock adding the servers from the imported profile
+      // In a real implementation, this would fetch the actual servers
+      const mockImportedServers: ServerInstance[] = profile.instances.map(id => ({
+        id,
+        name: `Imported ${id}`,
+        definitionId: "imported-def",
+        status: "stopped",
+        version: "1.0.0",
+        connectionDetails: "HTTP_SSE",
+        url: "http://localhost:8008/mcp"
+      }));
+      
+      if (mockImportedServers.length > 0) {
+        setServerInstances(prev => {
+          const newServers = mockImportedServers.filter(
+            server => !prev.some(s => s.id === server.id)
+          );
+          return [...prev, ...newServers];
+        });
+      }
+    }
+  };
+
   // Render appropriate content based on state
   if (!hasSeenOnboarding) {
     return (
@@ -368,6 +408,7 @@ const Hosts = () => {
               onCreateProfile={handleCreateProfile}
               onDeleteProfile={handleDeleteProfile}
               onAddServersToProfile={handleAddServersToProfile}
+              onImportProfile={handleImportProfile}
             />
           ) : (
             <div className="border border-dashed rounded-md p-8 text-center space-y-3">

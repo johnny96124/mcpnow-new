@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { FileText, Server, AlertTriangle, CheckCircle, Info, Plus, ChevronDown, ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,6 +35,7 @@ interface HostDetailViewProps {
   onCreateProfile: (name: string) => string;
   onDeleteProfile: (profileId: string) => void;
   onAddServersToProfile?: (servers: ServerInstance[]) => void;
+  onImportProfile?: (profile: Profile) => void;
 }
 
 export const HostDetailView: React.FC<HostDetailViewProps> = ({
@@ -51,7 +51,8 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
   onSaveProfileChanges,
   onCreateProfile,
   onDeleteProfile,
-  onAddServersToProfile
+  onAddServersToProfile,
+  onImportProfile
 }) => {
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [serverSelectionDialogOpen, setServerSelectionDialogOpen] = useState(false);
@@ -232,7 +233,14 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
               
               <div className="flex items-center">
                 <div className="p-1.5 bg-primary/5 border rounded-lg flex-1 flex items-center">
-                  <ProfileDropdown profiles={profiles} currentProfileId={selectedProfileId} onProfileChange={onProfileChange} onCreateProfile={onCreateProfile} onDeleteProfile={onDeleteProfile} />
+                  <ProfileDropdown 
+                    profiles={profiles}
+                    currentProfileId={selectedProfileId}
+                    onProfileChange={onProfileChange}
+                    onCreateProfile={onCreateProfile}
+                    onDeleteProfile={onDeleteProfile}
+                    onImportProfile={onImportProfile}
+                  />
                 </div>
               </div>
             </div>

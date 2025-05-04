@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, Plus, Trash2, Import } from "lucide-react";
 import { Profile } from "@/data/mockData";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
+import { ImportProfileDialog } from "./ImportProfileDialog";
 
 interface ProfileDropdownProps {
   profiles: Profile[];
@@ -16,6 +17,7 @@ interface ProfileDropdownProps {
   onProfileChange: (profileId: string) => void;
   onCreateProfile: (name: string) => string;
   onDeleteProfile: (profileId: string) => void;
+  onImportProfile?: (profile: Profile) => void;
 }
 
 export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
@@ -23,10 +25,12 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   currentProfileId,
   onProfileChange,
   onCreateProfile,
-  onDeleteProfile
+  onDeleteProfile,
+  onImportProfile
 }) => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [newProfileName, setNewProfileName] = useState("");
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const currentProfile = profiles.find(p => p.id === currentProfileId);
@@ -71,6 +75,12 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
       });
     }
   };
+
+  const handleImportSuccess = (profile: Profile) => {
+    if (onImportProfile) {
+      onImportProfile(profile);
+    }
+  };
   
   return <>
       <DropdownMenu>
@@ -106,6 +116,10 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
           <DropdownMenuItem onSelect={() => setCreateDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Create New Profile
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setImportDialogOpen(true)}>
+            <Import className="h-4 w-4 mr-2" />
+            Import Profile
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -155,5 +169,12 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Import Profile Dialog */}
+      <ImportProfileDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImportSuccess={handleImportSuccess}
+      />
     </>;
 };
