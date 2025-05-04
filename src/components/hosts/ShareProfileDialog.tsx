@@ -1,27 +1,25 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Profile, ServerInstance } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 interface ServerConfigDetail {
   name: string;
   value: string | string[] | Record<string, string> | undefined;
 }
-
 interface ShareProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   profile: Profile;
   servers: ServerInstance[];
 }
-
 export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   open,
   onOpenChange,
@@ -32,20 +30,20 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [openConfigs, setOpenConfigs] = useState<Record<string, boolean>>({});
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
 
   // Reset generated link when share mode changes
   useEffect(() => {
     setGeneratedLink(null);
   }, [shareMode]);
-
   const toggleServerConfig = (serverId: string) => {
     setOpenConfigs(prev => ({
       ...prev,
       [serverId]: !prev[serverId]
     }));
   };
-
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
 
@@ -70,7 +68,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }, 1000);
   };
-
   const handleCopyLink = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink);
@@ -81,68 +78,53 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }
   };
-
-  // Render content for each server type
-  const renderServerContent = (server: ServerInstance) => {
-    // For HTTP SSE servers
+  const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
+    const details: ServerConfigDetail[] = [];
     if (server.connectionDetails?.includes('http')) {
-      return (
-        <div className="space-y-4">
-          {/* URL */}
-          {'url' in server && server.url && (
-            <div className="grid gap-1">
-              <div className="font-medium text-xs text-muted-foreground">URL</div>
-              <div className="font-mono text-sm bg-muted p-1 rounded">{server.url as string}</div>
-            </div>
-          )}
-          
-          {/* HTTP Headers */}
-          {'headers' in server && server.headers && Object.keys(server.headers as Record<string, string>).length > 0 && (
-            <div className="grid gap-1">
-              <div className="font-medium text-xs text-muted-foreground">HTTP Headers</div>
-              <div className="space-y-1">
-                {Object.entries(server.headers as Record<string, string>).map(([key, val]) => (
-                  <div key={key} className="font-mono text-sm">
-                    <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      );
+      if ('url' in server) {
+        details.push({
+          name: "URL",
+          value: server.url as string
+        });
+      }
     }
-    
-    // For STDIO servers
-    return (
-      <div className="space-y-4">
-        {/* Command Arguments */}
-        {'arguments' in server && server.arguments && server.arguments.length > 0 && (
-          <div className="grid gap-1">
-            <div className="font-medium text-xs text-muted-foreground">Command Arguments</div>
-            <div className="font-mono text-sm bg-muted p-1 rounded">
-              {(server.arguments as string[]).join(' ')}
-            </div>
-          </div>
-        )}
-        
-        {/* Environment Variables */}
-        {'environment' in server && server.environment && Object.keys(server.environment as Record<string, string>).length > 0 && (
-          <div className="grid gap-1">
-            <div className="font-medium text-xs text-muted-foreground">Environment Variables</div>
-            <div className="space-y-1">
-              {Object.entries(server.environment as Record<string, string>).map(([key, val]) => (
-                <div key={key} className="font-mono text-sm">
-                  <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
+    if ('headers' in server && server.headers) {
+      details.push({
+        name: "HTTP Headers",
+        value: server.headers as Record<string, string>
+      });
+    }
+    if ('arguments' in server && server.arguments && server.arguments.length > 0) {
+      details.push({
+        name: "Command Arguments",
+        value: server.arguments
+      });
+    }
+    if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
+      details.push({
+        name: "Environment Variables",
+        value: server.environment as Record<string, string>
+      });
+    }
+    return details;
   };
-
+  const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
+    if (!value) return null;
+    if (typeof value === 'string') {
+      return <span className="font-mono text-sm bg-muted p-1 rounded">{value}</span>;
+    }
+    if (Array.isArray(value)) {
+      // Modified section - render Command Arguments in a single line
+      return <div className="font-mono text-sm bg-muted p-1 rounded">
+          {value.join(' ')}
+        </div>;
+    }
+    return <div className="space-y-1">
+        {Object.entries(value).map(([key, val]) => <div key={key} className="font-mono text-sm">
+            <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
+          </div>)}
+      </div>;
+  };
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
@@ -172,7 +154,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Server className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="font-medium text-base mb-2">No Configuration</h3>
+                <h3 className="font-medium text-base mb-2">No Configuration</h3>
                 <p className="text-sm text-muted-foreground">
                   Share server configurations without profile parameters
                 </p>
@@ -190,13 +172,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </div>
             
             <div className="border rounded-md divide-y">
-              {servers.map(server => (
-                <Collapsible 
-                  key={server.id} 
-                  open={openConfigs[server.id]} 
-                  onOpenChange={() => toggleServerConfig(server.id)} 
-                  className={shareMode === "with-config" ? "" : "pointer-events-none"}
-                >
+              {servers.map(server => <Collapsible key={server.id} open={openConfigs[server.id]} onOpenChange={() => toggleServerConfig(server.id)} className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}>
                   <div className="p-3 flex justify-between items-center">
                     <div className="flex items-center gap-3">
                       <Server className="h-4 w-4 text-muted-foreground" />
@@ -206,24 +182,22 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                       </Badge>
                     </div>
                     
-                    {shareMode === "with-config" && (
-                      <CollapsibleTrigger asChild>
+                    {shareMode === "with-config" && getServerConfigDetails(server).length > 0 && <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                           {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </Button>
-                      </CollapsibleTrigger>
-                    )}
+                      </CollapsibleTrigger>}
                   </div>
                   
-                  {shareMode === "with-config" && (
-                    <CollapsibleContent>
+                  {shareMode === "with-config" && <CollapsibleContent>
                       <div className="p-3 pt-0 pl-10 space-y-3 text-sm bg-muted/30">
-                        {renderServerContent(server)}
+                        {getServerConfigDetails(server).map((detail, index) => <div key={index} className="grid gap-1">
+                            <div className="font-medium text-xs text-muted-foreground">{detail.name}</div>
+                            {renderConfigValue(detail.value)}
+                          </div>)}
                       </div>
-                    </CollapsibleContent>
-                  )}
-                </Collapsible>
-              ))}
+                    </CollapsibleContent>}
+                </Collapsible>)}
             </div>
           </div>
           
@@ -231,13 +205,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           
           {/* Generate Link and Share Actions */}
           <div className="space-y-4">
-            {!generatedLink ? (
-              <Button onClick={handleGenerateLink} className="w-full" disabled={isGeneratingLink}>
+            {!generatedLink ? <Button onClick={handleGenerateLink} className="w-full" disabled={isGeneratingLink}>
                 <Upload className="h-4 w-4 mr-2" />
                 {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
-              </Button>
-            ) : (
-              <div className="space-y-3">
+              </Button> : <div className="space-y-3">
                 <div>
                   <h4 className="text-sm font-medium mb-2">Shareable Link:</h4>
                   <div className="flex items-center gap-2">
@@ -255,8 +226,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                     Copy Link
                   </Button>
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </DialogContent>
