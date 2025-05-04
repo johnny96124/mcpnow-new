@@ -244,20 +244,16 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             {!generatedLink ? (
               <Button 
                 onClick={handleGenerateLink}
-                className="w-full bg-[#9b87f5] hover:bg-[#9b87f5]/90"
+                className="w-full"
                 disabled={isGeneratingLink}
               >
-                <Upload className="h-5 w-5 mr-2" />
-                {isGeneratingLink ? "Generating Link..." : "Generate Link"}
+                {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
               </Button>
             ) : (
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium mb-2">Shareable Link:</h4>
-                  <div className="flex items-center gap-2">
-                    <div className="bg-muted p-2 rounded text-sm font-mono flex-1 truncate overflow-hidden">
-                      {generatedLink}
-                    </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="bg-muted p-2 rounded text-sm font-mono flex-1 truncate overflow-hidden">
+                    {generatedLink}
                   </div>
                 </div>
                 
