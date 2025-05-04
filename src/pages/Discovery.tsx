@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Calendar, Check, CheckCircle, ChevronLeft, Clock, Copy, Download, Eye, ExternalLink, FolderOpen, Globe, Info, Link2, Loader2, Search, Share, Star, Tag, UserRound, Users, Watch, Wrench, X, Plus } from "lucide-react";
+import { 
+  Calendar, Check, CheckCircle, ChevronLeft, Clock, Copy, 
+  Database, Download, Eye, ExternalLink, FolderOpen, Globe, 
+  History, Info, Link2, Loader2, Memory, Search, Share, 
+  Star, Tag, Terminal, Upload, UserRound, Users, Watch, Wrench, X, Plus 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
