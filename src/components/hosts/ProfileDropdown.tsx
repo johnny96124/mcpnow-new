@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChevronDown, Plus, Trash2, Import } from "lucide-react";
@@ -20,7 +20,7 @@ interface ProfileDropdownProps {
   onImportProfile?: (profile: Profile) => void;
 }
 
-export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
+export const ProfileDropdown: React.FC<ProfileDropdownProps> = React.memo(({
   profiles,
   currentProfileId,
   onProfileChange,
@@ -35,7 +35,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const currentProfile = profiles.find(p => p.id === currentProfileId);
   
-  const handleProfileCreate = () => {
+  const handleProfileCreate = useCallback(() => {
     if (!newProfileName.trim()) {
       toast({
         title: "Invalid profile name",
@@ -57,14 +57,14 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         type: "success"
       });
     }
-  };
+  }, [newProfileName, onCreateProfile, onProfileChange]);
   
-  const confirmDeleteProfile = (profile: Profile) => {
+  const confirmDeleteProfile = useCallback((profile: Profile) => {
     setProfileToDelete(profile);
     setDeleteDialogOpen(true);
-  };
+  }, []);
   
-  const handleProfileDelete = () => {
+  const handleProfileDelete = useCallback(() => {
     if (profileToDelete) {
       onDeleteProfile(profileToDelete.id);
       setDeleteDialogOpen(false);
@@ -74,15 +74,21 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         type: "success"
       });
     }
-  };
+  }, [profileToDelete, onDeleteProfile]);
 
-  const handleImportSuccess = (profile: Profile) => {
+  const handleImportSuccess = useCallback((profile: Profile) => {
     if (onImportProfile) {
       onImportProfile(profile);
+      toast({
+        title: "Profile imported",
+        description: `Profile "${profile.name}" has been imported successfully`,
+        type: "success"
+      });
     }
-  };
+  }, [onImportProfile]);
   
-  return <>
+  return (
+    <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="gap-1 h-8">
@@ -96,22 +102,37 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Select Profile</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {profiles.map(profile => <DropdownMenuItem key={profile.id} className="flex justify-between items-center" onSelect={e => {
-          e.preventDefault();
-          if (profile.id !== currentProfileId) {
-            onProfileChange(profile.id);
-          }
-        }}>
+          {profiles.map(profile => (
+            <DropdownMenuItem 
+              key={profile.id} 
+              className="flex justify-between items-center" 
+              onSelect={e => {
+                e.preventDefault();
+                if (profile.id !== currentProfileId) {
+                  onProfileChange(profile.id);
+                }
+              }}
+            >
               <span className={profile.id === currentProfileId ? "font-medium" : ""}>
                 {profile.name}
               </span>
-              {profile.id === currentProfileId ? <Badge variant="secondary" className="ml-2">Current</Badge> : <Button variant="ghost" size="icon" className="h-6 w-6 ml-2 opacity-50 hover:opacity-100" onClick={e => {
-            e.stopPropagation();
-            confirmDeleteProfile(profile);
-          }}>
+              {profile.id === currentProfileId ? (
+                <Badge variant="secondary" className="ml-2">Current</Badge>
+              ) : (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 ml-2 opacity-50 hover:opacity-100" 
+                  onClick={e => {
+                    e.stopPropagation();
+                    confirmDeleteProfile(profile);
+                  }}
+                >
                   <Trash2 className="h-3 w-3" />
-                </Button>}
-            </DropdownMenuItem>)}
+                </Button>
+              )}
+            </DropdownMenuItem>
+          ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => setCreateDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
@@ -136,7 +157,12 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
           <div className="space-y-4 py-2">
             <div className="space-y-2">
               <Label htmlFor="profile-name">Profile Name</Label>
-              <Input id="profile-name" placeholder="Enter profile name" value={newProfileName} onChange={e => setNewProfileName(e.target.value)} />
+              <Input 
+                id="profile-name" 
+                placeholder="Enter profile name" 
+                value={newProfileName} 
+                onChange={e => setNewProfileName(e.target.value)} 
+              />
             </div>
           </div>
           <DialogFooter>
@@ -176,5 +202,8 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
         onOpenChange={setImportDialogOpen}
         onImportSuccess={handleImportSuccess}
       />
-    </>;
-};
+    </>
+  );
+});
+
+ProfileDropdown.displayName = "ProfileDropdown";
