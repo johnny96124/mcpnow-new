@@ -30,6 +30,9 @@ import { ServerToolsList } from "@/components/discovery/ServerToolsList";
 import { ServerLogo } from "@/components/servers/ServerLogo";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ShareServerDialog } from "@/components/discovery/ShareServerDialog";
+import { VersionHistoryDialog } from "@/components/discovery/VersionHistoryDialog";
+import { ServerRequirementsSection } from "@/components/discovery/ServerRequirementsSection";
+
 const ITEMS_PER_PAGE = 12;
 interface EnhancedServerDefinition extends ServerDefinition {
   views?: number;
@@ -85,6 +88,42 @@ const Discovery = () => {
   const [selectedDefinition, setSelectedDefinition] = useState<ServerDefinition | null>(null);
   const [activeDetailTab, setActiveDetailTab] = useState("overview");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
+  
+  // Mock version history data
+  const versionHistory = [
+    {
+      version: "0.9.5", 
+      releaseDate: new Date(2025, 3, 3), // April 3, 2025
+      author: "API Team",
+      changes: [
+        "Added Kubernetes 1.28 support",
+        "Improved cluster monitoring with real-time metrics",
+        "Fixed pod visualization in dark mode"
+      ]
+    },
+    {
+      version: "0.9.0", 
+      releaseDate: new Date(2025, 2, 15), // March 15, 2025
+      author: "API Team",
+      changes: [
+        "Launched deployment automation features",
+        "Added support for custom namespaces",
+        "Fixed several stability issues with long-running operations"
+      ]
+    },
+    {
+      version: "0.8.5", 
+      releaseDate: new Date(2025, 1, 20), // February 20, 2025
+      author: "API Team",
+      changes: [
+        "Beta release of resource monitoring dashboard",
+        "Initial implementation of pod visualization",
+        "Added basic cluster management functionality"
+      ]
+    }
+  ];
+  
   const {
     toast
   } = useToast();
@@ -234,6 +273,19 @@ const Discovery = () => {
     if (diffDays < 30) return `${diffDays} days ago`;
     if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
     return `${Math.floor(diffDays / 365)} years ago`;
+  };
+  const handleInstallVersion = (version: string) => {
+    // 这里可以实现版本安装逻辑
+    setShowVersionHistory(false);
+    
+    if (selectedServer) {
+      setAddInstanceOpen(true);
+      
+      toast({
+        title: "Version selected",
+        description: `Preparing to install version ${version} of ${selectedServer.name}`,
+      });
+    }
   };
   return <div className="animate-fade-in">
       <div className="mb-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-8 text-white relative overflow-hidden">
@@ -502,15 +554,33 @@ const Discovery = () => {
                             </Badge>)}
                         </div>
                       </div>
+
+                      {/* 添加需求部分 */}
+                      {selectedServer.requirements && selectedServer.requirements.length > 0 && (
+                        <div>
+                          <ServerRequirementsSection requirements={selectedServer.requirements} />
+                        </div>
+                      )}
                     </div>
                     
                     <div className="space-y-6">
                       <div className="bg-gray-50 dark:bg-gray-800/50 rounded-md p-5 space-y-4">
                         <div>
                           <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Version</h3>
-                          <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                            {selectedServer.version || (Math.random() > 0.5 ? '1.5.0' : '0.9.5')}
-                          </p>
+                          <div className="flex items-center">
+                            <p className="text-sm font-medium text-gray-800 dark:text-gray-200 mr-2">
+                              {selectedServer.version || (Math.random() > 0.5 ? '1.5.0' : '0.9.5')}
+                            </p>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-blue-600 px-1.5 h-6 gap-1"
+                              onClick={() => setShowVersionHistory(true)}
+                            >
+                              <History className="h-3.5 w-3.5" />
+                              Version history
+                            </Button>
+                          </div>
                         </div>
                         
                         <div>
@@ -579,7 +649,24 @@ const Discovery = () => {
       
       <AddInstanceDialog open={addInstanceOpen} onOpenChange={setAddInstanceOpen} serverDefinition={selectedDefinition} onCreateInstance={handleCreateInstance} availableHosts={availableHosts} />
       
-      {selectedServer && <ShareServerDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen} server={selectedServer} serverDefinition={selectedServer} />}
+      {selectedServer && (
+        <>
+          <ShareServerDialog 
+            open={shareDialogOpen} 
+            onOpenChange={setShareDialogOpen} 
+            server={selectedServer} 
+            serverDefinition={selectedServer} 
+          />
+          
+          <VersionHistoryDialog
+            open={showVersionHistory}
+            onOpenChange={setShowVersionHistory}
+            serverName={selectedServer.name}
+            versions={versionHistory}
+            onInstallVersion={handleInstallVersion}
+          />
+        </>
+      )}
     </div>;
 };
 export default Discovery;
