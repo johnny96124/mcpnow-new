@@ -52,8 +52,8 @@ export function VersionHistoryDialog({
         
         <Tabs defaultValue="versions" value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-2 mb-4">
-            <TabsTrigger value="versions" className="text-center">VERSIONS</TabsTrigger>
-            <TabsTrigger value="changelog" className="text-center">CHANGE LOG</TabsTrigger>
+            <TabsTrigger value="versions" className="text-center">Versions</TabsTrigger>
+            <TabsTrigger value="changelog" className="text-center">Change Logs</TabsTrigger>
           </TabsList>
           
           <TabsContent value="versions" className="space-y-4">
