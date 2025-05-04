@@ -61,10 +61,10 @@ export function VersionHistoryDialog({
               <table className="w-full">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">VERSION</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">LAST UPDATED</th>
-                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">RELEASED BY</th>
-                    <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">ACTIONS</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Version</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Last updated</th>
+                    <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground">Released by</th>
+                    <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
