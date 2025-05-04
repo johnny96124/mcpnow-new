@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -87,24 +88,30 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           value: server.url as string
         });
       }
-    }
-    if ('headers' in server && server.headers) {
-      details.push({
-        name: "HTTP Headers",
-        value: server.headers as Record<string, string>
-      });
-    }
-    if ('arguments' in server && server.arguments && server.arguments.length > 0) {
-      details.push({
-        name: "Command Arguments",
-        value: server.arguments
-      });
-    }
-    if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
-      details.push({
-        name: "Environment Variables",
-        value: server.environment as Record<string, string>
-      });
+      
+      // Add HTTP Headers for HTTP SSE servers
+      if ('headers' in server && server.headers) {
+        details.push({
+          name: "HTTP Headers",
+          value: server.headers as Record<string, string>
+        });
+      }
+    } else {
+      // For STDIO servers
+      if ('arguments' in server && server.arguments && server.arguments.length > 0) {
+        details.push({
+          name: "Command Arguments",
+          value: server.arguments
+        });
+      }
+      
+      // Add Environment Variables for STDIO servers
+      if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
+        details.push({
+          name: "Environment Variables",
+          value: server.environment as Record<string, string>
+        });
+      }
     }
     return details;
   };
@@ -154,7 +161,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Server className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="font-medium text-base mb-2">No Configuration</h3>
+                <h3 className="font-medium text-base mb-2">No Configuration</h3>
                 <p className="text-sm text-muted-foreground">
                   Share server configurations without profile parameters
                 </p>
