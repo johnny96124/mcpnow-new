@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { FileText, Server, AlertTriangle, CheckCircle, Info, Plus, ChevronDown, ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -270,10 +269,13 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-medium">Connected Servers</h3>
               
-              <Button onClick={() => setServerSelectionDialogOpen(true)} variant="outline" size="sm" className="whitespace-nowrap">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Servers
-              </Button>
+              {/* Only show the Add Servers button in the header when there are servers */}
+              {profileServers.length > 0 && (
+                <Button onClick={() => setServerSelectionDialogOpen(true)} variant="outline" size="sm" className="whitespace-nowrap">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Servers
+                </Button>
+              )}
             </div>
             
             {profileServers.length > 0 ? <div className="rounded-md border">
