@@ -9,12 +9,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ServerLogo } from "@/components/servers/ServerLogo";
-import { Copy, Check, Ban, Share, Clock, History } from "lucide-react";
+import { Copy, Check, Ban, Share, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ServerInstance, ServerDefinition } from "@/data/mockData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VersionHistoryDialog, VersionInfo } from "./VersionHistoryDialog";
-import { ServerRequirementsSection } from "./ServerRequirementsSection";
 
 interface ShareServerDialogProps {
   open: boolean;
@@ -74,13 +73,6 @@ export function ShareServerDialog({
         "Added basic cluster management functionality"
       ]
     }
-  ];
-  
-  // Mock requirements data
-  const requirements = [
-    { type: 'llm' as const, value: '' },
-    { type: 'tool' as const, value: '' },
-    { type: 'memory' as const, value: '1MB' }
   ];
   
   // Generate configuration options with additional mock data
@@ -238,10 +230,6 @@ export function ShareServerDialog({
                 </Button>
               </div>
             </div>
-          </div>
-          
-          <div className="py-4 border-t">
-            <ServerRequirementsSection requirements={requirements} />
           </div>
           
           <div className="space-y-5 mt-2 border-t pt-4">
