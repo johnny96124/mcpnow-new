@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Plus, Info, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -291,9 +290,8 @@ const Hosts = () => {
         name: `Imported ${id}`,
         definitionId: "imported-def",
         status: "stopped",
-        version: "1.0.0",
         connectionDetails: "HTTP_SSE",
-        url: "http://localhost:8008/mcp"
+        enabled: true // Adding the required 'enabled' property that was missing
       }));
       
       if (mockImportedServers.length > 0) {
