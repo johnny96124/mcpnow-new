@@ -183,8 +183,14 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </div>
             
             <div className="border rounded-md divide-y">
-              {servers.map(server => <Collapsible key={server.id} open={openConfigs[server.id]} onOpenChange={() => toggleServerConfig(server.id)} className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}>
-                  <div className="p-3 flex justify-between items-center">
+              {servers.map(server => (
+                <Collapsible 
+                  key={server.id} 
+                  open={openConfigs[server.id]} 
+                  onOpenChange={() => toggleServerConfig(server.id)} 
+                  className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
+                >
+                  <div className="p-3 flex justify-between items-center h-[40px]">
                     <div className="flex items-center gap-3">
                       <Server className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium text-sm">{server.name}</span>
@@ -193,22 +199,31 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                       />
                     </div>
                     
-                    {shareMode === "with-config" && getServerConfigDetails(server).length > 0 && <CollapsibleTrigger asChild>
+                    {(shareMode === "with-config" && getServerConfigDetails(server).length > 0) ? (
+                      <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
                           {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </Button>
-                      </CollapsibleTrigger>}
+                      </CollapsibleTrigger>
+                    ) : (
+                      <div className="w-7 h-7"></div> /* Placeholder to maintain consistent spacing */
+                    )}
                   </div>
                   
-                  {shareMode === "with-config" && <CollapsibleContent>
+                  {shareMode === "with-config" && (
+                    <CollapsibleContent>
                       <div className="p-3 pt-0 pl-10 space-y-3 text-sm bg-muted/30">
-                        {getServerConfigDetails(server).map((detail, index) => <div key={index} className="grid gap-1">
+                        {getServerConfigDetails(server).map((detail, index) => (
+                          <div key={index} className="grid gap-1">
                             <div className="font-medium text-xs text-muted-foreground">{detail.name}</div>
                             {renderConfigValue(detail.value)}
-                          </div>)}
+                          </div>
+                        ))}
                       </div>
-                    </CollapsibleContent>}
-                </Collapsible>)}
+                    </CollapsibleContent>
+                  )}
+                </Collapsible>
+              ))}
             </div>
           </div>
           
