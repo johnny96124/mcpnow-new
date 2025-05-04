@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -10,16 +11,20 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { EndpointLabel } from "@/components/status/EndpointLabel";
+
 interface ServerConfigDetail {
   name: string;
   value: string | string[] | Record<string, string> | undefined;
 }
+
 interface ShareProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   profile: Profile;
   servers: ServerInstance[];
 }
+
 export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   open,
   onOpenChange,
@@ -38,12 +43,14 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   useEffect(() => {
     setGeneratedLink(null);
   }, [shareMode]);
+
   const toggleServerConfig = (serverId: string) => {
     setOpenConfigs(prev => ({
       ...prev,
       [serverId]: !prev[serverId]
     }));
   };
+
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
 
@@ -68,6 +75,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }, 1000);
   };
+
   const handleCopyLink = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink);
@@ -78,6 +86,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }
   };
+
   const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
     const details: ServerConfigDetail[] = [];
     if (server.connectionDetails?.includes('http')) {
@@ -108,6 +117,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
     return details;
   };
+
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -125,6 +135,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           </div>)}
       </div>;
   };
+
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
@@ -154,7 +165,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Server className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="font-medium text-base mb-2">No Configuration</h3>
+                <h3 className="font-medium text-base mb-2">No Configuration</h3>
                 <p className="text-sm text-muted-foreground">
                   Share server configurations without profile parameters
                 </p>
@@ -177,9 +188,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                     <div className="flex items-center gap-3">
                       <Server className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium text-sm">{server.name}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {server.connectionDetails?.includes('http') ? 'HTTP SSE' : 'STDIO'}
-                      </Badge>
+                      <EndpointLabel 
+                        type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'}
+                      />
                     </div>
                     
                     {shareMode === "with-config" && getServerConfigDetails(server).length > 0 && <CollapsibleTrigger asChild>
