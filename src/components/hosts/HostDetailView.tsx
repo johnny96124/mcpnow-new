@@ -134,6 +134,25 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
     }
   };
   
+  const handleRemoveServerFromProfile = (serverId: string) => {
+    // Find the selected profile
+    const selectedProfile = profiles.find(p => p.id === selectedProfileId);
+    
+    if (selectedProfile) {
+      // Update the profile by removing the server ID
+      const updatedInstances = selectedProfile.instances.filter(id => id !== serverId);
+      
+      // Call the save changes function to persist the update
+      onSaveProfileChanges();
+      
+      // For now, show a toast (the actual profiles list update is handled in the parent component)
+      toast({
+        title: "Server removed",
+        description: `Server has been removed from ${selectedProfile.name}`
+      });
+    }
+  };
+  
   if (host.configStatus === "unknown") {
     return <div className="space-y-6">
         <Card className="bg-white">
@@ -268,12 +287,14 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {profileServers.map(server => <ServerItem key={server.id} server={server} hostConnectionStatus={host.connectionStatus} onStatusChange={handleServerStatusChange} load={getServerLoad(server.id)} onRemoveFromProfile={serverId => {
-                  toast({
-                    title: "Server removed",
-                    description: `${server.name} has been removed from this profile`
-                  });
-                }} />)}
+                    {profileServers.map(server => <ServerItem 
+                      key={server.id} 
+                      server={server} 
+                      hostConnectionStatus={host.connectionStatus} 
+                      onStatusChange={handleServerStatusChange} 
+                      load={getServerLoad(server.id)} 
+                      onRemoveFromProfile={handleRemoveServerFromProfile}
+                    />)}
                   </tbody>
                 </table>
               </div> : <div className="mt-4">

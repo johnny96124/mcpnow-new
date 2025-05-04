@@ -35,15 +35,24 @@ export const ServerItem: React.FC<ServerItemProps> = ({
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [debugDialogOpen, setDebugDialogOpen] = useState(false);
+  const [confirmDeleteDialogOpen, setConfirmDeleteDialogOpen] = useState(false);
   
   const hasError = server.status === 'error';
   const isDisabled = hostConnectionStatus !== "connected";
   const definition = serverDefinitions.find(def => def.id === server.definitionId);
 
   const handleRemove = () => {
-    if (window.confirm(`Are you sure you want to remove ${server.name} from this profile?`)) {
-      onRemoveFromProfile(server.id);
-    }
+    setConfirmDeleteDialogOpen(true);
+  };
+
+  const confirmRemove = () => {
+    onRemoveFromProfile(server.id);
+    setConfirmDeleteDialogOpen(false);
+    
+    toast({
+      title: "Server removed",
+      description: `${server.name} has been removed from this profile`
+    });
   };
 
   const handleEditComplete = () => {
@@ -179,5 +188,23 @@ export const ServerItem: React.FC<ServerItemProps> = ({
         }}
         onCreateInstance={handleEditComplete}
       />
+
+      {/* Add confirmation dialog */}
+      <Dialog open={confirmDeleteDialogOpen} onOpenChange={setConfirmDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Remove Server</DialogTitle>
+          </DialogHeader>
+          <p>Are you sure you want to remove "{server.name}" from this profile?</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDeleteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmRemove}>
+              Remove
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </tr>;
 };

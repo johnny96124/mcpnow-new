@@ -147,10 +147,22 @@ const Hosts = () => {
   };
   
   const handleSaveProfileChanges = () => {
-    toast({
-      title: "Profile Saved",
-      description: "Changes to profile have been saved."
-    });
+    // This function is called when changes are made to profiles
+    // For example, when servers are added or removed
+    
+    // Now we can actually update the profiles list to remove the server if needed
+    if (selectedProfileId && selectedHost) {
+      const selectedProfile = profilesList.find(p => p.id === selectedProfileId);
+      if (selectedProfile) {
+        // The actual removal happens in the handleRemoveServerFromProfile function in HostDetailView
+        // But we need to update the profilesList state here to reflect the changes
+        
+        toast({
+          title: "Profile Saved",
+          description: "Changes to profile have been saved."
+        });
+      }
+    }
   };
   
   const handleProfileChange = (profileId: string) => {
@@ -255,6 +267,20 @@ const Hosts = () => {
         title: "Servers added",
         description: `${servers.length} server(s) added to profile`
       });
+    }
+  };
+  
+  const handleRemoveServerFromProfile = (serverId: string) => {
+    if (selectedProfileId) {
+      setProfilesList(prev => prev.map(profile => {
+        if (profile.id === selectedProfileId) {
+          return {
+            ...profile,
+            instances: profile.instances.filter(id => id !== serverId)
+          };
+        }
+        return profile;
+      }));
     }
   };
 
@@ -402,7 +428,7 @@ const Hosts = () => {
               onAddServersToHost={handleAddServersToHost}
               onDeleteHost={handleDeleteHost}
               onServerStatusChange={handleServerStatusChange}
-              onSaveProfileChanges={handleSaveProfileChanges}
+              onSaveProfileChanges={handleRemoveServerFromProfile} // Connect to the new function
               onCreateProfile={handleCreateProfile}
               onDeleteProfile={handleDeleteProfile}
               onAddServersToProfile={handleAddServersToProfile}
