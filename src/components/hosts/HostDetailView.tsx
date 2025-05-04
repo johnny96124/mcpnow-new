@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { FileText, Server, AlertTriangle, CheckCircle, Info, Plus, ChevronDown, ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,7 @@ interface HostDetailViewProps {
   onAddServersToHost: () => void;
   onDeleteHost: (hostId: string) => void;
   onServerStatusChange: (serverId: string, status: 'running' | 'stopped' | 'error' | 'connecting') => void;
-  onSaveProfileChanges: () => void;
+  onSaveProfileChanges: (serverId?: string) => void;
   onCreateProfile: (name: string) => string;
   onDeleteProfile: (profileId: string) => void;
   onAddServersToProfile?: (servers: ServerInstance[]) => void;
@@ -143,7 +144,7 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
       const updatedInstances = selectedProfile.instances.filter(id => id !== serverId);
       
       // Call the save changes function to persist the update
-      onSaveProfileChanges();
+      onSaveProfileChanges(serverId);
       
       // For now, show a toast (the actual profiles list update is handled in the parent component)
       toast({

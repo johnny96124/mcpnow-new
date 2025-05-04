@@ -146,7 +146,7 @@ const Hosts = () => {
     } : server));
   };
   
-  const handleSaveProfileChanges = () => {
+  const handleSaveProfileChanges = (serverId?: string) => {
     // This function is called when changes are made to profiles
     // For example, when servers are added or removed
     
@@ -154,8 +154,18 @@ const Hosts = () => {
     if (selectedProfileId && selectedHost) {
       const selectedProfile = profilesList.find(p => p.id === selectedProfileId);
       if (selectedProfile) {
-        // The actual removal happens in the handleRemoveServerFromProfile function in HostDetailView
-        // But we need to update the profilesList state here to reflect the changes
+        // If we have a serverId, remove it from the profile
+        if (serverId) {
+          setProfilesList(prev => prev.map(profile => {
+            if (profile.id === selectedProfileId) {
+              return {
+                ...profile,
+                instances: profile.instances.filter(id => id !== serverId)
+              };
+            }
+            return profile;
+          }));
+        }
         
         toast({
           title: "Profile Saved",
@@ -428,7 +438,7 @@ const Hosts = () => {
               onAddServersToHost={handleAddServersToHost}
               onDeleteHost={handleDeleteHost}
               onServerStatusChange={handleServerStatusChange}
-              onSaveProfileChanges={handleRemoveServerFromProfile} // Connect to the new function
+              onSaveProfileChanges={handleSaveProfileChanges}
               onCreateProfile={handleCreateProfile}
               onDeleteProfile={handleDeleteProfile}
               onAddServersToProfile={handleAddServersToProfile}
