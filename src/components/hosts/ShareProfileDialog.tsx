@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -150,7 +149,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         </DialogHeader>
         
         <div className="space-y-6">
-          {/* Share Mode Selection - Updated UI based on the provided image */}
+          {/* Share Mode Selection - Updated UI with English text */}
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div 
@@ -160,9 +159,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Upload className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="font-medium text-base mb-2">分享完整配置 (推荐)</h3>
+                <h3 className="font-medium text-base mb-2">Complete Configuration (Recommended)</h3>
                 <p className="text-sm text-muted-foreground">
-                  包含所有 Profile 变量和依赖的 Server
+                  Includes all profile variables and dependent servers
                 </p>
               </div>
               
@@ -173,9 +172,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Server className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="font-medium text-base mb-2">仅分享 Server</h3>
+                <h3 className="font-medium text-base mb-2">Servers Only</h3>
                 <p className="text-sm text-muted-foreground">
-                  只分享服务器配置，不包含 Profile 参数
+                  Share server configurations without profile parameters
                 </p>
               </div>
             </div>
