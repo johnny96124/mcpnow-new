@@ -76,12 +76,8 @@ export function VersionHistoryDialog({
                       <td className="px-4 py-3 text-sm text-muted-foreground">{version.author}</td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
-                          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => onInstallVersion(version.version)}>
-                            Install
-                          </Button>
-                          <Button variant="outline">
-                            Download
-                          </Button>
+                          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => onInstallVersion(version.version)}>Add</Button>
+                          
                         </div>
                       </td>
                     </tr>)}
