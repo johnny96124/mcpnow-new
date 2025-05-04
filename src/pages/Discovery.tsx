@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { 
   Calendar, Check, CheckCircle, ChevronLeft, Clock, Copy, 
   Database, Download, Eye, ExternalLink, FolderOpen, Globe, 
-  History, Info, Link2, Loader2, Memory, Search, Share, 
+  History, Info, Link2, Loader2, HardDrive, Search, Share, 
   Star, Tag, Terminal, Upload, UserRound, Users, Watch, Wrench, X, Plus 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

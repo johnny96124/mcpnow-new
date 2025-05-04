@@ -1,5 +1,5 @@
 
-import { Database, Terminal, Memory } from "lucide-react";
+import { Database, Terminal, HardDrive } from "lucide-react";
 
 interface Requirement {
   type: 'llm' | 'tool' | 'memory';
@@ -31,7 +31,7 @@ export function ServerRequirementsSection({ requirements }: ServerRequirementsSe
               <Terminal className="h-5 w-5 mr-2 text-gray-500" />
             )}
             {req.type === 'memory' && (
-              <Memory className="h-5 w-5 mr-2 text-gray-500" />
+              <HardDrive className="h-5 w-5 mr-2 text-gray-500" />
             )}
             <span>
               {req.type === 'llm' && 'LLM invocation'}
