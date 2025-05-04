@@ -1,4 +1,4 @@
-import React, { useState, useCallback, memo } from "react";
+import React, { useState } from "react";
 import { FileText, Server, AlertTriangle, CheckCircle, Info, Plus, ChevronDown, ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,12 +59,14 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
   const [deleteHostDialogOpen, setDeleteHostDialogOpen] = useState(false);
   const [shareProfileDialogOpen, setShareProfileDialogOpen] = useState(false);
   
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   
   const selectedProfile = profiles.find(p => p.id === selectedProfileId);
   const profileServers = serverInstances.filter(server => selectedProfile?.instances.includes(server.id));
   
-  const handleServerStatusChange = useCallback((serverId: string, enabled: boolean) => {
+  const handleServerStatusChange = (serverId: string, enabled: boolean) => {
     onServerStatusChange(serverId, enabled ? host.connectionStatus === "connected" ? 'connecting' : 'stopped' : 'stopped');
     if (enabled) {
       toast({
@@ -90,17 +92,17 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
         }
       }, 2000);
     }
-  }, [host.connectionStatus, onServerStatusChange, toast]);
+  };
   
-  const getServerLoad = useCallback((serverId: string) => {
+  const getServerLoad = (serverId: string) => {
     return Math.floor(Math.random() * 90) + 10;
-  }, []);
+  };
   
-  const showConfigFile = useCallback(() => {
+  const showConfigFile = () => {
     setConfigDialogOpen(true);
-  }, []);
+  };
   
-  const handleAddServers = useCallback((servers: ServerInstance[]) => {
+  const handleAddServers = (servers: ServerInstance[]) => {
     if (selectedProfile && servers.length > 0) {
       if (onAddServersToProfile) {
         onAddServersToProfile(servers);
@@ -113,14 +115,14 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
         onSaveProfileChanges();
       }
     }
-  }, [selectedProfile, onAddServersToProfile, onSaveProfileChanges, toast]);
+  };
   
-  const handleConfirmDeleteHost = useCallback(() => {
+  const handleConfirmDeleteHost = () => {
     onDeleteHost(host.id);
     setDeleteHostDialogOpen(false);
-  }, [host.id, onDeleteHost]);
+  };
 
-  const handleShareProfile = useCallback(() => {
+  const handleShareProfile = () => {
     if (selectedProfile) {
       setShareProfileDialogOpen(true);
     } else {
@@ -130,7 +132,7 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
         type: "error"
       });
     }
-  }, [selectedProfile, toast]);
+  };
   
   if (host.configStatus === "unknown") {
     return <div className="space-y-6">
@@ -254,8 +256,7 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
               </Button>
             </div>
             
-            {profileServers.length > 0 ? (
-              <div className="rounded-md border">
+            {profileServers.length > 0 ? <div className="rounded-md border">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b bg-muted/50">
@@ -267,44 +268,24 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {profileServers.map(server => (
-                      <ServerItem 
-                        key={server.id} 
-                        server={server} 
-                        hostConnectionStatus={host.connectionStatus} 
-                        onStatusChange={handleServerStatusChange} 
-                        load={getServerLoad(server.id)} 
-                        onRemoveFromProfile={serverId => {
-                          toast({
-                            title: "Server removed",
-                            description: `${server.name} has been removed from this profile`
-                          });
-                        }} 
-                      />
-                    ))}
+                    {profileServers.map(server => <ServerItem key={server.id} server={server} hostConnectionStatus={host.connectionStatus} onStatusChange={handleServerStatusChange} load={getServerLoad(server.id)} onRemoveFromProfile={serverId => {
+                  toast({
+                    title: "Server removed",
+                    description: `${server.name} has been removed from this profile`
+                  });
+                }} />)}
                   </tbody>
                 </table>
-              </div>
-            ) : (
-              <div className="mt-4">
+              </div> : <div className="mt-4">
                 <ServerListEmpty onAddServers={() => setServerSelectionDialogOpen(true)} />
-              </div>
-            )}
+              </div>}
           </div>
         </CardContent>
       </Card>
       
-      <ServerSelectionDialog 
-        open={serverSelectionDialogOpen} 
-        onOpenChange={setServerSelectionDialogOpen} 
-        onAddServers={handleAddServers} 
-      />
+      <ServerSelectionDialog open={serverSelectionDialogOpen} onOpenChange={setServerSelectionDialogOpen} onAddServers={handleAddServers} />
       
-      <ConfigHighlightDialog 
-        open={configDialogOpen} 
-        onOpenChange={setConfigDialogOpen} 
-        configPath={host.configPath || ""} 
-      />
+      <ConfigHighlightDialog open={configDialogOpen} onOpenChange={setConfigDialogOpen} configPath={host.configPath || ""} />
 
       {/* Delete Host Confirmation Dialog */}
       <Dialog open={deleteHostDialogOpen} onOpenChange={setDeleteHostDialogOpen}>

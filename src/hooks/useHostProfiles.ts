@@ -1,22 +1,18 @@
 
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { hosts, profiles, type Profile, type Host } from "@/data/mockData";
+import { useState, useEffect, useCallback } from "react";
+import { hosts, profiles, type Profile, type Host, type ConnectionStatus } from "@/data/mockData";
 
 export function useHostProfiles() {
-  const [hostProfiles, setHostProfiles] = useState<Record<string, string>>(
-    // Initialize safely with memo to avoid recalculation
-    useMemo(() => {
-      return hosts.reduce((acc, host) => {
-        acc[host.id] = host.profileId || "";
-        return acc;
-      }, {} as Record<string, string>);
-    }, [])
+  const [hostProfiles, setHostProfiles] = useState(
+    hosts.reduce((acc, host) => {
+      acc[host.id] = host.profileId || "";
+      return acc;
+    }, {} as Record<string, string>)
   );
   
   const [profileCache, setProfileCache] = useState<Record<string, Profile | null>>({});
   const [allProfiles, setAllProfiles] = useState<Profile[]>([]);
   
-  // Use useMemo for initial setup to prevent recomputation
   useEffect(() => {
     const initialCache = profiles.reduce((acc, profile) => {
       acc[profile.id] = profile;
@@ -59,23 +55,16 @@ export function useHostProfiles() {
       configStatus: (host.configStatus || "unconfigured") as "configured" | "misconfigured" | "unknown",
       icon: host.icon,
       profileId: host.profileId
+      // Removed the status property since it doesn't exist on the Host interface
     }));
   }, []);
   
-  // Use useMemo for returned values to prevent unnecessary re-renders
-  return useMemo(() => ({
+  return {
     hostProfiles,
     allProfiles,
     handleProfileChange,
     getProfileById,
     addInstanceToProfile,
     getAvailableHosts
-  }), [
-    hostProfiles,
-    allProfiles,
-    handleProfileChange,
-    getProfileById,
-    addInstanceToProfile,
-    getAvailableHosts
-  ]);
+  };
 }

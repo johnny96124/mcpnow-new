@@ -1,6 +1,5 @@
-
-import { useState, useEffect, useCallback } from "react";
-import { Plus, Info } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Info, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { hosts as initialHosts, type Host, type Profile, ServerInstance } from "@/data/mockData";
 import { ConfigFileDialog } from "@/components/hosts/ConfigFileDialog";
@@ -24,24 +23,17 @@ const mockJsonConfig = {
 };
 
 const Hosts = () => {
-  // Use localStorage with a try-catch for safety
-  const getInitialOnboardingState = () => {
-    try {
-      return localStorage.getItem('hostsOnboardingSeen') === 'true';
-    } catch (error) {
-      console.error("Error accessing localStorage:", error);
-      return false;
-    }
-  };
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean>(
+    localStorage.getItem('hostsOnboardingSeen') === 'true'
+  );
 
-  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean>(getInitialOnboardingState());
-
-  // Only update localStorage when the state changes, not every render
   useEffect(() => {
-    try {
-      localStorage.setItem('hostsOnboardingSeen', hasSeenOnboarding ? 'true' : 'false');
-    } catch (error) {
-      console.error("Error writing to localStorage:", error);
+    const markHostsOnboardingAsSeen = () => {
+      localStorage.setItem('hostsOnboardingSeen', 'true');
+    };
+    
+    if (hasSeenOnboarding) {
+      markHostsOnboardingAsSeen();
     }
   }, [hasSeenOnboarding]);
 
@@ -69,22 +61,21 @@ const Hosts = () => {
   const selectedHost = selectedHostId ? hostsList.find(h => h.id === selectedHostId) : null;
   const selectedProfileId = selectedHost ? hostProfiles[selectedHost.id] || "" : "";
 
-  // Fix for infinite loop - only set selectedHostId when hostsList changes or when it's null
   useEffect(() => {
-    if (hostsList.length > 0 && selectedHostId === null) {
+    if (hostsList.length > 0 && !selectedHostId) {
       setSelectedHostId(hostsList[0].id);
     }
   }, [hostsList, selectedHostId]);
 
-  const handleCreateConfigDialog = useCallback((hostId: string) => {
+  const handleCreateConfigDialog = (hostId: string) => {
     const host = hostsList.find(h => h.id === hostId);
     if (host) {
       const defaultConfigPath = `/Users/user/.mcp/hosts/${host.name.toLowerCase().replace(/\s+/g, '-')}.json`;
       openConfigDialog(hostId, defaultConfigPath, 'http://localhost:8008/mcp', true, true, false, false, true, true);
     }
-  }, [hostsList, openConfigDialog]);
+  };
 
-  const handleUpdateConfig = useCallback((config: string, configPath: string) => {
+  const handleUpdateConfig = (config: string, configPath: string) => {
     if (configDialog.hostId) {
       setHostsList(prev => prev.map(host => host.id === configDialog.hostId ? {
         ...host,
@@ -106,9 +97,9 @@ const Hosts = () => {
       }
     }
     resetConfigDialog();
-  }, [configDialog.hostId, hostsList, resetConfigDialog, updateProfileInHook, toast]);
+  };
 
-  const handleAddHosts = useCallback((newHosts: Host[]) => {
+  const handleAddHosts = (newHosts: Host[]) => {
     const hostsWithProfiles = newHosts.map(host => {
       const profileId = handleCreateProfile(host.defaultProfileName || `${host.name} Profile`);
       
@@ -139,30 +130,30 @@ const Hosts = () => {
       title: "Hosts Added",
       description: `Successfully added ${newHosts.length} new host${newHosts.length > 1 ? 's' : ''}`
     });
-  }, [hasSeenOnboarding, updateProfileInHook, toast]);
+  };
 
-  const handleAddServersToHost = useCallback(() => {
+  const handleAddServersToHost = () => {
     toast({
       title: "Add servers",
       description: "Select servers to add to this profile"
     });
-  }, [toast]);
+  };
   
-  const handleServerStatusChange = useCallback((serverId: string, status: 'running' | 'stopped' | 'error' | 'connecting') => {
+  const handleServerStatusChange = (serverId: string, status: 'running' | 'stopped' | 'error' | 'connecting') => {
     setServerInstances(prev => prev.map(server => server.id === serverId ? {
       ...server,
       status
     } : server));
-  }, []);
+  };
   
-  const handleSaveProfileChanges = useCallback(() => {
+  const handleSaveProfileChanges = () => {
     toast({
       title: "Profile Saved",
       description: "Changes to profile have been saved."
     });
-  }, [toast]);
+  };
   
-  const handleProfileChange = useCallback((profileId: string) => {
+  const handleProfileChange = (profileId: string) => {
     if (selectedHost) {
       updateProfileInHook(selectedHost.id, profileId);
       
@@ -171,9 +162,9 @@ const Hosts = () => {
         description: `Profile has been changed to "${profilesList.find(p => p.id === profileId)?.name}"`
       });
     }
-  }, [selectedHost, updateProfileInHook, profilesList, toast]);
+  };
   
-  const handleCreateProfile = useCallback((profileName: string) => {
+  const handleCreateProfile = (profileName: string) => {
     const newProfileId = `profile-${Date.now()}`;
     const newProfile: Profile = {
       id: newProfileId,
@@ -192,9 +183,9 @@ const Hosts = () => {
     });
     
     return newProfileId;
-  }, [toast]);
+  };
   
-  const handleDeleteProfile = useCallback((profileId: string) => {
+  const handleDeleteProfile = (profileId: string) => {
     if (profilesList.length <= 1) {
       toast({
         title: "Cannot delete profile",
@@ -217,9 +208,9 @@ const Hosts = () => {
       title: "Profile Deleted",
       description: "The profile has been deleted"
     });
-  }, [profilesList, selectedHost, hostProfiles, updateProfileInHook, toast]);
+  };
   
-  const handleDeleteHost = useCallback((hostId: string) => {
+  const handleDeleteHost = (hostId: string) => {
     setHostsList(prev => prev.filter(h => h.id !== hostId));
     
     if (selectedHostId === hostId) {
@@ -231,9 +222,9 @@ const Hosts = () => {
       title: "Host Deleted",
       description: "The host has been removed successfully"
     });
-  }, [hostsList, selectedHostId, toast]);
+  };
 
-  const handleAddServersToProfile = useCallback((servers: ServerInstance[]) => {
+  const handleAddServersToProfile = (servers: ServerInstance[]) => {
     const newServerIds = servers.map(server => server.id);
     
     const newServers = servers.filter(server => 
@@ -265,19 +256,19 @@ const Hosts = () => {
         description: `${servers.length} server(s) added to profile`
       });
     }
-  }, [serverInstances, selectedProfileId, toast]);
+  };
 
-  const handleCompleteOnboarding = useCallback(() => {
+  const handleCompleteOnboarding = () => {
     setHasSeenOnboarding(true);
-  }, []);
+  };
 
   // Updated this function to be used when clicking the "Add your First Host" button
-  const handleOpenAddHostDialog = useCallback(() => {
+  const handleOpenAddHostDialog = () => {
     setUnifiedHostDialogOpen(true);
-  }, []);
+  };
 
-  // Fixed import profile function for proper instance creation
-  const handleImportProfile = useCallback((profile: Profile) => {
+  // New function to handle imported profiles
+  const handleImportProfile = (profile: Profile) => {
     // Add the imported profile to the profiles list
     setProfilesList(prev => {
       // Check if profile with same ID already exists
@@ -300,7 +291,7 @@ const Hosts = () => {
         definitionId: "imported-def",
         status: "stopped",
         connectionDetails: "HTTP_SSE",
-        enabled: true
+        enabled: true // Adding the required 'enabled' property that was missing
       }));
       
       if (mockImportedServers.length > 0) {
@@ -312,7 +303,7 @@ const Hosts = () => {
         });
       }
     }
-  }, [selectedHost, updateProfileInHook]);
+  };
 
   // Render appropriate content based on state
   if (!hasSeenOnboarding) {
