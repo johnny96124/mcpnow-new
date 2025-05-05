@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProfileImportPreviewDialog } from "./ProfileImportPreviewDialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ServerConfigDetail {
   name: string;
@@ -150,7 +151,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   };
 
   return (
-    <>
+    <TooltipProvider>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader className="pb-2">
@@ -185,7 +186,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
               </RadioGroup>
             </div>
             
-            {/* Profile Content Preview - Simplified */}
+            {/* Profile Content Preview with server descriptions */}
             <div className="space-y-4">
               <h3 className="text-sm font-medium text-foreground capitalize">
                 Profile Details
@@ -211,10 +212,26 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                         className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
                       >
                         <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
-                          <div className="flex items-center gap-3">
-                            <Server className="h-4 w-4 text-foreground" />
-                            <span className="font-medium text-foreground">{server.name}</span>
-                            <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3">
+                              <Server className="h-4 w-4 text-foreground" />
+                              <span className="font-medium text-foreground">{server.name}</span>
+                              <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+                            </div>
+                            
+                            {/* Server description with hover tooltip - shown in both modes */}
+                            {server.description && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <p className="pl-7 mt-1 text-xs text-muted-foreground truncate">
+                                    {server.description}
+                                  </p>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs">
+                                  <p className="text-xs">{server.description}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
                           </div>
                           
                           {shareMode === "with-config" && getServerConfigDetails(server).length > 0 ? (
@@ -298,6 +315,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         servers={servers}
         onConfirmImport={handleImportConfirm}
       />
-    </>
+    </TooltipProvider>
   );
 };
