@@ -1,138 +1,189 @@
 
-import React, { useState } from "react";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-  DialogClose
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { X, CheckCircle, Plus } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ServerDefinition, serverDefinitions, ServerInstance } from "@/data/mockData";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+
+const serverSchema = z.object({
+  name: z.string().min(1, { message: "Server name is required" }),
+  definitionId: z.string().min(1, { message: "Server definition is required" }),
+  connectionDetails: z.string().optional(),
+});
+
+type ServerFormValues = z.infer<typeof serverSchema>;
 
 interface AddServerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddServer: (server: any) => void;
+  onAddServer: (server: ServerInstance) => void;
 }
 
-export const AddServerDialog = ({ open, onOpenChange, onAddServer }: AddServerDialogProps) => {
-  const [serverData, setServerData] = useState({
-    name: "",
-    url: "",
-    type: "HTTP_SSE"
-  });
+export function AddServerDialog({
+  open,
+  onOpenChange,
+  onAddServer,
+}: AddServerDialogProps) {
+  const [selectedDefinition, setSelectedDefinition] = useState<ServerDefinition | null>(null);
   
-  const [installedServers, setInstalledServers] = useState<Record<string, boolean>>({});
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setServerData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddServer = () => {
-    const newServer = {
-      id: `custom-${Date.now()}`,
-      name: serverData.name,
-      definitionId: "custom-server",
-      status: "stopped",
-      connectionDetails: serverData.url,
-      enabled: false
-    };
-    
-    // Mark server as installed
-    setInstalledServers(prev => ({
-      ...prev,
-      [newServer.id]: true
-    }));
-    
-    onAddServer(newServer);
-    setServerData({
+  const form = useForm<ServerFormValues>({
+    resolver: zodResolver(serverSchema),
+    defaultValues: {
       name: "",
-      url: "",
-      type: "HTTP_SSE"
-    });
+      definitionId: "",
+      connectionDetails: "",
+    },
+  });
+
+  const handleSubmit = (values: ServerFormValues) => {
+    const newServer: ServerInstance = {
+      id: `server-${Date.now()}`,
+      name: values.name,
+      definitionId: values.definitionId,
+      status: "stopped",
+      connectionDetails: values.connectionDetails || "http://localhost:8008/mcp",
+      enabled: true,
+    };
+
+    onAddServer(newServer);
+    form.reset();
+    onOpenChange(false);
   };
 
-  // Check if a server is installed based on name and URL
-  const isServerInstalled = () => {
-    // This would need to be adapted based on how you track installed servers
-    // For now, we'll just use a simple check for demonstration
-    return Object.keys(installedServers).some(id => 
-      id.startsWith('custom-') && 
-      installedServers[id] === true
-    );
+  const handleDefinitionChange = (definitionId: string) => {
+    form.setValue("definitionId", definitionId);
+    const definition = serverDefinitions.find(d => d.id === definitionId);
+    setSelectedDefinition(definition || null);
+    
+    // Auto-populate connection details if available
+    if (definition && definition.url) {
+      form.setValue("connectionDetails", definition.url);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <div className="flex items-center">
-            <DialogTitle>Add Custom Server</DialogTitle>
-            {isServerInstalled() && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="ml-2 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
-                      <CheckCircle className="h-4 w-4 text-blue-600" />
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Server already added</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </div>
+          <DialogTitle>Add New Server</DialogTitle>
+          <DialogDescription>
+            Create a new server instance from available server definitions
+          </DialogDescription>
         </DialogHeader>
-
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
+        
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
               name="name"
-              value={serverData.name}
-              onChange={handleChange}
-              className="col-span-3"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Server Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Enter server name" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="url" className="text-right">
-              URL
-            </Label>
-            <Input
-              id="url"
-              name="url"
-              value={serverData.url}
-              onChange={handleChange}
-              className="col-span-3"
-              placeholder="http://localhost:8000"
+            
+            <FormField
+              control={form.control}
+              name="definitionId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Server Definition</FormLabel>
+                  <FormControl>
+                    <Select 
+                      value={field.value} 
+                      onValueChange={(value) => handleDefinitionChange(value)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a server definition" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {serverDefinitions.map(definition => (
+                          <SelectItem key={definition.id} value={definition.id}>
+                            <div className="flex items-center gap-2">
+                              {definition.icon && (
+                                <span>{definition.icon}</span>
+                              )}
+                              <span>{definition.name}</span>
+                              <span className="text-muted-foreground text-xs">v{definition.version}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  {selectedDefinition && (
+                    <div className="mt-2 text-sm">
+                      <p className="text-muted-foreground">{selectedDefinition.description}</p>
+                      {selectedDefinition.categories && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {selectedDefinition.categories.map(category => (
+                            <Badge key={category} variant="secondary" className="text-xs">
+                              {category}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
+            
+            <FormField
+              control={form.control}
+              name="connectionDetails"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Connection Details</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      {...field} 
+                      placeholder="Enter connection URL or details"
+                      rows={2}
+                      className="resize-none"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleAddServer} disabled={!serverData.name}>
-            <Plus className="h-3.5 w-3.5 mr-1" />
-            Add
-          </Button>
-        </DialogFooter>
+            <DialogFooter className="pt-4">
+              <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
+                Cancel
+              </Button>
+              <Button type="submit">Add Server</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
-};
+}
