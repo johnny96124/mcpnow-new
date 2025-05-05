@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -178,7 +177,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
               {/* Profile name header */}
               <div className="bg-muted/30 p-4 border-b">
                 <div className="flex items-center justify-between">
-                  <div className="font-medium text-lg text-primary">{profile.name}</div>
+                  <div className="font-medium text-lg text-foreground">{profile.name}</div>
                   <Badge variant="outline" className="bg-secondary/50">{servers.length} Server{servers.length !== 1 ? 's' : ''}</Badge>
                 </div>
               </div>
@@ -194,7 +193,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   >
                     <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
                       <div className="flex items-center gap-3">
-                        <Server className="h-4 w-4 text-primary" />
+                        <Server className="h-4 w-4 text-foreground" />
                         <span className="font-medium">{server.name}</span>
                         <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
                       </div>
@@ -213,7 +212,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                         <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
                           {getServerConfigDetails(server).map((detail, index) => (
                             <div key={index} className="grid gap-1.5">
-                              <div className="font-medium text-xs text-primary/70 capitalize">{detail.name}</div>
+                              <div className="font-medium text-xs text-foreground capitalize">{detail.name}</div>
                               {renderConfigValue(detail.value)}
                             </div>
                           ))}
@@ -260,4 +259,3 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       </DialogContent>
     </Dialog>;
 };
-
