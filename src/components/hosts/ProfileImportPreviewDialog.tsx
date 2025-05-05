@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Server } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
@@ -138,7 +137,7 @@ export const ProfileImportPreviewDialog: React.FC<ProfileImportPreviewDialogProp
                             <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
                           </div>
                           {server.description && (
-                            <p className="text-xs text-muted-foreground pl-7 pr-4">
+                            <p className="text-xs text-muted-foreground pl-7 pr-4 mt-1">
                               {server.description}
                             </p>
                           )}

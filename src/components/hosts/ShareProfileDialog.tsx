@@ -219,7 +219,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                               <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
                             </div>
                             {server.description && (
-                              <p className="text-xs text-muted-foreground pl-7 pr-4">
+                              <p className="text-xs text-muted-foreground pl-7 pr-4 mt-1">
                                 {server.description}
                               </p>
                             )}
