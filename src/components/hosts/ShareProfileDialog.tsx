@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -172,13 +171,15 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           
           {/* Profile Content Preview */}
           <div className="space-y-4">
+            <h3 className="font-medium text-base">Profile Information</h3>
             <div className="flex justify-between items-center">
-              <h3 className="font-medium">
+              <h4 className="font-medium">
                 Profile: <span className="text-primary">{profile.name}</span>
-              </h3>
+              </h4>
               <Badge variant="outline">{servers.length} Server(s)</Badge>
             </div>
             
+            <h3 className="font-medium text-base pt-2">Servers Configuration</h3>
             <div className="border rounded-md divide-y">
               {servers.map(server => (
                 <Collapsible 
