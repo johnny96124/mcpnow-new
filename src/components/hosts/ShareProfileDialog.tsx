@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -9,7 +10,6 @@ import { Profile, ServerInstance } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 
 interface ServerConfigDetail {
@@ -123,7 +123,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       return <span className="font-mono text-sm bg-muted p-1 rounded">{value}</span>;
     }
     if (Array.isArray(value)) {
-      // Modified section - render Command Arguments in a single line
       return <div className="font-mono text-sm bg-muted p-1 rounded">
           {value.join(' ')}
         </div>;
@@ -182,7 +181,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           {/* Profile Content Preview */}
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="font-medium">Profile Content Preview</h3>
+              <h3 className="font-medium">
+                Profile: <span className="text-primary">{profile.name}</span>
+              </h3>
               <Badge variant="outline">{servers.length} Server(s)</Badge>
             </div>
             
@@ -240,7 +241,13 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
               </Button> : <div className="space-y-4">
                 <div className="space-y-2">
-                  <h4 className="text-sm font-medium">Shareable Link:</h4>
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-medium">Shareable Link:</h4>
+                    <div className="flex items-center gap-1 text-amber-600 text-xs">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>Expires in 10 minutes</span>
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
                     <div className="bg-muted p-2 rounded text-sm font-mono flex-1 truncate overflow-hidden">
                       {generatedLink}
@@ -248,17 +255,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   </div>
                 </div>
                 
-                {/* Link expiration notice */}
-                <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
-                  <Clock className="h-5 w-5" />
-                  <p className="text-sm">This link will expire in 10 minutes</p>
-                </div>
-                
-                <Button onClick={handleCopyLink} className="w-full" style={{
-                backgroundColor: "white"
-              }}>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy Link
+                <Button onClick={handleCopyLink} className="w-full">
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy Link
                 </Button>
               </div>}
           </div>
