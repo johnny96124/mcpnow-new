@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp, Server, Info } from "lucide-react";
+import { ChevronDown, ChevronUp, Server } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Profile, ServerInstance } from "@/data/mockData";
@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ProfileImportPreviewDialogProps {
   open: boolean;
@@ -138,36 +137,17 @@ export const ProfileImportPreviewDialog: React.FC<ProfileImportPreviewDialogProp
                           <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
                         </div>
                         
-                        <CollapsibleTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
-                            {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                          </Button>
-                        </CollapsibleTrigger>
+                        {getServerConfigDetails(server).length > 0 && (
+                          <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
+                              {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                            </Button>
+                          </CollapsibleTrigger>
+                        )}
                       </div>
                       
                       <CollapsibleContent>
                         <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
-                          {server.description && (
-                            <div className="grid gap-1.5">
-                              <div className="font-medium text-xs text-foreground capitalize flex items-center gap-1">
-                                Description
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-                                    </TooltipTrigger>
-                                    <TooltipContent className="max-w-xs">
-                                      {server.description}
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </div>
-                              <p className="text-sm text-muted-foreground line-clamp-2">
-                                {server.description}
-                              </p>
-                            </div>
-                          )}
-                          
                           {getServerConfigDetails(server).map((detail, index) => (
                             <div key={index} className="grid gap-1.5">
                               <div className="font-medium text-xs text-foreground capitalize">{detail.name}</div>
