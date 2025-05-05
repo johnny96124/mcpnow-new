@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from "react";
-import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload } from "lucide-react";
+import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -143,34 +142,39 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             <Share2 className="h-5 w-5" /> Share Profile
           </DialogTitle>
           <DialogDescription>
-            Share your "{profile.name}" profile with others
+            Share your profile with others
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-6">
-          {/* Share Mode Selection - Updated UI with English text */}
+        <div className="space-y-6 pt-2">
+          {/* Profile name display */}
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+            <h3 className="font-medium text-lg flex items-center gap-2">
+              <span className="text-primary">{profile.name}</span>
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">{profile.description}</p>
+          </div>
+          
+          {/* Share Mode Selection - Simplified Radio Group */}
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className={`border rounded-lg p-6 flex flex-col items-center text-center cursor-pointer transition-all hover:bg-muted/20 ${shareMode === "with-config" ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-muted"}`} onClick={() => setShareMode("with-config")}>
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Upload className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-medium text-base mb-2">Complete Configuration (Recommended)</h3>
-                <p className="text-sm text-muted-foreground">
-                  Includes all profile variables and dependent servers
-                </p>
+            <h3 className="font-medium mb-2">Sharing Options</h3>
+            <RadioGroup value={shareMode} onValueChange={(value) => setShareMode(value as "with-config" | "without-config")} className="flex flex-col space-y-3">
+              <div className="flex items-center space-x-3 rounded-md border p-3 cursor-pointer hover:bg-muted/30" onClick={() => setShareMode("with-config")}>
+                <RadioGroupItem value="with-config" id="with-config" />
+                <Label htmlFor="with-config" className="flex-1 cursor-pointer">
+                  <div className="font-medium">Complete Configuration (Recommended)</div>
+                  <div className="text-sm text-muted-foreground">Includes all profile variables and dependent servers</div>
+                </Label>
               </div>
               
-              <div className={`border rounded-lg p-6 flex flex-col items-center text-center cursor-pointer transition-all hover:bg-muted/20 ${shareMode === "without-config" ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-muted"}`} onClick={() => setShareMode("without-config")}>
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Server className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-medium text-base mb-2">No Configuration</h3>
-                <p className="text-sm text-muted-foreground">
-                  Share server configurations without profile parameters
-                </p>
+              <div className="flex items-center space-x-3 rounded-md border p-3 cursor-pointer hover:bg-muted/30" onClick={() => setShareMode("without-config")}>
+                <RadioGroupItem value="without-config" id="without-config" />
+                <Label htmlFor="without-config" className="flex-1 cursor-pointer">
+                  <div className="font-medium">No Configuration</div>
+                  <div className="text-sm text-muted-foreground">Share server configurations without profile parameters</div>
+                </Label>
               </div>
-            </div>
+            </RadioGroup>
           </div>
           
           <Separator />
@@ -190,7 +194,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   onOpenChange={() => toggleServerConfig(server.id)} 
                   className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
                 >
-                  <div className="p-3 flex justify-between items-center h-[40px]">
+                  <div className="p-3 flex justify-between items-center min-h-[40px]">
                     <div className="flex items-center gap-3">
                       <Server className="h-4 w-4 text-muted-foreground" />
                       <span className="font-medium text-sm">{server.name}</span>
@@ -234,9 +238,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             {!generatedLink ? <Button onClick={handleGenerateLink} className="w-full" disabled={isGeneratingLink}>
                 <Upload className="h-4 w-4 mr-2" />
                 {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
-              </Button> : <div className="space-y-3">
-                <div>
-                  <h4 className="text-sm font-medium mb-2">Shareable Link:</h4>
+              </Button> : <div className="space-y-4">
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Shareable Link:</h4>
                   <div className="flex items-center gap-2">
                     <div className="bg-muted p-2 rounded text-sm font-mono flex-1 truncate overflow-hidden">
                       {generatedLink}
@@ -244,14 +248,18 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   </div>
                 </div>
                 
-                <div className="flex gap-2">
-                  <Button onClick={handleCopyLink} className="w-full" variant="outline" style={{
+                {/* Link expiration notice */}
+                <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200">
+                  <Clock className="h-5 w-5" />
+                  <p className="text-sm">This link will expire in 10 minutes</p>
+                </div>
+                
+                <Button onClick={handleCopyLink} className="w-full" style={{
                 backgroundColor: "white"
               }}>
                     <Copy className="h-4 w-4 mr-2" />
                     Copy Link
-                  </Button>
-                </div>
+                </Button>
               </div>}
           </div>
         </div>

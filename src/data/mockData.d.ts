@@ -1,3 +1,4 @@
+
 export interface ServerInstance {
   id: string;
   name: string;
@@ -5,6 +6,10 @@ export interface ServerInstance {
   status: "running" | "stopped" | "error";
   connectionDetails: string;
   enabled: boolean;
+  url?: string;
+  headers?: Record<string, string>;
+  arguments?: string[];
+  environment?: Record<string, string>;
 }
 
 export interface ServerDefinition {
