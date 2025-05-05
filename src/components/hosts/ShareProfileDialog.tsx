@@ -158,7 +158,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </RadioGroup>
           </div>
           
-          <Separator className="my-1" />
+          
           
           {/* Profile Content Preview - Enhanced */}
           <div className="space-y-4">
