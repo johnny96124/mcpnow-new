@@ -120,77 +120,89 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
     if (!value) return null;
     if (typeof value === 'string') {
-      return <span className="font-mono text-sm bg-muted p-1 rounded">{value}</span>;
+      return <span className="font-mono text-sm bg-muted/80 p-1.5 rounded">{value}</span>;
     }
     if (Array.isArray(value)) {
-      return <div className="font-mono text-sm bg-muted p-1 rounded">
+      return <div className="font-mono text-sm bg-muted/80 p-1.5 rounded">
           {value.join(' ')}
         </div>;
     }
-    return <div className="space-y-1">
+    return <div className="space-y-2">
         {Object.entries(value).map(([key, val]) => <div key={key} className="font-mono text-sm">
-            <span className="font-semibold">{key}:</span> <span className="bg-muted p-1 rounded">{val}</span>
+            <span className="font-semibold text-primary/80">{key}:</span> <span className="bg-muted/80 p-1 rounded">{val}</span>
           </div>)}
       </div>;
   };
 
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="flex items-center gap-2 text-xl text-primary">
             <Share2 className="h-5 w-5" /> Share Profile
           </DialogTitle>
-          <DialogDescription>
-            Share your profile with others
+          <DialogDescription className="text-muted-foreground">
+            Share your profile configuration with others
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-6 pt-2">
-          {/* Share Mode Selection - Simplified Radio Group */}
-          <div className="space-y-4">
-            <h3 className="font-medium mb-2">Sharing Options</h3>
+        <div className="space-y-6 pt-3">
+          {/* Share Mode Selection - Enhanced Radio Group */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-foreground/90 uppercase tracking-wide">Sharing Options</h3>
             <RadioGroup value={shareMode} onValueChange={(value) => setShareMode(value as "with-config" | "without-config")} className="flex flex-col space-y-3">
-              <div className="flex items-center space-x-3 rounded-md border p-3 cursor-pointer hover:bg-muted/30" onClick={() => setShareMode("with-config")}>
-                <RadioGroupItem value="with-config" id="with-config" />
+              <div className={`flex items-center space-x-3 rounded-md border p-3.5 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "with-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("with-config")}>
+                <RadioGroupItem value="with-config" id="with-config" className="border-primary/70" />
                 <Label htmlFor="with-config" className="flex-1 cursor-pointer">
-                  <div className="font-medium">Complete Configuration (Recommended)</div>
-                  <div className="text-sm text-muted-foreground">Includes all profile variables and dependent servers</div>
+                  <div className="font-medium">Complete Configuration <Badge variant="outline" className="ml-2 bg-primary/10 text-xs font-normal">Recommended</Badge></div>
+                  <div className="text-sm text-muted-foreground mt-1">Includes all profile variables and dependent servers</div>
                 </Label>
               </div>
               
-              <div className="flex items-center space-x-3 rounded-md border p-3 cursor-pointer hover:bg-muted/30" onClick={() => setShareMode("without-config")}>
-                <RadioGroupItem value="without-config" id="without-config" />
+              <div className={`flex items-center space-x-3 rounded-md border p-3.5 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "without-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("without-config")}>
+                <RadioGroupItem value="without-config" id="without-config" className="border-primary/70" />
                 <Label htmlFor="without-config" className="flex-1 cursor-pointer">
-                  <div className="font-medium">No Configuration</div>
-                  <div className="text-sm text-muted-foreground">Share server configurations without profile parameters</div>
+                  <div className="font-medium">Basic Profile</div>
+                  <div className="text-sm text-muted-foreground mt-1">Share server configurations without detailed parameters</div>
                 </Label>
               </div>
             </RadioGroup>
           </div>
           
-          <Separator />
+          <Separator className="my-1" />
           
-          {/* Profile Content Preview */}
+          {/* Profile Content Preview - Enhanced */}
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="font-medium">
-                Profile: <span className="text-primary">{profile.name}</span>
+              <h3 className="text-sm font-medium text-foreground/90 uppercase tracking-wide">
+                Profile Information
               </h3>
-              <Badge variant="outline">{servers.length} Server(s)</Badge>
+            </div>
+
+            <div className="bg-muted/30 p-3 rounded-lg border">
+              <div className="flex items-center justify-between">
+                <div className="font-medium text-primary">
+                  {profile.name}
+                </div>
+                <Badge variant="outline" className="bg-secondary/50">{servers.length} Server{servers.length !== 1 ? 's' : ''}</Badge>
+              </div>
             </div>
             
-            <div className="border rounded-md divide-y">
-              {servers.map(server => (
+            <h3 className="text-sm font-medium text-foreground/90 uppercase tracking-wide">
+              Servers Configuration
+            </h3>
+            
+            <div className="border rounded-lg overflow-hidden shadow-sm">
+              {servers.map((server, index) => (
                 <Collapsible 
                   key={server.id} 
                   open={openConfigs[server.id]} 
                   onOpenChange={() => toggleServerConfig(server.id)} 
-                  className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
+                  className={`${shareMode === "with-config" ? "" : "pointer-events-none"} ${index !== 0 ? "border-t" : ""}`}
                 >
-                  <div className="p-3 flex justify-between items-center min-h-[40px]">
+                  <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
                     <div className="flex items-center gap-3">
-                      <Server className="h-4 w-4 text-muted-foreground" />
-                      <span className="font-medium text-sm">{server.name}</span>
+                      <Server className="h-4 w-4 text-primary" />
+                      <span className="font-medium">{server.name}</span>
                       <EndpointLabel 
                         type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'}
                       />
@@ -198,7 +210,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                     
                     {(shareMode === "with-config" && getServerConfigDetails(server).length > 0) ? (
                       <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
                           {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </Button>
                       </CollapsibleTrigger>
@@ -209,10 +221,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   
                   {shareMode === "with-config" && (
                     <CollapsibleContent>
-                      <div className="p-3 pt-0 pl-10 space-y-3 text-sm bg-muted/30">
+                      <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
                         {getServerConfigDetails(server).map((detail, index) => (
-                          <div key={index} className="grid gap-1">
-                            <div className="font-medium text-xs text-muted-foreground">{detail.name}</div>
+                          <div key={index} className="grid gap-1.5">
+                            <div className="font-medium text-xs text-primary/70 uppercase tracking-wide">{detail.name}</div>
                             {renderConfigValue(detail.value)}
                           </div>
                         ))}
@@ -224,34 +236,47 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </div>
           </div>
           
-          <Separator />
+          <Separator className="my-1" />
           
-          {/* Generate Link and Share Actions */}
+          {/* Generate Link and Share Actions - Enhanced */}
           <div className="space-y-4">
-            {!generatedLink ? <Button onClick={handleGenerateLink} className="w-full" disabled={isGeneratingLink}>
+            {!generatedLink ? (
+              <Button 
+                onClick={handleGenerateLink} 
+                className="w-full py-5 font-medium transition-all" 
+                disabled={isGeneratingLink}
+              >
                 <Upload className="h-4 w-4 mr-2" />
                 {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
-              </Button> : <div className="space-y-4">
+              </Button>
+            ) : (
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-medium">Shareable Link:</h4>
-                    <div className="flex items-center gap-1 text-amber-600 text-xs">
-                      <Clock className="h-3.5 w-3.5" />
-                      <span>Expires in 10 minutes</span>
-                    </div>
+                    <h4 className="text-sm font-medium text-foreground/90">Shareable Link 
+                      <span className="inline-flex items-center ml-3 text-amber-600 text-xs">
+                        <Clock className="h-3.5 w-3.5 mr-1" />
+                        <span>Expires in 10 minutes</span>
+                      </span>
+                    </h4>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="bg-muted p-2 rounded text-sm font-mono flex-1 truncate overflow-hidden">
+                  <div className="flex items-center gap-2 p-1 bg-muted/30 rounded-md border">
+                    <div className="bg-muted/90 p-2.5 rounded text-sm font-mono flex-1 truncate overflow-hidden">
                       {generatedLink}
                     </div>
                   </div>
                 </div>
                 
-                <Button onClick={handleCopyLink} className="w-full">
+                <Button 
+                  onClick={handleCopyLink} 
+                  variant="default" 
+                  className="w-full py-5 font-medium hover:shadow-md transition-all"
+                >
                   <Copy className="h-4 w-4 mr-2" />
                   Copy Link
                 </Button>
-              </div>}
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>
