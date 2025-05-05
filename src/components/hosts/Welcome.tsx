@@ -1,5 +1,5 @@
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -18,16 +18,15 @@ import {
   HelpCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { hosts } from "@/data/mockData";
-import { useHostProfiles } from "@/hooks/useHostProfiles";
-import { HostConfigGuideDialog } from "@/components/discovery/HostConfigGuideDialog";
 
-const HostsNewUser = () => {
-  const navigate = useNavigate();
+interface WelcomeProps {
+  onAddHosts: () => void;
+  onSkip: () => void;
+}
+
+const Welcome = ({ onAddHosts, onSkip }: WelcomeProps) => {
   const { toast } = useToast();
   const [isScanning, setIsScanning] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const { getAvailableHosts } = useHostProfiles();
   
   const mainHostTypes = [
     {
@@ -62,12 +61,13 @@ const HostsNewUser = () => {
       if (success) {
         toast({
           title: "Host discovered!",
-          description: "We found a local host on your network.",
+          description: "We found a local MCP Now host on your network.",
         });
         
-        // Redirect to main hosts page after successful scan
+        // Redirect to add hosts dialog after successful scan
         setTimeout(() => {
-          navigate("/hosts");
+          setIsScanning(false);
+          onAddHosts();
         }, 1500);
       } else {
         toast({
@@ -75,19 +75,9 @@ const HostsNewUser = () => {
           description: "We couldn't find any hosts automatically.",
           variant: "destructive",
         });
-        setDialogOpen(true);
+        setIsScanning(false);
       }
-      
-      setIsScanning(false);
     }, 2500);
-  };
-  
-  const handleSkip = () => {
-    navigate("/hosts");
-  };
-  
-  const handleOpenGuide = () => {
-    setDialogOpen(true);
   };
 
   return (
@@ -101,22 +91,21 @@ const HostsNewUser = () => {
           </div>
         </div>
         
-        <h1 className="text-4xl font-bold tracking-tight mb-2 text-teal-900 dark:text-teal-50">Welcome to Hosts</h1>
+        <h1 className="text-4xl font-bold tracking-tight mb-2 text-teal-900 dark:text-teal-50">Welcome to MCP Now</h1>
         <p className="text-muted-foreground text-lg max-w-2xl">
-          Hosts are machines that run your server profiles and instances. Let's set up your first host.
+          Easily configure and manage Model Context Protocol servers to create powerful AI applications.
         </p>
       </div>
       
       <div className="space-y-8">
         <div>
-          <h2 className="text-2xl font-semibold mb-4">What are hosts?</h2>
+          <h2 className="text-2xl font-semibold mb-4">Why use MCP Now?</h2>
           <Card className="border-2 border-dashed bg-card/50 hover:bg-card/80 transition-colors">
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="space-y-4">
                   <p className="text-muted-foreground">
-                    Hosts are computers or servers that run your model profiles and instances.
-                    You need at least one host to start using the platform.
+                    MCP Now helps you manage the complexity of AI model hosting and server configuration. Connect to any MCP-compatible host to streamline your AI infrastructure.
                   </p>
                   
                   <div className="space-y-4">
@@ -125,9 +114,9 @@ const HostsNewUser = () => {
                         <Search className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium">Scan for hosts</h3>
+                        <h3 className="text-sm font-medium">Discover hosts automatically</h3>
                         <p className="text-xs text-muted-foreground">
-                          We'll automatically detect hosts on your local network
+                          We'll find local or network MCP hosts for you
                         </p>
                       </div>
                     </div>
@@ -137,9 +126,9 @@ const HostsNewUser = () => {
                         <Server className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium">Add hosts manually</h3>
+                        <h3 className="text-sm font-medium">Centralized management</h3>
                         <p className="text-xs text-muted-foreground">
-                          Configure remote hosts or servers with custom settings
+                          Organize servers with profiles for better workflow
                         </p>
                       </div>
                     </div>
@@ -149,9 +138,9 @@ const HostsNewUser = () => {
                         <ArrowRight className="h-4 w-4 text-teal-600 dark:text-teal-400" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium">Connect profiles to hosts</h3>
+                        <h3 className="text-sm font-medium">Streamlined configuration</h3>
                         <p className="text-xs text-muted-foreground">
-                          Link your model profiles to the appropriate hosts
+                          Set up servers with minimal technical knowledge
                         </p>
                       </div>
                     </div>
@@ -159,7 +148,7 @@ const HostsNewUser = () => {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-medium mb-3">Supported host types</h3>
+                  <h3 className="text-lg font-medium mb-3">Compatible platforms</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {mainHostTypes.map((type) => (
                       <HoverCard key={type.name}>
@@ -187,7 +176,7 @@ const HostsNewUser = () => {
                     variant="ghost" 
                     className="mt-4 w-full justify-between text-muted-foreground hover:text-foreground"
                   >
-                    Explore more host types
+                    View all compatible platforms
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -214,8 +203,16 @@ const HostsNewUser = () => {
                 </Button>
                 
                 <Button 
-                  onClick={handleSkip} 
+                  onClick={onAddHosts} 
                   variant="outline" 
+                  size="lg"
+                >
+                  Add Host Manually
+                </Button>
+                
+                <Button 
+                  onClick={onSkip} 
+                  variant="ghost" 
                   size="lg"
                 >
                   Skip for Now
@@ -230,30 +227,17 @@ const HostsNewUser = () => {
         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 p-4 rounded-lg flex items-start gap-3">
           <HelpCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
           <div>
-            <h3 className="font-medium text-amber-800 dark:text-amber-300">Need help?</h3>
+            <h3 className="font-medium text-amber-800 dark:text-amber-300">Common setup issues</h3>
             <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
-              If you're not sure how to set up a host, 
-              <Button 
-                variant="link" 
-                className="h-auto p-0 text-sm text-amber-700 dark:text-amber-400 font-medium underline"
-                onClick={handleOpenGuide}
-              >
-                view our configuration guide
-              </Button>
-              .
+              If you're having trouble finding hosts, make sure your MCP server is running locally 
+              or check your network configuration settings. For local servers, the default endpoint 
+              is usually http://localhost:8008/mcp.
             </p>
           </div>
         </div>
       </div>
-
-      <HostConfigGuideDialog 
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        profile={null}
-        hosts={getAvailableHosts()}
-      />
     </div>
   );
 };
 
-export default HostsNewUser;
+export default Welcome;
