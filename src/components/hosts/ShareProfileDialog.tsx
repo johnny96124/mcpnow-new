@@ -146,14 +146,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         </DialogHeader>
         
         <div className="space-y-6 pt-2">
-          {/* Profile name display */}
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-            <h3 className="font-medium text-lg flex items-center gap-2">
-              <span className="text-primary">{profile.name}</span>
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">{profile.description}</p>
-          </div>
-          
           {/* Share Mode Selection - Simplified Radio Group */}
           <div className="space-y-4">
             <h3 className="font-medium mb-2">Sharing Options</h3>
