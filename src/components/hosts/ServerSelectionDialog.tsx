@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { ServerLogo } from "@/components/servers/ServerLogo";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { serverDefinitions, type ServerInstance, type ServerDefinition } from "@/data/mockData";
+import { serverDefinitions, type ServerInstance, type ServerDefinition, type EndpointType } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { AddInstanceDialog } from "@/components/servers/AddInstanceDialog";
 import { AddServerDialog } from "@/components/new-layout/AddServerDialog";
@@ -62,7 +62,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   const [selectedServer, setSelectedServer] = useState<ServerDefinition | null>(null);
   const [showInstanceDialog, setShowInstanceDialog] = useState(false);
   const [showCustomServerDialog, setShowCustomServerDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState<"installed" | "discovery">("installed");
+  const [activeTab, setActiveTab] = useState<"installed" | "discovery">("discovery");
   const { toast } = useToast();
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -97,7 +97,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
       setSelectedServer(null);
       setShowInstanceDialog(false);
       setShowCustomServerDialog(false);
-      setActiveTab("installed");
+      setActiveTab("discovery");
     } else {
       // Focus search input when dialog opens
       setTimeout(() => {
@@ -213,104 +213,21 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
               />
             </div>
             
-            {/* Tabs to switch between installed and discovery servers */}
-            <Tabs defaultValue="installed" value={activeTab} onValueChange={(value) => setActiveTab(value as "installed" | "discovery")} className="w-full">
+            {/* Tabs to switch between installed and discovery servers - swapped order */}
+            <Tabs defaultValue="discovery" value={activeTab} onValueChange={(value) => setActiveTab(value as "installed" | "discovery")} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="discovery" className="flex items-center gap-1">
+                  <ExternalLink className="h-4 w-4" />
+                  <span>Discovery</span>
+                </TabsTrigger>
                 <TabsTrigger value="installed" className="flex items-center gap-1">
                   <Server className="h-4 w-4" />
                   <span>Installed Servers</span>
                   <Badge variant="outline" className="ml-1 text-xs">{existingInstances.length}</Badge>
                 </TabsTrigger>
-                <TabsTrigger value="discovery" className="flex items-center gap-1">
-                  <ExternalLink className="h-4 w-4" />
-                  <span>Discovery</span>
-                </TabsTrigger>
               </TabsList>
               
-              <TabsContent value="installed" className="mt-4 space-y-4">
-                {isSearching && (
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Showing results for "{searchQuery}"
-                  </p>
-                )}
-                
-                {filteredExistingInstances.length > 0 ? (
-                  <ScrollArea className="max-h-[350px] overflow-auto pr-2">
-                    <div className="space-y-2">
-                      {filteredExistingInstances.map((instance) => (
-                        <div
-                          key={instance.id}
-                          className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
-                        >
-                          <div className="flex items-start space-x-4">
-                            <div className="relative">
-                              <ServerLogo name={instance.name} className="flex-shrink-0" />
-                              {installedServers[instance.id] && (
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
-                                        <CheckCircle className="h-4 w-4 text-blue-600" />
-                                      </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Server already added</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <h4 className="font-medium text-sm truncate">{instance.name}</h4>
-                                <EndpointLabel 
-                                  type={serverDefinitions.find(def => def.id === instance.definitionId)?.type || 'Custom'} 
-                                />
-                              </div>
-                              <div className="text-xs text-muted-foreground mt-1">
-                                <div className="flex flex-col space-y-1">
-                                  {instance.description && (
-                                    <span>{instance.description}</span>
-                                  )}
-                                  {instance.addedAt && (
-                                    <span className="flex items-center">
-                                      <Clock className="h-3 w-3 mr-1" /> 
-                                      Added on {format(instance.addedAt, "MMM dd, yyyy")}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <Button 
-                            size="sm" 
-                            variant={installedServers[instance.id] ? "outline" : "secondary"}
-                            onClick={() => handleAddExistingInstance(instance)}
-                          >
-                            {installedServers[instance.id] ? "Re-add" : "Add"}
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                ) : (
-                  <div className="text-center py-8 border border-dashed rounded-md">
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {isSearching 
-                        ? `No installed servers found matching "${searchQuery}"` 
-                        : "No installed servers found"}
-                    </p>
-                    <Button 
-                      variant="link" 
-                      className="p-0 h-auto text-primary"
-                      onClick={() => setActiveTab("discovery")}
-                    >
-                      Switch to Discovery to find new servers
-                    </Button>
-                  </div>
-                )}
-              </TabsContent>
-              
+              {/* Discovery Tab Content - Now First */}
               <TabsContent value="discovery" className="mt-4 space-y-4">
                 {isSearching ? (
                   <>
@@ -343,7 +260,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2">
                                     <h4 className="font-medium text-sm truncate">{server.name}</h4>
-                                    <EndpointLabel type={server.type} />
+                                    <EndpointLabel type={server.type as EndpointType | 'Custom'} />
                                   </div>
                                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                                     {server.description}
@@ -394,6 +311,91 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Browse Discovery
+                    </Button>
+                  </div>
+                )}
+              </TabsContent>
+              
+              {/* Installed Servers Tab Content - Now Second */}
+              <TabsContent value="installed" className="mt-4 space-y-4">
+                {isSearching && (
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Showing results for "{searchQuery}"
+                  </p>
+                )}
+                
+                {filteredExistingInstances.length > 0 ? (
+                  <ScrollArea className="max-h-[350px] overflow-auto pr-2">
+                    <div className="space-y-2">
+                      {filteredExistingInstances.map((instance) => (
+                        <div
+                          key={instance.id}
+                          className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                        >
+                          <div className="flex items-start space-x-4">
+                            <div className="relative">
+                              <ServerLogo name={instance.name} className="flex-shrink-0" />
+                              {installedServers[instance.id] && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                                        <CheckCircle className="h-4 w-4 text-blue-600" />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Server already added</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium text-sm truncate">{instance.name}</h4>
+                                <EndpointLabel 
+                                  type={serverDefinitions.find(def => def.id === instance.definitionId)?.type || 'Custom' as EndpointType | 'Custom'} 
+                                />
+                              </div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                <div className="flex flex-col space-y-1">
+                                  {instance.description && (
+                                    <span>{instance.description}</span>
+                                  )}
+                                  {instance.addedAt && (
+                                    <span className="flex items-center">
+                                      <Clock className="h-3 w-3 mr-1" /> 
+                                      Added on {format(instance.addedAt, "MMM dd, yyyy")}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant={installedServers[instance.id] ? "outline" : "secondary"}
+                            onClick={() => handleAddExistingInstance(instance)}
+                          >
+                            {installedServers[instance.id] ? "Re-add" : "Add"}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                ) : (
+                  <div className="text-center py-8 border border-dashed rounded-md">
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {isSearching 
+                        ? `No installed servers found matching "${searchQuery}"` 
+                        : "No installed servers found"}
+                    </p>
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto text-primary"
+                      onClick={() => setActiveTab("discovery")}
+                    >
+                      Switch to Discovery to find new servers
                     </Button>
                   </div>
                 )}
