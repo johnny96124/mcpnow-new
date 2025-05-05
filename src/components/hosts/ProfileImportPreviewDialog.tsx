@@ -1,6 +1,6 @@
 
-import React from "react";
-import { Server } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronDown, ChevronUp, Server } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Profile, ServerInstance } from "@/data/mockData";
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface ProfileImportPreviewDialogProps {
   open: boolean;
@@ -25,6 +26,14 @@ export const ProfileImportPreviewDialog: React.FC<ProfileImportPreviewDialogProp
   onConfirmImport
 }) => {
   const { toast } = useToast();
+  const [openConfigs, setOpenConfigs] = useState<Record<string, boolean>>({});
+
+  const toggleServerConfig = (serverId: string) => {
+    setOpenConfigs(prev => ({
+      ...prev,
+      [serverId]: !prev[serverId]
+    }));
+  };
 
   const handleConfirmImport = () => {
     onConfirmImport();
@@ -34,6 +43,54 @@ export const ProfileImportPreviewDialog: React.FC<ProfileImportPreviewDialogProp
       description: `${profile.name} and its servers have been added to your profiles`,
       type: "success"
     });
+  };
+
+  const getServerConfigDetails = (server: ServerInstance) => {
+    const details = [];
+    if (server.connectionDetails?.includes('http')) {
+      if ('url' in server) {
+        details.push({
+          name: "URL",
+          value: server.url as string
+        });
+      }
+    }
+    if ('headers' in server && server.headers) {
+      details.push({
+        name: "HTTP Headers",
+        value: server.headers as Record<string, string>
+      });
+    }
+    if ('arguments' in server && server.arguments && server.arguments.length > 0) {
+      details.push({
+        name: "Command Arguments",
+        value: server.arguments
+      });
+    }
+    if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
+      details.push({
+        name: "Environment Variables",
+        value: server.environment as Record<string, string>
+      });
+    }
+    return details;
+  };
+
+  const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
+    if (!value) return null;
+    if (typeof value === 'string') {
+      return <span className="font-mono text-sm bg-muted/80 p-1.5 rounded">{value}</span>;
+    }
+    if (Array.isArray(value)) {
+      return <div className="font-mono text-sm bg-muted/80 p-1.5 rounded">
+          {value.join(' ')}
+        </div>;
+    }
+    return <div className="space-y-2">
+        {Object.entries(value).map(([key, val]) => <div key={key} className="font-mono text-sm">
+            <span className="font-semibold text-foreground">{key}:</span> <span className="bg-muted/80 p-1 rounded">{val}</span>
+          </div>)}
+      </div>;
   };
 
   return (
@@ -68,13 +125,38 @@ export const ProfileImportPreviewDialog: React.FC<ProfileImportPreviewDialogProp
               <ScrollArea className="h-[240px]">
                 <div className="divide-y divide-border">
                   {servers.map((server) => (
-                    <div key={server.id} className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Server className="h-4 w-4 text-foreground" />
-                        <span className="font-medium text-foreground">{server.name}</span>
-                        <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+                    <Collapsible 
+                      key={server.id} 
+                      open={openConfigs[server.id]} 
+                      onOpenChange={() => toggleServerConfig(server.id)}
+                    >
+                      <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <Server className="h-4 w-4 text-foreground" />
+                          <span className="font-medium text-foreground">{server.name}</span>
+                          <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+                        </div>
+                        
+                        {getServerConfigDetails(server).length > 0 && (
+                          <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
+                              {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                            </Button>
+                          </CollapsibleTrigger>
+                        )}
                       </div>
-                    </div>
+                      
+                      <CollapsibleContent>
+                        <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
+                          {getServerConfigDetails(server).map((detail, index) => (
+                            <div key={index} className="grid gap-1.5">
+                              <div className="font-medium text-xs text-foreground capitalize">{detail.name}</div>
+                              {renderConfigValue(detail.value)}
+                            </div>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
                   ))}
                 </div>
               </ScrollArea>
