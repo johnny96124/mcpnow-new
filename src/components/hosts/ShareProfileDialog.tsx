@@ -10,16 +10,19 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
+
 interface ServerConfigDetail {
   name: string;
   value: string | string[] | Record<string, string> | undefined;
 }
+
 interface ShareProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   profile: Profile;
   servers: ServerInstance[];
 }
+
 export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   open,
   onOpenChange,
@@ -38,12 +41,14 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   useEffect(() => {
     setGeneratedLink(null);
   }, [shareMode]);
+
   const toggleServerConfig = (serverId: string) => {
     setOpenConfigs(prev => ({
       ...prev,
       [serverId]: !prev[serverId]
     }));
   };
+
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
 
@@ -68,6 +73,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }, 1000);
   };
+
   const handleCopyLink = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink);
@@ -78,6 +84,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }
   };
+
   const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
     const details: ServerConfigDetail[] = [];
     if (server.connectionDetails?.includes('http')) {
@@ -108,6 +115,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
     return details;
   };
+
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -124,6 +132,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           </div>)}
       </div>;
   };
+
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
         <DialogHeader className="pb-2">
@@ -158,54 +167,61 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </RadioGroup>
           </div>
           
-          
-          
-          {/* Profile Content Preview - Enhanced */}
+          {/* Profile Content Preview - Simplified */}
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="text-sm font-medium text-foreground/90 uppercase tracking-wide">
-                Profile Information
-              </h3>
-            </div>
-
-            <div className="bg-muted/30 p-3 rounded-lg border">
-              <div className="flex items-center justify-between">
-                <div className="font-medium text-primary bg-transparent">
-                  {profile.name}
-                </div>
-                <Badge variant="outline" className="bg-secondary/50">{servers.length} Server{servers.length !== 1 ? 's' : ''}</Badge>
-              </div>
-            </div>
-            
             <h3 className="text-sm font-medium text-foreground/90 uppercase tracking-wide">
-              Servers Configuration
+              Profile Details
             </h3>
             
-            <div className="border rounded-lg overflow-hidden shadow-sm">
-              {servers.map((server, index) => <Collapsible key={server.id} open={openConfigs[server.id]} onOpenChange={() => toggleServerConfig(server.id)} className={`${shareMode === "with-config" ? "" : "pointer-events-none"} ${index !== 0 ? "border-t" : ""}`}>
-                  <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <Server className="h-4 w-4 text-primary" />
-                      <span className="font-medium">{server.name}</span>
-                      <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+            <div className="rounded-lg border overflow-hidden shadow-sm">
+              {/* Profile name header */}
+              <div className="bg-muted/30 p-4 border-b">
+                <div className="flex items-center justify-between">
+                  <div className="font-medium text-lg text-primary">{profile.name}</div>
+                  <Badge variant="outline" className="bg-secondary/50">{servers.length} Server{servers.length !== 1 ? 's' : ''}</Badge>
+                </div>
+              </div>
+              
+              {/* Servers list */}
+              <div className="divide-y divide-border">
+                {servers.map((server, index) => (
+                  <Collapsible 
+                    key={server.id} 
+                    open={openConfigs[server.id]} 
+                    onOpenChange={() => toggleServerConfig(server.id)} 
+                    className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
+                  >
+                    <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <Server className="h-4 w-4 text-primary" />
+                        <span className="font-medium">{server.name}</span>
+                        <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+                      </div>
+                      
+                      {shareMode === "with-config" && getServerConfigDetails(server).length > 0 ? (
+                        <CollapsibleTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
+                            {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          </Button>
+                        </CollapsibleTrigger>
+                      ) : <div className="w-7 h-7"></div> /* Placeholder to maintain consistent spacing */}
                     </div>
                     
-                    {shareMode === "with-config" && getServerConfigDetails(server).length > 0 ? <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
-                          {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                        </Button>
-                      </CollapsibleTrigger> : <div className="w-7 h-7"></div> /* Placeholder to maintain consistent spacing */}
-                  </div>
-                  
-                  {shareMode === "with-config" && <CollapsibleContent>
-                      <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
-                        {getServerConfigDetails(server).map((detail, index) => <div key={index} className="grid gap-1.5">
-                            <div className="font-medium text-xs text-primary/70 uppercase tracking-wide">{detail.name}</div>
-                            {renderConfigValue(detail.value)}
-                          </div>)}
-                      </div>
-                    </CollapsibleContent>}
-                </Collapsible>)}
+                    {shareMode === "with-config" && (
+                      <CollapsibleContent>
+                        <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
+                          {getServerConfigDetails(server).map((detail, index) => (
+                            <div key={index} className="grid gap-1.5">
+                              <div className="font-medium text-xs text-primary/70 uppercase tracking-wide">{detail.name}</div>
+                              {renderConfigValue(detail.value)}
+                            </div>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    )}
+                  </Collapsible>
+                ))}
+              </div>
             </div>
           </div>
           
