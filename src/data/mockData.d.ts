@@ -1,4 +1,5 @@
 
+
 export interface ServerInstance {
   id: string;
   name: string;
@@ -50,3 +51,4 @@ export interface Host {
   address: string;
   servers: ServerInstance[];
 }
+
