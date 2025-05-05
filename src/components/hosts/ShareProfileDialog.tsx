@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -128,7 +129,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
     return <div className="space-y-2">
         {Object.entries(value).map(([key, val]) => <div key={key} className="font-mono text-sm">
-            <span className="font-semibold text-primary/80">{key}:</span> <span className="bg-muted/80 p-1 rounded">{val}</span>
+            <span className="font-semibold text-foreground">{key}:</span> <span className="bg-muted/80 p-1 rounded">{val}</span>
           </div>)}
       </div>;
   };
