@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -211,10 +212,17 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                         className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
                       >
                         <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
-                          <div className="flex items-center gap-3">
-                            <Server className="h-4 w-4 text-foreground" />
-                            <span className="font-medium text-foreground">{server.name}</span>
-                            <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-3">
+                              <Server className="h-4 w-4 text-foreground" />
+                              <span className="font-medium text-foreground">{server.name}</span>
+                              <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+                            </div>
+                            {server.description && (
+                              <p className="text-xs text-muted-foreground pl-7 pr-4">
+                                {server.description}
+                              </p>
+                            )}
                           </div>
                           
                           {shareMode === "with-config" && getServerConfigDetails(server).length > 0 ? (
