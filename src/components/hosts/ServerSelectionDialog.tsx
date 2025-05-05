@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useRef } from "react";
-import { Search, Clock, ExternalLink, Plus, X, Server, CheckCircle, Filter, Compass, Star } from "lucide-react";
+import { Search, Clock, ExternalLink, Plus, X, Server, CheckCircle, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -51,46 +52,6 @@ const existingInstances: EnhancedServerInstance[] = [
   }
 ];
 
-// Recommended servers data
-const recommendedServers = [
-  {
-    id: "rec-1",
-    name: "MongoDB",
-    type: "HTTP_SSE",
-    description: "Popular NoSQL database with JSON-like document storage",
-    popularity: 4.8
-  },
-  {
-    id: "rec-2",
-    name: "Elasticsearch",
-    type: "HTTP_SSE",
-    description: "Distributed search and analytics engine",
-    popularity: 4.5
-  },
-  {
-    id: "rec-3",
-    name: "RabbitMQ",
-    type: "STDIO",
-    description: "Message broker that implements AMQP protocol",
-    popularity: 4.3
-  },
-  {
-    id: "rec-4",
-    name: "MySQL",
-    type: "HTTP_SSE", 
-    description: "Open-source relational database management system",
-    popularity: 4.7
-  }
-];
-
-// Categories for discovery
-const serverCategories = [
-  { id: "databases", name: "Databases", count: 12 },
-  { id: "messaging", name: "Messaging", count: 8 },
-  { id: "cache", name: "Cache", count: 5 },
-  { id: "apis", name: "APIs & Services", count: 14 }
-];
-
 export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   open,
   onOpenChange,
@@ -118,14 +79,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
         server.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : []; // Only show when searching
     
-  // Filtered results for recommended servers
-  const filteredRecommendedServers = searchQuery
-    ? recommendedServers.filter(server =>
-        server.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        server.description.toLowerCase().includes(searchQuery.toLowerCase()))
-    : recommendedServers; // Show all recommendations when no search
-    
-  const hasSearchResults = filteredExistingInstances.length > 0 || filteredServerDefinitions.length > 0 || filteredRecommendedServers.length > 0;
+  const hasSearchResults = filteredExistingInstances.length > 0 || filteredServerDefinitions.length > 0;
   const showNoResults = isSearching && !hasSearchResults;
   
   // Mock data for installed servers tracking 
@@ -174,21 +128,6 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   // Handle discovery server setup
   const handleSetupServer = (server: ServerDefinition) => {
     setSelectedServer(server);
-    setShowInstanceDialog(true);
-  };
-
-  // Handle server setup from recommendations
-  const handleSetupRecommendedServer = (server: any) => {
-    // Create a server definition from recommendation
-    const serverDef = {
-      id: server.id,
-      name: server.name,
-      type: server.type,
-      description: server.description,
-      iconUrl: "",
-      categories: []
-    };
-    setSelectedServer(serverDef);
     setShowInstanceDialog(true);
   };
 
@@ -283,7 +222,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                   <Badge variant="outline" className="ml-1 text-xs">{existingInstances.length}</Badge>
                 </TabsTrigger>
                 <TabsTrigger value="discovery" className="flex items-center gap-1">
-                  <Compass className="h-4 w-4" />
+                  <ExternalLink className="h-4 w-4" />
                   <span>Discovery</span>
                 </TabsTrigger>
               </TabsList>
@@ -325,9 +264,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                               <div className="flex items-center gap-2">
                                 <h4 className="font-medium text-sm truncate">{instance.name}</h4>
                                 <EndpointLabel 
-                                  type={
-                                    serverDefinitions.find(def => def.id === instance.definitionId)?.type || 'Custom' as 'Custom'
-                                  } 
+                                  type={serverDefinitions.find(def => def.id === instance.definitionId)?.type || 'Custom'} 
                                 />
                               </div>
                               <div className="text-xs text-muted-foreground mt-1">
@@ -377,109 +314,51 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
               <TabsContent value="discovery" className="mt-4 space-y-4">
                 {isSearching ? (
                   <>
-                    {(filteredServerDefinitions.length > 0 || filteredRecommendedServers.length > 0) ? (
+                    {filteredServerDefinitions.length > 0 ? (
                       <ScrollArea className="max-h-[350px] overflow-auto pr-2">
-                        <p className="text-sm text-muted-foreground mb-2">
-                          Showing results for "{searchQuery}"
-                        </p>
-
-                        {filteredRecommendedServers.length > 0 && (
-                          <div className="mb-4">
-                            <h3 className="text-sm font-semibold mb-2">Recommended Servers</h3>
-                            <div className="space-y-2">
-                              {filteredRecommendedServers.map((server) => (
-                                <div
-                                  key={server.id}
-                                  className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
-                                >
-                                  <div className="flex items-start space-x-4">
-                                    <div className="relative">
-                                      <ServerLogo name={server.name} className="flex-shrink-0" />
-                                      {installedServers[server.id] && (
-                                        <TooltipProvider>
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
-                                                <CheckCircle className="h-4 w-4 text-blue-600" />
-                                              </div>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                              <p>Server already added</p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        </TooltipProvider>
-                                      )}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-2">
-                                        <h4 className="font-medium text-sm truncate">{server.name}</h4>
-                                        <EndpointLabel type={server.type as 'HTTP_SSE' | 'STDIO' | 'WS' | 'Custom'} />
-                                      </div>
-                                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                        {server.description}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <Button 
-                                    size="sm"
-                                    onClick={() => handleSetupRecommendedServer(server)}
-                                  >
-                                    Setup
-                                  </Button>
+                        <div className="space-y-2">
+                          {filteredServerDefinitions.map((server) => (
+                            <div
+                              key={server.id}
+                              className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                            >
+                              <div className="flex items-start space-x-4">
+                                <div className="relative">
+                                  <ServerLogo name={server.name} className="flex-shrink-0" />
+                                  {installedServers[server.id] && (
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
+                                            <CheckCircle className="h-4 w-4 text-blue-600" />
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Server already added</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  )}
                                 </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        {filteredServerDefinitions.length > 0 && (
-                          <div>
-                            <h3 className="text-sm font-semibold mb-2">All Results</h3>
-                            <div className="space-y-2">
-                              {filteredServerDefinitions.map((server) => (
-                                <div
-                                  key={server.id}
-                                  className="flex items-start justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
-                                >
-                                  <div className="flex items-start space-x-4">
-                                    <div className="relative">
-                                      <ServerLogo name={server.name} className="flex-shrink-0" />
-                                      {installedServers[server.id] && (
-                                        <TooltipProvider>
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <div className="absolute -top-1 -right-1 bg-blue-100 border border-blue-200 rounded-full p-0.5 shadow-sm">
-                                                <CheckCircle className="h-4 w-4 text-blue-600" />
-                                              </div>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                              <p>Server already added</p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        </TooltipProvider>
-                                      )}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className="flex items-center gap-2">
-                                        <h4 className="font-medium text-sm truncate">{server.name}</h4>
-                                        <EndpointLabel type={server.type} />
-                                      </div>
-                                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                        {server.description}
-                                      </p>
-                                    </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <h4 className="font-medium text-sm truncate">{server.name}</h4>
+                                    <EndpointLabel type={server.type} />
                                   </div>
-                                  <Button 
-                                    size="sm"
-                                    onClick={() => handleSetupServer(server)}
-                                  >
-                                    Setup
-                                  </Button>
+                                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                    {server.description}
+                                  </p>
                                 </div>
-                              ))}
+                              </div>
+                              <Button 
+                                size="sm"
+                                onClick={() => handleSetupServer(server)}
+                              >
+                                Setup
+                              </Button>
                             </div>
-                          </div>
-                        )}
+                          ))}
+                        </div>
                       </ScrollArea>
                     ) : (
                       <div className="text-center py-8 border border-dashed rounded-md">
@@ -498,90 +377,24 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                     )}
                   </>
                 ) : (
-                  <div className="space-y-6">
-                    {/* Recommended servers section */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-semibold flex items-center">
-                          <Star className="h-4 w-4 mr-1.5 text-amber-500" />
-                          Recommended Servers
-                        </h3>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleNavigateToDiscovery()}
-                          className="text-xs h-7"
-                        >
-                          View All
-                        </Button>
-                      </div>
-                      
-                      <ScrollArea className="max-h-[220px] overflow-auto pr-2">
-                        <div className="grid gap-2">
-                          {recommendedServers.map((server) => (
-                            <div
-                              key={server.id}
-                              className="flex items-start justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
-                            >
-                              <div className="flex items-start space-x-3">
-                                <ServerLogo name={server.name} className="h-8 w-8 flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <h4 className="font-medium text-sm truncate">{server.name}</h4>
-                                    <EndpointLabel type={server.type} className="text-xs" />
-                                  </div>
-                                  <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
-                                    {server.description}
-                                  </p>
-                                </div>
-                              </div>
-                              <Button 
-                                size="sm" 
-                                variant="outline"
-                                className="h-7"
-                                onClick={() => handleSetupRecommendedServer(server)}
-                              >
-                                Setup
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </ScrollArea>
+                  <div className="p-6 border border-dashed rounded-md text-center space-y-4">
+                    <div className="mx-auto bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center">
+                      <Search className="h-6 w-6 text-primary" />
                     </div>
-                    
-                    {/* Categories section */}
-                    <div className="space-y-3">
-                      <h3 className="text-sm font-semibold">Categories</h3>
-                      <div className="grid grid-cols-2 gap-2">
-                        {serverCategories.map((category) => (
-                          <div 
-                            key={category.id}
-                            className="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-accent/50 transition-colors"
-                            onClick={() => {
-                              setSearchQuery(category.name);
-                              setIsSearching(true);
-                            }}
-                          >
-                            <span className="font-medium text-sm">{category.name}</span>
-                            <Badge variant="secondary" className="text-xs">
-                              {category.count}
-                            </Badge>
-                          </div>
-                        ))}
-                      </div>
+                    <div>
+                      <h4 className="font-medium">Search for servers to discover</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Type in the search box above to find servers in our discovery catalog
+                      </p>
                     </div>
-                    
-                    <div className="p-4 border border-dashed rounded-md bg-muted/50 text-center">
-                      <p className="text-sm mb-3">Search for specific servers or browse the discovery catalog</p>
-                      <Button
-                        variant="outline"
-                        onClick={handleNavigateToDiscovery}
-                        className="text-primary"
-                      >
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Browse Full Discovery Catalog
-                      </Button>
-                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={handleNavigateToDiscovery}
+                      className="mt-2"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" />
+                      Browse Discovery
+                    </Button>
                   </div>
                 )}
               </TabsContent>
