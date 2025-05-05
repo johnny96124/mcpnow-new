@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -147,7 +148,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         <div className="space-y-6 pt-3">
           {/* Share Mode Selection - Enhanced Radio Group */}
           <div className="space-y-3">
-            <h3 className="text-sm font-medium text-foreground/90 uppercase tracking-wide">Sharing Options</h3>
+            <h3 className="text-sm font-medium text-foreground/90 capitalize">Sharing Options</h3>
             <RadioGroup value={shareMode} onValueChange={value => setShareMode(value as "with-config" | "without-config")} className="flex flex-col space-y-3">
               <div className={`flex items-center space-x-3 rounded-md border p-3.5 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "with-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("with-config")}>
                 <RadioGroupItem value="with-config" id="with-config" className="border-primary/70" />
@@ -169,7 +170,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           
           {/* Profile Content Preview - Simplified */}
           <div className="space-y-4">
-            <h3 className="text-sm font-medium text-foreground/90 uppercase tracking-wide">
+            <h3 className="text-sm font-medium text-foreground/90 capitalize">
               Profile Details
             </h3>
             
@@ -212,7 +213,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                         <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
                           {getServerConfigDetails(server).map((detail, index) => (
                             <div key={index} className="grid gap-1.5">
-                              <div className="font-medium text-xs text-primary/70 uppercase tracking-wide">{detail.name}</div>
+                              <div className="font-medium text-xs text-primary/70 capitalize">{detail.name}</div>
                               {renderConfigValue(detail.value)}
                             </div>
                           ))}
@@ -259,3 +260,4 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       </DialogContent>
     </Dialog>;
 };
+
