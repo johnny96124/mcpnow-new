@@ -3,7 +3,7 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
 import { ServerProvider } from "@/context/ServerContext";
 import DefaultLayout from "@/layouts/DefaultLayout";
 import Dashboard from "@/pages/Dashboard";
@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import TrayPopup from "./pages/TrayPopup";
 import NewUserTrayPopup from "./pages/NewUserTrayPopup";
 import HostsNewUser from "./pages/HostsNewUser";
+import Introduction3 from "./pages/Introduction-3";
 
 function App() {
   const queryClient = new QueryClient();
@@ -29,11 +30,23 @@ function App() {
           <RouterProvider router={createBrowserRouter([
             {
               path: "/",
+              element: <DefaultLayout><Hosts /></DefaultLayout>
+            },
+            {
+              path: "/index",
+              element: <Navigate to="/" replace />
+            },
+            {
+              path: "/introduction-3",
+              element: <Introduction3 />
+            },
+            {
+              path: "/dashboard",
               element: <DefaultLayout><Dashboard /></DefaultLayout>
             },
             {
               path: "/hosts",
-              element: <DefaultLayout><Hosts /></DefaultLayout>
+              element: <Navigate to="/" replace />
             },
             {
               path: "/hosts-new-user",

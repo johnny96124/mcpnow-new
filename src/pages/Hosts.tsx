@@ -146,11 +146,33 @@ const Hosts = () => {
     } : server));
   };
   
-  const handleSaveProfileChanges = () => {
-    toast({
-      title: "Profile Saved",
-      description: "Changes to profile have been saved."
-    });
+  const handleSaveProfileChanges = (serverId?: string) => {
+    // This function is called when changes are made to profiles
+    // For example, when servers are added or removed
+    
+    // Now we can actually update the profiles list to remove the server if needed
+    if (selectedProfileId && selectedHost) {
+      const selectedProfile = profilesList.find(p => p.id === selectedProfileId);
+      if (selectedProfile) {
+        // If we have a serverId, remove it from the profile
+        if (serverId) {
+          setProfilesList(prev => prev.map(profile => {
+            if (profile.id === selectedProfileId) {
+              return {
+                ...profile,
+                instances: profile.instances.filter(id => id !== serverId)
+              };
+            }
+            return profile;
+          }));
+        }
+        
+        toast({
+          title: "Profile Saved",
+          description: "Changes to profile have been saved."
+        });
+      }
+    }
   };
   
   const handleProfileChange = (profileId: string) => {
@@ -257,6 +279,20 @@ const Hosts = () => {
       });
     }
   };
+  
+  const handleRemoveServerFromProfile = (serverId: string) => {
+    if (selectedProfileId) {
+      setProfilesList(prev => prev.map(profile => {
+        if (profile.id === selectedProfileId) {
+          return {
+            ...profile,
+            instances: profile.instances.filter(id => id !== serverId)
+          };
+        }
+        return profile;
+      }));
+    }
+  };
 
   const handleCompleteOnboarding = () => {
     setHasSeenOnboarding(true);
@@ -265,6 +301,44 @@ const Hosts = () => {
   // Updated this function to be used when clicking the "Add your First Host" button
   const handleOpenAddHostDialog = () => {
     setUnifiedHostDialogOpen(true);
+  };
+
+  // New function to handle imported profiles
+  const handleImportProfile = (profile: Profile) => {
+    // Add the imported profile to the profiles list
+    setProfilesList(prev => {
+      // Check if profile with same ID already exists
+      if (prev.some(p => p.id === profile.id)) {
+        // Create a new ID to avoid conflicts
+        profile.id = `imported-${Date.now()}`;
+      }
+      return [...prev, profile];
+    });
+    
+    // If there's a selected host, assign the imported profile to it
+    if (selectedHost) {
+      updateProfileInHook(selectedHost.id, profile.id);
+      
+      // Mock adding the servers from the imported profile
+      // In a real implementation, this would fetch the actual servers
+      const mockImportedServers: ServerInstance[] = profile.instances.map(id => ({
+        id,
+        name: `Imported ${id}`,
+        definitionId: "imported-def",
+        status: "stopped",
+        connectionDetails: "HTTP_SSE",
+        enabled: true // Adding the required 'enabled' property that was missing
+      }));
+      
+      if (mockImportedServers.length > 0) {
+        setServerInstances(prev => {
+          const newServers = mockImportedServers.filter(
+            server => !prev.some(s => s.id === server.id)
+          );
+          return [...prev, ...newServers];
+        });
+      }
+    }
   };
 
   // Render appropriate content based on state
@@ -292,10 +366,6 @@ const Hosts = () => {
             Manage your hosts, profiles, and servers to efficiently configure your MCP environment
           </p>
         </div>
-        <Button onClick={handleOpenAddHostDialog}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Host
-        </Button>
       </div>
       
       {/* Removed search input section */}
@@ -317,18 +387,20 @@ const Hosts = () => {
                       </div>
                       <div>
                         <p className="font-medium text-sm">{host.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {host.connectionStatus === "connected" 
-                            ? "Connected" 
-                            : "Disconnected"}
-                        </p>
+                        <div className="flex items-center gap-1.5">
+                          <div className={`w-2 h-2 rounded-full ${
+                            host.connectionStatus === "connected" 
+                              ? 'bg-green-500' 
+                              : 'bg-neutral-400'
+                          }`} />
+                          <p className="text-xs text-muted-foreground">
+                            {host.connectionStatus === "connected" 
+                              ? "Connected" 
+                              : "Disconnected"}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    <div className={`w-3 h-3 rounded-full ${
-                      host.connectionStatus === "connected" 
-                        ? 'bg-green-500' 
-                        : 'bg-neutral-400'
-                    }`} />
                   </CardContent>
                 </Card>
               ))}
@@ -370,6 +442,7 @@ const Hosts = () => {
               onCreateProfile={handleCreateProfile}
               onDeleteProfile={handleDeleteProfile}
               onAddServersToProfile={handleAddServersToProfile}
+              onImportProfile={handleImportProfile}
             />
           ) : (
             <div className="border border-dashed rounded-md p-8 text-center space-y-3">

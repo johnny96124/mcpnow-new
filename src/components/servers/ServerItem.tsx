@@ -1,7 +1,6 @@
 
 import React, { useState } from "react";
 import { ServerInstance, ConnectionStatus, serverDefinitions } from "@/data/mockData";
-import { StatusIndicator } from "@/components/status/StatusIndicator";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { ServerErrorDialog } from "@/components/hosts/ServerErrorDialog";
 import { ServerDetailsDialog } from "@/components/hosts/ServerDetailsDialog";
 import { AddInstanceDialog } from "./AddInstanceDialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface ServerItemProps {
   server: ServerInstance;
@@ -89,7 +89,7 @@ export const ServerItem: React.FC<ServerItemProps> = ({
         <EndpointLabel type={definition?.type || "STDIO"} />
       </td>
       <td className="p-4 align-middle">
-        <StatusIndicator status={server.status === "running" ? "active" : server.status === "error" ? "error" : server.status === "connecting" ? "warning" : "inactive"} label={server.status} />
+        {server.status}
       </td>
       <td className="p-4 align-middle text-center">
         <Switch checked={server.status === 'running'} onCheckedChange={enabled => onStatusChange(server.id, enabled)} disabled={isDisabled} />
