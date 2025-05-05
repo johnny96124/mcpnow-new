@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -11,19 +10,16 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
-
 interface ServerConfigDetail {
   name: string;
   value: string | string[] | Record<string, string> | undefined;
 }
-
 interface ShareProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   profile: Profile;
   servers: ServerInstance[];
 }
-
 export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   open,
   onOpenChange,
@@ -42,14 +38,12 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   useEffect(() => {
     setGeneratedLink(null);
   }, [shareMode]);
-
   const toggleServerConfig = (serverId: string) => {
     setOpenConfigs(prev => ({
       ...prev,
       [serverId]: !prev[serverId]
     }));
   };
-
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
 
@@ -74,7 +68,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }, 1000);
   };
-
   const handleCopyLink = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink);
@@ -85,7 +78,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }
   };
-
   const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
     const details: ServerConfigDetail[] = [];
     if (server.connectionDetails?.includes('http')) {
@@ -116,7 +108,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
     return details;
   };
-
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -133,11 +124,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           </div>)}
       </div>;
   };
-
   return <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
         <DialogHeader className="pb-2">
-          <DialogTitle className="flex items-center gap-2 text-xl text-primary">
+          <DialogTitle className="flex items-center gap-2 text-xl text-slate-950">
             <Share2 className="h-5 w-5" /> Share Profile
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
@@ -149,7 +139,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           {/* Share Mode Selection - Enhanced Radio Group */}
           <div className="space-y-3">
             <h3 className="text-sm font-medium text-foreground/90 uppercase tracking-wide">Sharing Options</h3>
-            <RadioGroup value={shareMode} onValueChange={(value) => setShareMode(value as "with-config" | "without-config")} className="flex flex-col space-y-3">
+            <RadioGroup value={shareMode} onValueChange={value => setShareMode(value as "with-config" | "without-config")} className="flex flex-col space-y-3">
               <div className={`flex items-center space-x-3 rounded-md border p-3.5 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "with-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("with-config")}>
                 <RadioGroupItem value="with-config" id="with-config" className="border-primary/70" />
                 <Label htmlFor="with-config" className="flex-1 cursor-pointer">
@@ -180,7 +170,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
 
             <div className="bg-muted/30 p-3 rounded-lg border">
               <div className="flex items-center justify-between">
-                <div className="font-medium text-primary">
+                <div className="font-medium text-primary bg-transparent">
                   {profile.name}
                 </div>
                 <Badge variant="outline" className="bg-secondary/50">{servers.length} Server{servers.length !== 1 ? 's' : ''}</Badge>
@@ -192,47 +182,30 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </h3>
             
             <div className="border rounded-lg overflow-hidden shadow-sm">
-              {servers.map((server, index) => (
-                <Collapsible 
-                  key={server.id} 
-                  open={openConfigs[server.id]} 
-                  onOpenChange={() => toggleServerConfig(server.id)} 
-                  className={`${shareMode === "with-config" ? "" : "pointer-events-none"} ${index !== 0 ? "border-t" : ""}`}
-                >
+              {servers.map((server, index) => <Collapsible key={server.id} open={openConfigs[server.id]} onOpenChange={() => toggleServerConfig(server.id)} className={`${shareMode === "with-config" ? "" : "pointer-events-none"} ${index !== 0 ? "border-t" : ""}`}>
                   <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
                     <div className="flex items-center gap-3">
                       <Server className="h-4 w-4 text-primary" />
                       <span className="font-medium">{server.name}</span>
-                      <EndpointLabel 
-                        type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'}
-                      />
+                      <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
                     </div>
                     
-                    {(shareMode === "with-config" && getServerConfigDetails(server).length > 0) ? (
-                      <CollapsibleTrigger asChild>
+                    {shareMode === "with-config" && getServerConfigDetails(server).length > 0 ? <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
                           {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                         </Button>
-                      </CollapsibleTrigger>
-                    ) : (
-                      <div className="w-7 h-7"></div> /* Placeholder to maintain consistent spacing */
-                    )}
+                      </CollapsibleTrigger> : <div className="w-7 h-7"></div> /* Placeholder to maintain consistent spacing */}
                   </div>
                   
-                  {shareMode === "with-config" && (
-                    <CollapsibleContent>
+                  {shareMode === "with-config" && <CollapsibleContent>
                       <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
-                        {getServerConfigDetails(server).map((detail, index) => (
-                          <div key={index} className="grid gap-1.5">
+                        {getServerConfigDetails(server).map((detail, index) => <div key={index} className="grid gap-1.5">
                             <div className="font-medium text-xs text-primary/70 uppercase tracking-wide">{detail.name}</div>
                             {renderConfigValue(detail.value)}
-                          </div>
-                        ))}
+                          </div>)}
                       </div>
-                    </CollapsibleContent>
-                  )}
-                </Collapsible>
-              ))}
+                    </CollapsibleContent>}
+                </Collapsible>)}
             </div>
           </div>
           
@@ -240,17 +213,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           
           {/* Generate Link and Share Actions - Enhanced */}
           <div className="space-y-4">
-            {!generatedLink ? (
-              <Button 
-                onClick={handleGenerateLink} 
-                className="w-full py-5 font-medium transition-all" 
-                disabled={isGeneratingLink}
-              >
+            {!generatedLink ? <Button onClick={handleGenerateLink} className="w-full py-5 font-medium transition-all" disabled={isGeneratingLink}>
                 <Upload className="h-4 w-4 mr-2" />
                 {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
-              </Button>
-            ) : (
-              <div className="space-y-4">
+              </Button> : <div className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-medium text-foreground/90">Shareable Link 
@@ -267,16 +233,11 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   </div>
                 </div>
                 
-                <Button 
-                  onClick={handleCopyLink} 
-                  variant="default" 
-                  className="w-full py-5 font-medium hover:shadow-md transition-all"
-                >
+                <Button onClick={handleCopyLink} variant="default" className="w-full py-5 font-medium hover:shadow-md transition-all">
                   <Copy className="h-4 w-4 mr-2" />
                   Copy Link
                 </Button>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </DialogContent>
