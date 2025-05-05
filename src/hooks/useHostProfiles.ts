@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { hosts, profiles, type Profile } from "@/data/mockData";
+import { hosts, profiles, type Profile, type Host, type ConnectionStatus } from "@/data/mockData";
 
 export function useHostProfiles() {
   const [hostProfiles, setHostProfiles] = useState(
@@ -46,11 +46,16 @@ export function useHostProfiles() {
     return null;
   }, [getProfileById]);
   
-  const getAvailableHosts = useCallback(() => {
+  const getAvailableHosts = useCallback((): Host[] => {
+    // Map hosts to include all required properties with proper typing
     return hosts.map(host => ({
       id: host.id,
       name: host.name,
-      status: host.connectionStatus || "disconnected"
+      connectionStatus: host.connectionStatus || "disconnected",
+      configStatus: (host.configStatus || "unconfigured") as "configured" | "misconfigured" | "unknown",
+      icon: host.icon,
+      profileId: host.profileId
+      // Removed the status property since it doesn't exist on the Host interface
     }));
   }, []);
   

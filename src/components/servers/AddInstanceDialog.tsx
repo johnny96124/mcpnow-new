@@ -1,16 +1,21 @@
-
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Info, Plus, Trash2, X } from "lucide-react";
+import { Info, Plus, Trash2, Check } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ServerDefinition } from "@/data/mockData";
+import { ServerDefinition, Host } from "@/data/mockData";
 import {
   Tooltip,
   TooltipContent,
@@ -21,15 +26,17 @@ import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface AddInstanceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   serverDefinition: ServerDefinition | null;
-  onCreateInstance: (data: InstanceFormValues) => void;
+  onCreateInstance: (data: InstanceFormValues, selectedHosts?: string[]) => void;
   editMode?: boolean;
   initialValues?: InstanceFormValues;
   instanceId?: string;
+  availableHosts?: Host[];
 }
 
 const instanceFormSchema = z.object({
@@ -50,17 +57,13 @@ export function AddInstanceDialog({
   onCreateInstance,
   editMode = false,
   initialValues,
-  instanceId
+  instanceId,
+  availableHosts = []
 }: AddInstanceDialogProps) {
-  // For STDIO type
   const [envFields, setEnvFields] = useState<{name: string; value: string}[]>([]);
-  
-  // For HTTP_SSE type
   const [headerFields, setHeaderFields] = useState<{name: string; value: string}[]>([]);
-
-  // For info box visibility
-  const [showInfoBox, setShowInfoBox] = useState<boolean>(true);
-
+  const [selectedHosts, setSelectedHosts] = useState<string[]>([]);
+  
   const form = useForm<InstanceFormValues>({
     resolver: zodResolver(instanceFormSchema),
     defaultValues: {
@@ -73,12 +76,10 @@ export function AddInstanceDialog({
     },
   });
 
-  // Effect to reset form when dialog opens
   useEffect(() => {
     if (open && serverDefinition) {
-      // Initialize the form with proper defaults based on server definition
       form.reset({
-        name: initialValues?.name || (serverDefinition ? `${serverDefinition.name} Instance` : ""),
+        name: initialValues?.name || (serverDefinition ? `${serverDefinition.name}` : ""),
         args: initialValues?.args || (serverDefinition?.type === 'STDIO' ? 
           serverDefinition?.commandArgs || `npx -y @smithery/cli@latest install @block/${serverDefinition?.type.toLowerCase()} --client ${serverDefinition?.name?.toLowerCase()} --key ad3dda05-c241-44f6-bcb8-283ef9149d88` 
           : ""),
@@ -88,16 +89,15 @@ export function AddInstanceDialog({
         instanceId: instanceId,
       });
       
-      // Initialize env fields based on initialValues if in edit mode
+      setSelectedHosts([]);
+      
       if (editMode && initialValues?.env) {
         const envEntries = Object.entries(initialValues.env);
         setEnvFields(envEntries.map(([name, value]) => ({ name, value: value.toString() })));
       } else if (serverDefinition?.type === 'STDIO') {
-        // Set default env fields for new STDIO instance based on server definition
         if (serverDefinition.environment && Object.keys(serverDefinition.environment).length > 0) {
           setEnvFields(Object.entries(serverDefinition.environment).map(([name, value]) => ({ name, value: value.toString() })));
         } else {
-          // Default env fields if no server definition environment
           setEnvFields([
             { name: "API_KEY", value: "" },
             { name: "MODEL_NAME", value: "" },
@@ -106,30 +106,23 @@ export function AddInstanceDialog({
         }
       }
       
-      // Initialize header fields based on initialValues if in edit mode
       if (editMode && initialValues?.headers) {
         const headerEntries = Object.entries(initialValues.headers);
         setHeaderFields(headerEntries.map(([name, value]) => ({ name, value: value.toString() })));
       } else if (serverDefinition?.type === 'HTTP_SSE') {
-        // Set default header fields for new HTTP_SSE instance based on server definition
         if (serverDefinition.headers && Object.keys(serverDefinition.headers).length > 0) {
           setHeaderFields(Object.entries(serverDefinition.headers).map(([name, value]) => ({ name, value: value.toString() })));
         } else {
-          // Default header fields if no server definition headers
           setHeaderFields([
             { name: "Authorization", value: "" },
             { name: "Content-Type", value: "application/json" },
           ]);
         }
       }
-      
-      // Reset info box visibility
-      setShowInfoBox(true);
     }
   }, [open, initialValues, serverDefinition, form, editMode, instanceId]);
 
   const onSubmit = (data: InstanceFormValues) => {
-    // Process environment variables for STDIO type
     if (serverDefinition?.type === 'STDIO') {
       const envData: Record<string, string> = {};
       
@@ -142,7 +135,6 @@ export function AddInstanceDialog({
       data.env = envData;
     }
     
-    // Process HTTP headers for HTTP_SSE type
     if (serverDefinition?.type === 'HTTP_SSE') {
       const headerData: Record<string, string> = {};
       
@@ -156,7 +148,7 @@ export function AddInstanceDialog({
     }
     
     data.instanceId = instanceId; 
-    onCreateInstance(data);
+    onCreateInstance(data, selectedHosts);
     if (!editMode) form.reset();
   };
 
@@ -169,17 +161,23 @@ export function AddInstanceDialog({
   };
   
   const removeEnvField = (index: number) => {
-    // Allow removing any field now
     const newFields = [...envFields];
     newFields.splice(index, 1);
     setEnvFields(newFields);
   };
 
   const removeHeaderField = (index: number) => {
-    // Allow removing any field now
     const newFields = [...headerFields];
     newFields.splice(index, 1);
     setHeaderFields(newFields);
+  };
+
+  const toggleHostSelection = (hostId: string) => {
+    setSelectedHosts(prev => 
+      prev.includes(hostId)
+        ? prev.filter(id => id !== hostId)
+        : [...prev, hostId]
+    );
   };
 
   if (!serverDefinition) return null;
@@ -205,31 +203,6 @@ export function AddInstanceDialog({
           </DialogDescription>
         </DialogHeader>
         
-        {/* What is an Instance explanation box */}
-        {!editMode && showInfoBox && (
-          <Alert className="bg-blue-50 dark:bg-blue-950/30 rounded-md p-4 border border-blue-100 dark:border-blue-900 mb-4 relative">
-            <div className="flex gap-2 items-center">
-              <Info className="h-4 w-4 text-blue-500" />
-              <h3 className="font-medium text-blue-800 dark:text-blue-300">
-                What is an Instance?
-              </h3>
-            </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="absolute top-2 right-2 h-6 w-6 p-1 text-blue-600"
-              onClick={() => setShowInfoBox(false)}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-            <AlertDescription className="mt-2 text-sm text-blue-700 dark:text-blue-400">
-              An instance is a running copy of a server with specific configuration settings. 
-              You can create multiple instances of the same server type with different settings 
-              to serve different purposes or environments.
-            </AlertDescription>
-          </Alert>
-        )}
-        
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -238,7 +211,7 @@ export function AddInstanceDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center">
-                    Instance Name
+                    Name
                     <span className="text-destructive ml-1">*</span>
                     <TooltipProvider>
                       <Tooltip>
@@ -262,7 +235,6 @@ export function AddInstanceDialog({
             />
             
             {isStdio ? (
-              // STDIO specific fields
               <>
                 <FormField
                   control={form.control}
@@ -376,7 +348,6 @@ export function AddInstanceDialog({
                 </div>
               </>
             ) : (
-              // HTTP_SSE specific fields
               <>
                 <FormField
                   control={form.control}
@@ -490,21 +461,68 @@ export function AddInstanceDialog({
               </>
             )}
             
+            {!editMode && availableHosts.length > 0 && (
+              <>
+                <Separator className="my-2" />
+                
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium flex items-center">
+                    Add to Hosts (Optional)
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="ml-1 cursor-help">
+                            <Info className="h-4 w-4 text-muted-foreground" />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Add this server to selected hosts immediately after creation</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </h4>
+                  
+                  <div className="max-h-[150px] overflow-y-auto border rounded-md p-3 space-y-2">
+                    {availableHosts.map((host) => (
+                      <div key={host.id} className="flex items-center space-x-2">
+                        <Checkbox 
+                          id={`host-${host.id}`} 
+                          checked={selectedHosts.includes(host.id)}
+                          onCheckedChange={() => toggleHostSelection(host.id)}
+                        />
+                        <label
+                          htmlFor={`host-${host.id}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center"
+                        >
+                          <span className="mr-2">{host.icon || '🖥️'}</span>
+                          {host.name}
+                          <Badge variant="outline" className="ml-2 text-xs">
+                            {host.connectionStatus === "connected" ? "Connected" : "Disconnected"}
+                          </Badge>
+                        </label>
+                      </div>
+                    ))}
+                    {availableHosts.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-2">
+                        No available hosts. You can add hosts in the Hosts page.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+            
             <DialogFooter className="flex justify-between">
               <Button 
                 type="button" 
                 variant="ghost" 
                 onClick={() => onOpenChange(false)}
               >
-                Skip
+                Cancel
               </Button>
-              <div className="flex gap-2">
-                <Button 
-                  type="submit"
-                >
-                  {editMode ? "Save Changes" : "Create Instance"}
-                </Button>
-              </div>
+              <Button type="submit">
+                {editMode ? "Save Changes" : "Add"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
