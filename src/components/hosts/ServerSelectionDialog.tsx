@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Search, Clock, ExternalLink, Plus, X, Server, CheckCircle, Filter, Compass, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -326,7 +325,9 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                               <div className="flex items-center gap-2">
                                 <h4 className="font-medium text-sm truncate">{instance.name}</h4>
                                 <EndpointLabel 
-                                  type={serverDefinitions.find(def => def.id === instance.definitionId)?.type || 'Custom'} 
+                                  type={
+                                    serverDefinitions.find(def => def.id === instance.definitionId)?.type || 'Custom' as 'Custom'
+                                  } 
                                 />
                               </div>
                               <div className="text-xs text-muted-foreground mt-1">
@@ -412,7 +413,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-center gap-2">
                                         <h4 className="font-medium text-sm truncate">{server.name}</h4>
-                                        <EndpointLabel type={server.type} />
+                                        <EndpointLabel type={server.type as 'HTTP_SSE' | 'STDIO' | 'WS' | 'Custom'} />
                                       </div>
                                       <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                                         {server.description}
