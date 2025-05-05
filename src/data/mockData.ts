@@ -47,6 +47,7 @@ export interface ServerInstance {
   environment?: Record<string, string>;
   arguments?: string[];
   requestCount?: number;
+  description?: string;
 }
 
 export interface Profile {
@@ -482,7 +483,8 @@ export const serverInstances: ServerInstance[] = [
     environment: {
       'DB_URL': 'postgresql://dev:password@localhost:5432/dev'
     },
-    requestCount: 124
+    requestCount: 124,
+    description: 'Development database server for local testing and development'
   },
   {
     id: 'postgres-prod',
@@ -494,7 +496,8 @@ export const serverInstances: ServerInstance[] = [
     environment: {
       'DB_URL': 'postgresql://prod:password@db.example.com:5432/prod'
     },
-    requestCount: 37
+    requestCount: 37,
+    description: 'Production database server with restricted access'
   },
   {
     id: 'github-copilot',
@@ -506,7 +509,8 @@ export const serverInstances: ServerInstance[] = [
     environment: {
       'GITHUB_TOKEN': 'github_pat_xxxxxxxxxxxx'
     },
-    requestCount: 892
+    requestCount: 892,
+    description: 'AI-powered code completion tool that integrates with your editor'
   },
   {
     id: 'local-files',
@@ -516,7 +520,8 @@ export const serverInstances: ServerInstance[] = [
     enabled: true,
     connectionDetails: '/usr/local/bin/file-assistant',
     arguments: ['--watch', '/home/user/projects'],
-    requestCount: 56
+    requestCount: 56,
+    description: 'Assists with local file operations including search, indexing and batch operations'
   },
   {
     id: 'code-assist-team1',
@@ -525,7 +530,8 @@ export const serverInstances: ServerInstance[] = [
     status: 'running',
     enabled: true,
     connectionDetails: 'http://localhost:8090/code-assist',
-    requestCount: 245
+    requestCount: 245,
+    description: 'Code completion and suggestions for Team1 projects'
   },
   {
     id: 'code-assist-team2',
@@ -534,7 +540,8 @@ export const serverInstances: ServerInstance[] = [
     status: 'error',
     enabled: true,
     connectionDetails: 'http://localhost:8091/code-assist',
-    requestCount: 178
+    requestCount: 178,
+    description: 'Code completion and suggestions for Team2 projects'
   },
   {
     id: 'code-assist-personal',
@@ -543,7 +550,8 @@ export const serverInstances: ServerInstance[] = [
     status: 'stopped',
     enabled: false,
     connectionDetails: 'http://localhost:8092/code-assist',
-    requestCount: 57
+    requestCount: 57,
+    description: 'Customized code assistance for personal projects'
   },
   {
     id: 'docker-tools-dev',
@@ -552,7 +560,8 @@ export const serverInstances: ServerInstance[] = [
     status: 'running',
     enabled: true,
     connectionDetails: '/usr/local/bin/docker-tools',
-    requestCount: 325
+    requestCount: 325,
+    description: 'Tools for managing Docker Compose environments in development'
   },
   {
     id: 'docker-tools-prod',
@@ -561,7 +570,8 @@ export const serverInstances: ServerInstance[] = [
     status: 'stopped',
     enabled: false,
     connectionDetails: '/usr/local/bin/docker-tools',
-    requestCount: 112
+    requestCount: 112,
+    description: 'Tools for managing Docker Compose environments in production'
   },
   {
     id: 'docker-tools-test',
@@ -570,7 +580,8 @@ export const serverInstances: ServerInstance[] = [
     status: 'running',
     enabled: true,
     connectionDetails: '/usr/local/bin/docker-tools',
-    requestCount: 204
+    requestCount: 204,
+    description: 'Tools for managing Docker Compose environments in testing'
   },
 ];
 
