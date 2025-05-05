@@ -7,9 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { ServerInstance, ServerDefinition } from "@/data/mockData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VersionHistoryDialog, VersionInfo } from "./VersionHistoryDialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ServerRequirementsSection } from "./ServerRequirementsSection";
-
 interface ShareServerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -167,9 +164,7 @@ export function ShareServerDialog({
 
   // Access version and requirements from the server data
   const version = 'version' in server ? server.version : '0.9.5';
-  
-  return (
-    <TooltipProvider>
+  return <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-xl md:max-w-2xl p-6">
           <DialogHeader className="mb-4">
@@ -184,16 +179,9 @@ export function ShareServerDialog({
             
             <div className="space-y-1 min-w-0 flex-grow">
               <h3 className="font-semibold text-lg">{server.name}</h3>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {description}
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs">
-                  <p className="text-xs">{description}</p>
-                </TooltipContent>
-              </Tooltip>
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {description}
+              </p>
               
               
             </div>
@@ -259,6 +247,5 @@ export function ShareServerDialog({
       </Dialog>
       
       <VersionHistoryDialog open={showVersionHistory} onOpenChange={setShowVersionHistory} serverName={server.name} versions={versionHistory} onInstallVersion={handleInstallVersion} />
-    </TooltipProvider>
-  );
+    </>;
 }

@@ -1,5 +1,4 @@
 
-
 export interface ServerInstance {
   id: string;
   name: string;
@@ -11,7 +10,6 @@ export interface ServerInstance {
   headers?: Record<string, string>;
   arguments?: string[];
   environment?: Record<string, string>;
-  description?: string; // Added description field
 }
 
 export interface ServerDefinition {
@@ -51,4 +49,3 @@ export interface Host {
   address: string;
   servers: ServerInstance[];
 }
-
