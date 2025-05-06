@@ -1,25 +1,23 @@
 
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogClose
-} from "@/components/ui/dialog";
+import React, { useState, useEffect } from "react";
+import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock, Eye } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Profile, ServerInstance } from "@/data/mockData";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ServerLogo } from "@/components/servers/ServerLogo";
+import { Profile, ServerInstance } from "@/data/mockData";
+import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ProfileImportPreviewDialog } from "./ProfileImportPreviewDialog";
+
+interface ServerConfigDetail {
+  name: string;
+  value: string | string[] | Record<string, string> | undefined;
+}
 
 interface ShareProfileDialogProps {
   open: boolean;
@@ -34,206 +32,280 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   profile,
   servers
 }) => {
-  const [shareType, setShareType] = useState<"basic" | "detailed">("basic");
-  const [copied, setCopied] = useState(false);
-  const [expandedServers, setExpandedServers] = useState<Record<string, boolean>>({});
-  const { toast } = useToast();
-  
-  const toggleServerExpansion = (serverId: string) => {
-    setExpandedServers(prev => ({
+  const [shareMode, setShareMode] = useState<"with-config" | "without-config">("with-config");
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [openConfigs, setOpenConfigs] = useState<Record<string, boolean>>({});
+  const [showImportPreview, setShowImportPreview] = useState(false);
+  const {
+    toast
+  } = useToast();
+
+  // Reset generated link when share mode changes
+  useEffect(() => {
+    setGeneratedLink(null);
+  }, [shareMode]);
+
+  const toggleServerConfig = (serverId: string) => {
+    setOpenConfigs(prev => ({
       ...prev,
       [serverId]: !prev[serverId]
     }));
   };
-  
-  const basicProfileJson = JSON.stringify(
-    {
-      profile: {
-        name: profile.name,
-        endpoint: profile.endpoint,
-        endpointType: profile.endpointType,
-        serverCount: servers.length
-      }
-    },
-    null,
-    2
-  );
-  
-  const detailedProfileJson = JSON.stringify(
-    {
-      profile: {
-        name: profile.name,
-        endpoint: profile.endpoint,
-        endpointType: profile.endpointType,
-        servers: servers.map(server => ({
-          name: server.name,
-          definitionId: server.definitionId,
-          connectionDetails: server.connectionDetails
-        }))
-      }
-    },
-    null,
-    2
-  );
-  
-  const handleCopy = () => {
-    const textToCopy = shareType === "basic" ? basicProfileJson : detailedProfileJson;
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    
+
+  const handleGenerateLink = () => {
+    setIsGeneratingLink(true);
+
+    // Simulate generating a link
     setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-    
+      // Generate a shortened mock share URL with the profile ID and share mode
+      const shareData = {
+        pid: profile.id,
+        m: shareMode === "with-config" ? "wc" : "nc",
+        t: Date.now().toString().slice(-6)
+      };
+
+      // Generate a mock shareable link - limited to 20 characters
+      const shortCode = btoa(JSON.stringify(shareData)).substring(0, 14);
+      const shareLink = `sh.io/${shortCode}`;
+      setGeneratedLink(shareLink);
+      setIsGeneratingLink(false);
+      toast({
+        title: "Share link generated",
+        description: "You can now copy the link",
+        type: "success"
+      });
+    }, 1000);
+  };
+
+  const handleCopyLink = () => {
+    if (generatedLink) {
+      navigator.clipboard.writeText(generatedLink);
+      toast({
+        title: "Link copied",
+        description: "The share link has been copied to your clipboard",
+        type: "success"
+      });
+    }
+  };
+
+  const handleShowImportPreview = () => {
+    setShowImportPreview(true);
+  };
+
+  const handleImportConfirm = () => {
+    // This would typically implement the actual import logic
     toast({
-      title: "Copied to clipboard",
-      description: "Profile details have been copied to your clipboard."
+      title: "Profile imported",
+      description: `Successfully imported ${profile.name} profile`,
+      type: "success"
     });
   };
-  
+
+  const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
+    const details: ServerConfigDetail[] = [];
+    if (server.connectionDetails?.includes('http')) {
+      if ('url' in server) {
+        details.push({
+          name: "URL",
+          value: server.url as string
+        });
+      }
+    }
+    if ('headers' in server && server.headers) {
+      details.push({
+        name: "HTTP Headers",
+        value: server.headers as Record<string, string>
+      });
+    }
+    if ('arguments' in server && server.arguments && server.arguments.length > 0) {
+      details.push({
+        name: "Command Arguments",
+        value: server.arguments
+      });
+    }
+    if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
+      details.push({
+        name: "Environment Variables",
+        value: server.environment as Record<string, string>
+      });
+    }
+    return details;
+  };
+
+  const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
+    if (!value) return null;
+    if (typeof value === 'string') {
+      return <span className="font-mono text-sm bg-muted/80 p-1.5 rounded">{value}</span>;
+    }
+    if (Array.isArray(value)) {
+      return <div className="font-mono text-sm bg-muted/80 p-1.5 rounded">
+          {value.join(' ')}
+        </div>;
+    }
+    return <div className="space-y-2">
+        {Object.entries(value).map(([key, val]) => <div key={key} className="font-mono text-sm">
+            <span className="font-semibold text-foreground">{key}:</span> <span className="bg-muted/80 p-1 rounded">{val}</span>
+          </div>)}
+      </div>;
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>Share Profile</DialogTitle>
-          <DialogDescription>
-            Share your profile configuration with others to help them get set up quickly.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <Tabs defaultValue="export" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="export">Export</TabsTrigger>
-            <TabsTrigger value="import">Import</TabsTrigger>
-          </TabsList>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="flex items-center gap-2 text-xl text-foreground">
+              <Share2 className="h-5 w-5" /> Share Profile
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Share your profile configuration with others
+            </DialogDescription>
+          </DialogHeader>
           
-          <TabsContent value="export" className="space-y-4">
-            <div className="space-y-4">
-              <RadioGroup
-                defaultValue="basic"
-                value={shareType}
-                onValueChange={(value) => setShareType(value as "basic" | "detailed")}
-                className="flex flex-col space-y-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="basic" id="basic" />
-                  <Label htmlFor="basic" className="font-medium">Basic Profile</Label>
+          <div className="space-y-6 pt-3">
+            {/* Share Mode Selection - Enhanced Radio Group */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-foreground capitalize">Sharing Options</h3>
+              <RadioGroup value={shareMode} onValueChange={value => setShareMode(value as "with-config" | "without-config")} className="flex flex-col space-y-3">
+                <div className={`flex items-center space-x-3 rounded-md border p-3.5 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "with-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("with-config")}>
+                  <RadioGroupItem value="with-config" id="with-config" className="border-primary/70" />
+                  <Label htmlFor="with-config" className="flex-1 cursor-pointer">
+                    <div className="font-medium text-foreground">Complete Configuration <Badge variant="outline" className="ml-2 bg-primary/10 text-xs font-normal">Recommended</Badge></div>
+                    <div className="text-sm text-muted-foreground mt-1">Includes all profile variables and dependent servers</div>
+                  </Label>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="detailed" id="detailed" />
-                  <Label htmlFor="detailed" className="font-medium">Detailed Profile with Servers</Label>
+                
+                <div className={`flex items-center space-x-3 rounded-md border p-3.5 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "without-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("without-config")}>
+                  <RadioGroupItem value="without-config" id="without-config" className="border-primary/70" />
+                  <Label htmlFor="without-config" className="flex-1 cursor-pointer">
+                    <div className="font-medium text-foreground">Basic Profile</div>
+                    <div className="text-sm text-muted-foreground mt-1">Share server configurations without detailed parameters</div>
+                  </Label>
                 </div>
               </RadioGroup>
+            </div>
+            
+            {/* Profile Content Preview - Simplified */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-foreground capitalize">
+                Profile Details
+              </h3>
               
-              <div className="border rounded-md p-4">
-                <h3 className="text-sm font-medium mb-2">Profile Details</h3>
+              <div className="rounded-lg border overflow-hidden shadow-sm">
+                {/* Profile name header */}
+                <div className="bg-muted/30 p-4 border-b">
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium text-lg text-foreground">{profile.name}</div>
+                    <Badge variant="outline" className="bg-secondary/50">{servers.length} Server{servers.length !== 1 ? 's' : ''}</Badge>
+                  </div>
+                </div>
                 
-                {shareType === "basic" ? (
-                  <>
-                    <div className="space-y-2 mb-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Name:</span>
-                        <span className="text-sm font-medium">{profile.name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Endpoint:</span>
-                        <span className="text-sm font-medium">{profile.endpoint}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Endpoint Type:</span>
-                        <span className="text-sm font-medium">{profile.endpointType}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Servers:</span>
-                        <span className="text-sm font-medium">{servers.length}</span>
-                      </div>
-                    </div>
-                    
-                    {servers.length > 0 && (
-                      <div className="space-y-2 mt-3">
-                        <h3 className="text-sm font-medium">Server List</h3>
-                        <ScrollArea className="h-[160px]">
-                          <div className="space-y-2">
-                            {servers.map(server => (
-                              <Collapsible
-                                key={server.id}
-                                open={expandedServers[server.id]}
-                                onOpenChange={() => toggleServerExpansion(server.id)}
-                                className="border rounded-md p-2"
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center gap-2">
-                                    <ServerLogo name={server.name} />
-                                    <span className="text-sm font-medium">{server.name}</span>
-                                  </div>
-                                  <CollapsibleTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                                      {expandedServers[server.id] ? (
-                                        <ChevronUp className="h-4 w-4" />
-                                      ) : (
-                                        <ChevronDown className="h-4 w-4" />
-                                      )}
-                                    </Button>
-                                  </CollapsibleTrigger>
-                                </div>
-                                <CollapsibleContent className="pt-2">
-                                  <div className="space-y-1 pl-8 text-sm">
-                                    <div className="flex justify-between text-xs">
-                                      <span className="text-muted-foreground">Type:</span>
-                                      <EndpointLabel type="HTTP_SSE" />
-                                    </div>
-                                    <div className="flex justify-between text-xs">
-                                      <span className="text-muted-foreground">Connection:</span>
-                                      <span className="font-mono text-xs">{server.connectionDetails}</span>
-                                    </div>
-                                  </div>
-                                </CollapsibleContent>
-                              </Collapsible>
-                            ))}
+                {/* Servers list with ScrollArea */}
+                <ScrollArea className="h-[240px]">
+                  <div className="divide-y divide-border">
+                    {servers.map((server, index) => (
+                      <Collapsible 
+                        key={server.id} 
+                        open={openConfigs[server.id]} 
+                        onOpenChange={() => toggleServerConfig(server.id)} 
+                        className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
+                      >
+                        <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-3">
+                              <Server className="h-4 w-4 text-foreground" />
+                              <span className="font-medium text-foreground">{server.name}</span>
+                              <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+                            </div>
+                            {server.description && (
+                              <p className="text-xs text-muted-foreground pl-7 pr-4 mt-1">
+                                {server.description}
+                              </p>
+                            )}
                           </div>
-                        </ScrollArea>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <ScrollArea className="h-[300px]">
-                    <pre className="text-xs overflow-auto p-2 bg-muted rounded-md">
-                      {detailedProfileJson}
-                    </pre>
-                  </ScrollArea>
-                )}
+                          
+                          {shareMode === "with-config" && getServerConfigDetails(server).length > 0 ? (
+                            <CollapsibleTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
+                                {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                              </Button>
+                            </CollapsibleTrigger>
+                          ) : <div className="w-7 h-7"></div> /* Placeholder to maintain consistent spacing */}
+                        </div>
+                        
+                        {shareMode === "with-config" && (
+                          <CollapsibleContent>
+                            <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
+                              {getServerConfigDetails(server).map((detail, index) => (
+                                <div key={index} className="grid gap-1.5">
+                                  <div className="font-medium text-xs text-foreground capitalize">{detail.name}</div>
+                                  {renderConfigValue(detail.value)}
+                                </div>
+                              ))}
+                            </div>
+                          </CollapsibleContent>
+                        )}
+                      </Collapsible>
+                    ))}
+                  </div>
+                </ScrollArea>
               </div>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="import" className="space-y-4">
-            <div className="text-center py-8">
-              <p className="text-sm text-muted-foreground mb-2">
-                Import functionality will be implemented in a future update.
-              </p>
+            
+            <Separator className="my-1" />
+            
+            {/* Generate Link and Share Actions - Enhanced */}
+            <div className="space-y-4">
+              {!generatedLink ? (
+                <Button onClick={handleGenerateLink} className="w-full py-5 font-medium transition-all" disabled={isGeneratingLink}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
+                </Button>
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-medium text-foreground">Shareable Link 
+                        <span className="inline-flex items-center ml-3 text-amber-600 text-xs">
+                          <Clock className="h-3.5 w-3.5 mr-1" />
+                          <span>Expires in 10 minutes</span>
+                        </span>
+                      </h4>
+                    </div>
+                    <div className="flex items-center gap-2 p-1 bg-muted/30 rounded-md border">
+                      <div className="bg-muted/90 p-2.5 rounded text-sm font-mono flex-1 truncate overflow-hidden">
+                        {generatedLink}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button onClick={handleCopyLink} variant="default" className="flex-1 py-5 font-medium hover:shadow-md transition-all">
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy Link
+                    </Button>
+                    
+                    <Button onClick={handleShowImportPreview} variant="outline" className="flex-1 py-5 font-medium hover:shadow-md transition-all">
+                      <Eye className="h-4 w-4 mr-2" />
+                      Preview Import
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
-          </TabsContent>
-        </Tabs>
-        
-        <DialogFooter className="flex justify-between items-center sm:justify-between">
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <Button onClick={handleCopy} className="gap-2">
-            {copied ? (
-              <>
-                <CheckCircle className="h-4 w-4" />
-                Copied
-              </>
-            ) : (
-              <>
-                <Copy className="h-4 w-4" />
-                Copy to Clipboard
-              </>
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Import Preview Dialog */}
+      <ProfileImportPreviewDialog
+        open={showImportPreview}
+        onOpenChange={setShowImportPreview}
+        profile={profile}
+        servers={servers}
+        onConfirmImport={handleImportConfirm}
+      />
+    </>
   );
 };
