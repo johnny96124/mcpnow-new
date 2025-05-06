@@ -217,21 +217,65 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                               />
                             </div>
                           </AccordionTrigger>
-                          <AccordionContent className="pt-0 pb-3 px-4 pl-10 bg-muted/20">
+                          <AccordionContent className="pt-0 pb-5 px-4 pl-10 bg-muted/10">
+                            {/* Server description */}
                             {server.description && (
-                              <p className="text-sm text-muted-foreground mb-3">
+                              <p className="text-muted-foreground mb-4">
                                 {server.description}
                               </p>
                             )}
                             
                             {shareMode === "with-config" && (
-                              <div className="space-y-4">
-                                {getServerConfigDetails(server).map((detail, index) => (
-                                  <div key={index} className="grid gap-1.5">
-                                    <div className="font-medium text-xs text-foreground capitalize">{detail.name}</div>
-                                    {renderConfigValue(detail.value)}
+                              <div className="space-y-5">
+                                {/* Command Arguments section - only for STDIO */}
+                                {!server.connectionDetails?.includes('http') && 'arguments' in server && server.arguments && server.arguments.length > 0 && (
+                                  <div className="space-y-2">
+                                    <h4 className="font-medium text-sm">Command Arguments</h4>
+                                    <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm whitespace-pre-wrap">
+                                      {server.arguments.join(' ')}
+                                    </pre>
                                   </div>
-                                ))}
+                                )}
+                                
+                                {/* URL section - only for HTTP_SSE */}
+                                {server.connectionDetails?.includes('http') && 'url' in server && (
+                                  <div className="space-y-2">
+                                    <h4 className="font-medium text-sm">URL</h4>
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm">
+                                      {server.url as string}
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* HTTP Headers - only for HTTP_SSE */}
+                                {server.connectionDetails?.includes('http') && 'headers' in server && server.headers && Object.keys(server.headers).length > 0 && (
+                                  <div className="space-y-2">
+                                    <h4 className="font-medium text-sm">HTTP Headers</h4>
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                      {Object.entries(server.headers).map(([key, value]) => (
+                                        <div key={key} className="font-mono text-sm flex items-start mb-1 last:mb-0">
+                                          <span className="font-medium min-w-[120px] inline-block">{key}:</span>
+                                          <span className="text-muted-foreground break-all">{value}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                
+                                {/* Environment Variables section - for both types */}
+                                {'environment' in server && server.environment && Object.keys(server.environment).length > 0 && (
+                                  <div className="space-y-2">
+                                    <h4 className="font-medium text-sm">Environment Variables</h4>
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                      {Object.entries(server.environment).map(([key, value]) => (
+                                        <div key={key} className="font-mono text-sm flex items-start mb-1 last:mb-0">
+                                          <span className="font-medium min-w-[180px] inline-block">{key}:</span>
+                                          <span className="text-muted-foreground break-all">{value}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
                           </AccordionContent>
