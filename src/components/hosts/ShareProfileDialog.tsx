@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from "react";
-import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock, Eye } from "lucide-react";
+import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock, Eye, CheckSquare, Square } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -13,6 +14,7 @@ import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProfileImportPreviewDialog } from "./ProfileImportPreviewDialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ServerConfigDetail {
   name: string;
@@ -37,14 +39,22 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [openConfigs, setOpenConfigs] = useState<Record<string, boolean>>({});
   const [showImportPreview, setShowImportPreview] = useState(false);
+  const [selectedServers, setSelectedServers] = useState<string[]>([]);
   const {
     toast
   } = useToast();
 
-  // Reset generated link when share mode changes
+  // Initialize selected servers with all servers when dialog opens
+  useEffect(() => {
+    if (open && servers.length > 0) {
+      setSelectedServers(servers.map(server => server.id));
+    }
+  }, [open, servers]);
+
+  // Reset generated link when share mode or selected servers change
   useEffect(() => {
     setGeneratedLink(null);
-  }, [shareMode]);
+  }, [shareMode, selectedServers]);
 
   const toggleServerConfig = (serverId: string) => {
     setOpenConfigs(prev => ({
@@ -53,19 +63,40 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }));
   };
 
+  const toggleServerSelection = (serverId: string) => {
+    setSelectedServers(prev => {
+      if (prev.includes(serverId)) {
+        return prev.filter(id => id !== serverId);
+      } else {
+        return [...prev, serverId];
+      }
+    });
+    // Reset the generated link since selection changed
+    setGeneratedLink(null);
+  };
+
+  const handleSelectAll = () => {
+    setSelectedServers(servers.map(server => server.id));
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedServers([]);
+  };
+
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
 
     // Simulate generating a link
     setTimeout(() => {
-      // Generate a shortened mock share URL with the profile ID and share mode
+      // Generate a shortened mock share URL with the profile ID, share mode, and selected servers
       const shareData = {
         pid: profile.id,
         m: shareMode === "with-config" ? "wc" : "nc",
+        servers: selectedServers,
         t: Date.now().toString().slice(-6)
       };
 
-      // Generate a mock shareable link - limited to 20 characters
+      // Generate a mock shareable link
       const shortCode = btoa(JSON.stringify(shareData)).substring(0, 14);
       const shareLink = `sh.io/${shortCode}`;
       setGeneratedLink(shareLink);
@@ -150,6 +181,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       </div>;
   };
 
+  // Filter servers based on selection
+  const filteredServers = servers.filter(server => selectedServers.includes(server.id));
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -186,18 +220,40 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
               </RadioGroup>
             </div>
             
-            {/* Profile Content Preview - Simplified */}
+            {/* Profile Content Preview with Server Selection */}
             <div className="space-y-4">
-              <h3 className="text-sm font-medium text-foreground capitalize">
-                Profile Details
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-foreground capitalize">
+                  Profile Details
+                </h3>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-2"
+                  onClick={selectedServers.length === servers.length ? handleDeselectAll : handleSelectAll}
+                >
+                  {selectedServers.length === servers.length ? (
+                    <>
+                      <Square className="h-4 w-4 text-primary" />
+                      <span>Deselect All</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckSquare className="h-4 w-4 text-primary" />
+                      <span>Select All</span>
+                    </>
+                  )}
+                </Button>
+              </div>
               
               <div className="rounded-lg border overflow-hidden shadow-sm">
                 {/* Profile name header */}
                 <div className="bg-muted/30 p-4 border-b">
                   <div className="flex items-center justify-between">
                     <div className="font-medium text-lg text-foreground">{profile.name}</div>
-                    <Badge variant="outline" className="bg-secondary/50">{servers.length} Server{servers.length !== 1 ? 's' : ''}</Badge>
+                    <Badge variant="outline" className="bg-secondary/50">
+                      {selectedServers.length} Server{selectedServers.length !== 1 ? 's' : ''} Selected
+                    </Badge>
                   </div>
                 </div>
                 
@@ -208,7 +264,20 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                       <Accordion type="single" collapsible key={server.id}>
                         <AccordionItem value={server.id} className="border-b-0">
                           <AccordionTrigger className="py-3 px-3.5 hover:bg-muted/30 transition-colors hover:no-underline">
-                            <div className="flex items-center gap-3 text-left">
+                            <div className="flex items-center gap-3 text-left w-full">
+                              <div 
+                                className="cursor-pointer flex items-center justify-center" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleServerSelection(server.id);
+                                }}
+                              >
+                                {selectedServers.includes(server.id) ? (
+                                  <CheckSquare className="h-5 w-5 text-primary" />
+                                ) : (
+                                  <Square className="h-5 w-5 text-muted-foreground" />
+                                )}
+                              </div>
                               <Server className="h-4 w-4 text-foreground" />
                               <span className="font-medium text-foreground">{server.name}</span>
                               <EndpointLabel 
@@ -334,10 +403,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             
             <Separator className="my-1" />
             
-            {/* Generate Link and Share Actions - Enhanced */}
+            {/* Generate Link and Share Actions */}
             <div className="space-y-4">
               {!generatedLink ? (
-                <Button onClick={handleGenerateLink} className="w-full py-5 font-medium transition-all" disabled={isGeneratingLink}>
+                <Button onClick={handleGenerateLink} className="w-full py-5 font-medium transition-all" disabled={isGeneratingLink || selectedServers.length === 0}>
                   <Upload className="h-4 w-4 mr-2" />
                   {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
                 </Button>
@@ -377,14 +446,15 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
         </DialogContent>
       </Dialog>
       
-      {/* Import Preview Dialog */}
+      {/* Import Preview Dialog - Only showing selected servers */}
       <ProfileImportPreviewDialog
         open={showImportPreview}
         onOpenChange={setShowImportPreview}
         profile={profile}
-        servers={servers}
+        servers={filteredServers}
         onConfirmImport={handleImportConfirm}
       />
     </>
   );
 };
+
