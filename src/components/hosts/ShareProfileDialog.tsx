@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -225,32 +224,46 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                               </p>
                             )}
                             
-                            {shareMode === "with-config" && (
-                              <div className="space-y-5">
-                                {/* Command Arguments section - only for STDIO */}
-                                {!server.connectionDetails?.includes('http') && 'arguments' in server && server.arguments && server.arguments.length > 0 && (
-                                  <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">Command Arguments</h4>
+                            <div className="space-y-5">
+                              {/* Command Arguments section - only for STDIO */}
+                              {!server.connectionDetails?.includes('http') && 'arguments' in server && server.arguments && server.arguments.length > 0 && (
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-sm">Command Arguments</h4>
+                                  {shareMode === "with-config" ? (
                                     <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm whitespace-pre-wrap">
                                       {server.arguments.join(' ')}
                                     </pre>
-                                  </div>
-                                )}
-                                
-                                {/* URL section - only for HTTP_SSE */}
-                                {server.connectionDetails?.includes('http') && 'url' in server && (
-                                  <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">URL</h4>
+                                  ) : (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-x-auto">
+                                      <div className="font-mono text-sm opacity-60">
+                                        {server.arguments.length} argument{server.arguments.length !== 1 ? 's' : ''} defined
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* URL section - only for HTTP_SSE */}
+                              {server.connectionDetails?.includes('http') && 'url' in server && (
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-sm">URL</h4>
+                                  {shareMode === "with-config" ? (
                                     <div className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm">
                                       {server.url as string}
                                     </div>
-                                  </div>
-                                )}
-                                
-                                {/* HTTP Headers - only for HTTP_SSE */}
-                                {server.connectionDetails?.includes('http') && 'headers' in server && server.headers && Object.keys(server.headers).length > 0 && (
-                                  <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">HTTP Headers</h4>
+                                  ) : (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-x-auto">
+                                      <div className="font-mono text-sm opacity-60">URL defined</div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* HTTP Headers - only for HTTP_SSE */}
+                              {server.connectionDetails?.includes('http') && 'headers' in server && server.headers && Object.keys(server.headers).length > 0 && (
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-sm">HTTP Headers</h4>
+                                  {shareMode === "with-config" ? (
                                     <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
                                       {Object.entries(server.headers).map(([key, value]) => (
                                         <div key={key} className="font-mono text-sm flex items-start mb-1 last:mb-0">
@@ -259,13 +272,26 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                                         </div>
                                       ))}
                                     </div>
-                                  </div>
-                                )}
-                                
-                                {/* Environment Variables section - for both types */}
-                                {'environment' in server && server.environment && Object.keys(server.environment).length > 0 && (
-                                  <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">Environment Variables</h4>
+                                  ) : (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                      <div className="space-y-1">
+                                        {Object.keys(server.headers).map((key) => (
+                                          <div key={key} className="font-mono text-sm flex items-center">
+                                            <span className="font-medium">{key}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* Environment Variables section - for both types */}
+                              {'environment' in server && server.environment && Object.keys(server.environment).length > 0 && (
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-sm">Environment Variables</h4>
+                                  
+                                  {shareMode === "with-config" ? (
                                     <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
                                       <div className="grid grid-cols-2 gap-2">
                                         {/* Keys column */}
@@ -290,10 +316,20 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                                  ) : (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                      <div className="space-y-2">
+                                        {Object.keys(server.environment).map((key) => (
+                                          <div key={`key-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
+                                            <span className="font-medium text-foreground truncate">{key}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </AccordionContent>
                         </AccordionItem>
                       </Accordion>
