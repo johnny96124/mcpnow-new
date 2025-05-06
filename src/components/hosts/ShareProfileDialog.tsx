@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, Server, Share2, Upload, Clock, Eye, Check } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -14,19 +13,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProfileImportPreviewDialog } from "./ProfileImportPreviewDialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
-
 interface ServerConfigDetail {
   name: string;
   value: string | string[] | Record<string, string> | undefined;
 }
-
 interface ShareProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   profile: Profile;
   servers: ServerInstance[];
 }
-
 export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   open,
   onOpenChange,
@@ -38,7 +34,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [showImportPreview, setShowImportPreview] = useState(false);
   const [selectedServers, setSelectedServers] = useState<string[]>([]);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
 
   // Initialize selected servers with all servers when dialog opens
   useEffect(() => {
@@ -51,7 +49,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   useEffect(() => {
     setGeneratedLink(null);
   }, [shareMode, selectedServers]);
-
   const handleServerSelection = (serverId: string, checked: boolean) => {
     setSelectedServers(prev => {
       if (checked) {
@@ -63,7 +60,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     // Reset generated link when server selection changes
     setGeneratedLink(null);
   };
-
   const toggleAllServers = (checked: boolean) => {
     if (checked) {
       setSelectedServers(servers.map(server => server.id));
@@ -73,9 +69,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     // Reset generated link when server selection changes
     setGeneratedLink(null);
   };
-
   const filteredServers = servers.filter(server => selectedServers.includes(server.id));
-
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
 
@@ -101,7 +95,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }, 1000);
   };
-
   const handleCopyLink = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink);
@@ -112,11 +105,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }
   };
-
   const handleShowImportPreview = () => {
     setShowImportPreview(true);
   };
-
   const handleImportConfirm = () => {
     // This would typically implement the actual import logic
     toast({
@@ -125,7 +116,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       type: "success"
     });
   };
-
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -142,9 +132,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           </div>)}
       </div>;
   };
-
-  return (
-    <>
+  return <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-hidden flex flex-col">
           <DialogHeader className="pb-2">
@@ -182,16 +170,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             {/* Combined Server Selection and Content View Section */}
             <div className="flex flex-col space-y-2 flex-1 overflow-hidden">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-foreground">Select Servers To Share</h3>
+                <h3 className="text-sm font-medium text-foreground">Profile Details</h3>
                 <div className="flex items-center gap-2">
-                  <div className="text-sm text-muted-foreground">
-                    {selectedServers.length} of {servers.length} servers selected
-                  </div>
-                  <Checkbox 
-                    id="select-all" 
-                    checked={selectedServers.length === servers.length}
-                    onCheckedChange={(checked) => toggleAllServers(!!checked)}
-                  />
+                  
+                  <Checkbox id="select-all" checked={selectedServers.length === servers.length} onCheckedChange={checked => toggleAllServers(!!checked)} />
                   <Label htmlFor="select-all" className="text-sm cursor-pointer">
                     Select All
                   </Label>
@@ -210,140 +192,97 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 {/* Servers list with integrated selection */}
                 <ScrollArea className="flex-1">
                   <div className="divide-y divide-border">
-                    {servers.map((server) => (
-                      <Accordion type="single" collapsible key={server.id} className="border-b last:border-b-0">
+                    {servers.map(server => <Accordion type="single" collapsible key={server.id} className="border-b last:border-b-0">
                         <AccordionItem value={server.id} className="border-0">
                           <div className="flex items-center">
-                            <Checkbox 
-                              id={`server-${server.id}`} 
-                              checked={selectedServers.includes(server.id)}
-                              onCheckedChange={(checked) => handleServerSelection(server.id, !!checked)}
-                              className="ml-3 mr-2"
-                            />
+                            <Checkbox id={`server-${server.id}`} checked={selectedServers.includes(server.id)} onCheckedChange={checked => handleServerSelection(server.id, !!checked)} className="ml-3 mr-2" />
                             <AccordionTrigger className="flex-1 py-3 px-2 hover:bg-muted/30 transition-colors hover:no-underline">
                               <div className="flex items-center gap-3 text-left">
                                 <Server className="h-4 w-4 text-foreground" />
                                 <span className="font-medium text-foreground">{server.name}</span>
-                                <EndpointLabel 
-                                  type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} 
-                                />
+                                <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
                               </div>
                             </AccordionTrigger>
                           </div>
                           
-                          {selectedServers.includes(server.id) && (
-                            <AccordionContent className="pt-0 pb-5 px-4 pl-10 bg-muted/10">
+                          {selectedServers.includes(server.id) && <AccordionContent className="pt-0 pb-5 px-4 pl-10 bg-muted/10">
                               {/* Server description */}
-                              {server.description && (
-                                <p className="text-muted-foreground mb-4">
+                              {server.description && <p className="text-muted-foreground mb-4">
                                   {server.description}
-                                </p>
-                              )}
+                                </p>}
                               
                               <div className="space-y-5">
                                 {/* Command Arguments section - only for STDIO */}
-                                {!server.connectionDetails?.includes('http') && 'arguments' in server && server.arguments && server.arguments.length > 0 && (
-                                  <div className="space-y-2">
+                                {!server.connectionDetails?.includes('http') && 'arguments' in server && server.arguments && server.arguments.length > 0 && <div className="space-y-2">
                                     <h4 className="font-medium text-sm">Command Arguments</h4>
                                     {/* Always show the complete command arguments regardless of share mode */}
                                     <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm whitespace-pre-wrap">
                                       {server.arguments.join(' ')}
                                     </pre>
-                                  </div>
-                                )}
+                                  </div>}
                                 
                                 {/* URL section - only for HTTP_SSE */}
-                                {server.connectionDetails?.includes('http') && 'url' in server && (
-                                  <div className="space-y-2">
+                                {server.connectionDetails?.includes('http') && 'url' in server && <div className="space-y-2">
                                     <h4 className="font-medium text-sm">URL</h4>
-                                    {shareMode === "with-config" ? (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm">
+                                    {shareMode === "with-config" ? <div className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm">
                                         {server.url as string}
-                                      </div>
-                                    ) : (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-x-auto">
+                                      </div> : <div className="bg-muted/40 p-3 rounded-md overflow-x-auto">
                                         <div className="font-mono text-sm opacity-60">URL defined</div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                      </div>}
+                                  </div>}
                                 
                                 {/* HTTP Headers - only for HTTP_SSE */}
-                                {server.connectionDetails?.includes('http') && 'headers' in server && server.headers && Object.keys(server.headers).length > 0 && (
-                                  <div className="space-y-2">
+                                {server.connectionDetails?.includes('http') && 'headers' in server && server.headers && Object.keys(server.headers).length > 0 && <div className="space-y-2">
                                     <h4 className="font-medium text-sm">HTTP Headers</h4>
-                                    {shareMode === "with-config" ? (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
-                                        {Object.entries(server.headers).map(([key, value]) => (
-                                          <div key={key} className="font-mono text-sm flex items-start mb-1 last:mb-0">
+                                    {shareMode === "with-config" ? <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                        {Object.entries(server.headers).map(([key, value]) => <div key={key} className="font-mono text-sm flex items-start mb-1 last:mb-0">
                                             <span className="font-medium min-w-[120px] inline-block">{key}:</span>
                                             <span className="text-muted-foreground break-all">{value}</span>
-                                          </div>
-                                        ))}
-                                      </div>
-                                    ) : (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                          </div>)}
+                                      </div> : <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
                                         <div className="space-y-1">
-                                          {Object.keys(server.headers).map((key) => (
-                                            <div key={key} className="font-mono text-sm flex items-center">
+                                          {Object.keys(server.headers).map(key => <div key={key} className="font-mono text-sm flex items-center">
                                               <span className="font-medium">{key}</span>
-                                            </div>
-                                          ))}
+                                            </div>)}
                                         </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                      </div>}
+                                  </div>}
                                 
                                 {/* Environment Variables section - for both types */}
-                                {'environment' in server && server.environment && Object.keys(server.environment).length > 0 && (
-                                  <div className="space-y-2">
+                                {'environment' in server && server.environment && Object.keys(server.environment).length > 0 && <div className="space-y-2">
                                     <h4 className="font-medium text-sm">Environment Variables</h4>
                                     
-                                    {shareMode === "with-config" ? (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                    {shareMode === "with-config" ? <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
                                         <div className="grid grid-cols-2 gap-2">
                                           {/* Keys column */}
                                           <div className="space-y-2">
-                                            {Object.keys(server.environment).map((key) => (
-                                              <div key={`key-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
+                                            {Object.keys(server.environment).map(key => <div key={`key-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
                                                 <span className="font-medium text-foreground truncate">{key}</span>
-                                              </div>
-                                            ))}
+                                              </div>)}
                                           </div>
                                           
                                           {/* Values column */}
                                           <div className="space-y-2">
                                             {Object.values(server.environment).map((value, index) => {
-                                              const key = Object.keys(server.environment!)[index];
-                                              return (
-                                                <div key={`value-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
+                                    const key = Object.keys(server.environment!)[index];
+                                    return <div key={`value-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
                                                   <span className="text-muted-foreground truncate">{value}</span>
-                                                </div>
-                                              );
-                                            })}
+                                                </div>;
+                                  })}
                                           </div>
                                         </div>
-                                      </div>
-                                    ) : (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                      </div> : <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
                                         <div className="space-y-2">
-                                          {Object.keys(server.environment).map((key) => (
-                                            <div key={`key-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
+                                          {Object.keys(server.environment).map(key => <div key={`key-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
                                               <span className="font-medium text-foreground truncate">{key}</span>
-                                            </div>
-                                          ))}
+                                            </div>)}
                                         </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                      </div>}
+                                  </div>}
                               </div>
-                            </AccordionContent>
-                          )}
+                            </AccordionContent>}
                         </AccordionItem>
-                      </Accordion>
-                    ))}
+                      </Accordion>)}
                   </div>
                 </ScrollArea>
               </div>
@@ -353,17 +292,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             
             {/* Generate Link and Share Actions */}
             <div className="space-y-4">
-              {!generatedLink ? (
-                <Button 
-                  onClick={handleGenerateLink} 
-                  className="w-full py-5 font-medium transition-all" 
-                  disabled={isGeneratingLink || selectedServers.length === 0}
-                >
+              {!generatedLink ? <Button onClick={handleGenerateLink} className="w-full py-5 font-medium transition-all" disabled={isGeneratingLink || selectedServers.length === 0}>
                   <Upload className="h-4 w-4 mr-2" />
                   {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
-                </Button>
-              ) : (
-                <div className="space-y-4">
+                </Button> : <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-medium text-foreground">Shareable Link 
@@ -391,27 +323,17 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                       Preview Import
                     </Button>
                   </div>
-                </div>
-              )}
+                </div>}
 
-              {selectedServers.length === 0 && (
-                <div className="text-center p-2 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-600 text-sm">
+              {selectedServers.length === 0 && <div className="text-center p-2 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-600 text-sm">
                   Please select at least one server to generate a share link
-                </div>
-              )}
+                </div>}
             </div>
           </div>
         </DialogContent>
       </Dialog>
       
       {/* Import Preview Dialog */}
-      <ProfileImportPreviewDialog
-        open={showImportPreview}
-        onOpenChange={setShowImportPreview}
-        profile={profile}
-        servers={filteredServers}
-        onConfirmImport={handleImportConfirm}
-      />
-    </>
-  );
+      <ProfileImportPreviewDialog open={showImportPreview} onOpenChange={setShowImportPreview} profile={profile} servers={filteredServers} onConfirmImport={handleImportConfirm} />
+    </>;
 };
