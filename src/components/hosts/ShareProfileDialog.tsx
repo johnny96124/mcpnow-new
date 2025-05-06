@@ -13,16 +13,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProfileImportPreviewDialog } from "./ProfileImportPreviewDialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
+
 interface ServerConfigDetail {
   name: string;
   value: string | string[] | Record<string, string> | undefined;
 }
+
 interface ShareProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   profile: Profile;
   servers: ServerInstance[];
 }
+
 export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   open,
   onOpenChange,
@@ -34,6 +37,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [showImportPreview, setShowImportPreview] = useState(false);
   const [selectedServers, setSelectedServers] = useState<string[]>([]);
+  const [isCopied, setIsCopied] = useState(false);
   const {
     toast
   } = useToast();
@@ -48,6 +52,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   // Reset generated link when share mode or selected servers change
   useEffect(() => {
     setGeneratedLink(null);
+    setIsCopied(false);
   }, [shareMode, selectedServers]);
   const handleServerSelection = (serverId: string, checked: boolean) => {
     setSelectedServers(prev => {
@@ -59,6 +64,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     });
     // Reset generated link when server selection changes
     setGeneratedLink(null);
+    setIsCopied(false);
   };
   const toggleAllServers = (checked: boolean) => {
     if (checked) {
@@ -68,6 +74,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     }
     // Reset generated link when server selection changes
     setGeneratedLink(null);
+    setIsCopied(false);
   };
   const filteredServers = servers.filter(server => selectedServers.includes(server.id));
   const handleGenerateLink = () => {
@@ -98,6 +105,8 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const handleCopyLink = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 3000);
       toast({
         title: "Link copied",
         description: "The share link has been copied to your clipboard",
@@ -292,10 +301,17 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             
             {/* Generate Link and Share Actions */}
             <div className="space-y-4">
-              {!generatedLink ? <Button onClick={handleGenerateLink} className="w-full py-5 font-medium transition-all" disabled={isGeneratingLink || selectedServers.length === 0}>
+              {!generatedLink ? (
+                <Button 
+                  onClick={handleGenerateLink} 
+                  className="w-full py-5 font-medium transition-all" 
+                  disabled={isGeneratingLink || selectedServers.length === 0}
+                >
                   <Upload className="h-4 w-4 mr-2" />
                   {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
-                </Button> : <div className="space-y-4">
+                </Button>
+              ) : (
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-medium text-foreground">Shareable Link 
@@ -305,25 +321,30 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                         </span>
                       </h4>
                     </div>
-                    <div className="flex items-center gap-2 p-1 bg-muted/30 rounded-md border">
-                      <div className="bg-muted/90 p-2.5 rounded text-sm font-mono flex-1 truncate overflow-hidden">
-                        {generatedLink}
+                    <div className="flex items-center gap-2">
+                      <div className="bg-muted/30 p-3 rounded-md border flex-1 overflow-hidden">
+                        <div className="font-mono text-sm truncate">{generatedLink}</div>
                       </div>
+                      <Button 
+                        onClick={handleCopyLink} 
+                        variant="outline" 
+                        className={`h-12 w-12 p-0 flex items-center justify-center ${isCopied ? 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300' : ''}`}
+                      >
+                        {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                      </Button>
                     </div>
                   </div>
                   
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button onClick={handleCopyLink} variant="default" className="flex-1 py-5 font-medium hover:shadow-md transition-all">
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copy Link
-                    </Button>
-                    
-                    <Button onClick={handleShowImportPreview} variant="outline" className="flex-1 py-5 font-medium hover:shadow-md transition-all">
-                      <Eye className="h-4 w-4 mr-2" />
-                      Preview Import
-                    </Button>
-                  </div>
-                </div>}
+                  <Button 
+                    onClick={handleShowImportPreview} 
+                    variant="outline" 
+                    className="w-full py-5 font-medium hover:shadow-md transition-all mt-2"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Preview Import
+                  </Button>
+                </div>
+              )}
 
               {selectedServers.length === 0 && <div className="text-center p-2 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-600 text-sm">
                   Please select at least one server to generate a share link
