@@ -267,12 +267,28 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                                   <div className="space-y-2">
                                     <h4 className="font-medium text-sm">Environment Variables</h4>
                                     <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
-                                      {Object.entries(server.environment).map(([key, value]) => (
-                                        <div key={key} className="font-mono text-sm flex items-start mb-1 last:mb-0">
-                                          <span className="font-medium min-w-[180px] inline-block">{key}:</span>
-                                          <span className="text-muted-foreground break-all">{value}</span>
+                                      <div className="grid grid-cols-2 gap-2">
+                                        {/* Keys column */}
+                                        <div className="space-y-2">
+                                          {Object.keys(server.environment).map((key) => (
+                                            <div key={`key-${key}`} className="font-mono text-sm bg-primary/10 p-2 rounded flex items-center h-8">
+                                              <span className="font-medium text-foreground truncate">{key}</span>
+                                            </div>
+                                          ))}
                                         </div>
-                                      ))}
+                                        
+                                        {/* Values column */}
+                                        <div className="space-y-2">
+                                          {Object.values(server.environment).map((value, index) => {
+                                            const key = Object.keys(server.environment!)[index];
+                                            return (
+                                              <div key={`value-${key}`} className="font-mono text-sm bg-muted/80 p-2 rounded flex items-center h-8">
+                                                <span className="text-muted-foreground truncate">{value}</span>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
                                     </div>
                                   </div>
                                 )}
@@ -343,3 +359,4 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     </>
   );
 };
+
