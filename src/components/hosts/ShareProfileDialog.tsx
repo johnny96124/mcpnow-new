@@ -92,8 +92,11 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       // Generate a mock shareable link - limited to 20 characters
       const shortCode = btoa(JSON.stringify(shareData)).substring(0, 14);
       const shareLink = `sh.io/${shortCode}`;
+      
+      // Set the generated link in state
       setGeneratedLink(shareLink);
       setIsGeneratingLink(false);
+      
       toast({
         title: "Share link generated",
         description: "You can now copy the link",
