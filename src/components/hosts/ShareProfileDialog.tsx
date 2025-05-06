@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -271,7 +270,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                                         {/* Keys column */}
                                         <div className="space-y-2">
                                           {Object.keys(server.environment).map((key) => (
-                                            <div key={`key-${key}`} className="font-mono text-sm bg-primary/10 p-2 rounded flex items-center h-8">
+                                            <div key={`key-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
                                               <span className="font-medium text-foreground truncate">{key}</span>
                                             </div>
                                           ))}
@@ -282,7 +281,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                                           {Object.values(server.environment).map((value, index) => {
                                             const key = Object.keys(server.environment!)[index];
                                             return (
-                                              <div key={`value-${key}`} className="font-mono text-sm bg-muted/80 p-2 rounded flex items-center h-8">
+                                              <div key={`value-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
                                                 <span className="text-muted-foreground truncate">{value}</span>
                                               </div>
                                             );
@@ -359,4 +358,3 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     </>
   );
 };
-
