@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from "react";
-import { Copy, ChevronDown, Server, Share2, Upload, Clock, Eye, Check } from "lucide-react";
+import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Profile, ServerInstance } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const [shareMode, setShareMode] = useState<"with-config" | "without-config">("with-config");
   const [generatedLink, setGeneratedLink] = useState<string | null>(null);
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const [openConfigs, setOpenConfigs] = useState<Record<string, boolean>>({});
   const [showImportPreview, setShowImportPreview] = useState(false);
   const [selectedServers, setSelectedServers] = useState<string[]>([]);
   const { toast } = useToast();
@@ -51,6 +53,13 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   useEffect(() => {
     setGeneratedLink(null);
   }, [shareMode, selectedServers]);
+
+  const toggleServerConfig = (serverId: string) => {
+    setOpenConfigs(prev => ({
+      ...prev,
+      [serverId]: !prev[serverId]
+    }));
+  };
 
   const handleServerSelection = (serverId: string, checked: boolean) => {
     setSelectedServers(prev => {
@@ -126,6 +135,37 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     });
   };
 
+  const getServerConfigDetails = (server: ServerInstance): ServerConfigDetail[] => {
+    const details: ServerConfigDetail[] = [];
+    if (server.connectionDetails?.includes('http')) {
+      if ('url' in server) {
+        details.push({
+          name: "URL",
+          value: server.url as string
+        });
+      }
+    }
+    if ('headers' in server && server.headers) {
+      details.push({
+        name: "HTTP Headers",
+        value: server.headers as Record<string, string>
+      });
+    }
+    if ('arguments' in server && server.arguments && server.arguments.length > 0) {
+      details.push({
+        name: "Command Arguments",
+        value: server.arguments
+      });
+    }
+    if ('environment' in server && server.environment && Object.keys(server.environment).length > 0) {
+      details.push({
+        name: "Environment Variables",
+        value: server.environment as Record<string, string>
+      });
+    }
+    return details;
+  };
+
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -146,7 +186,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-hidden flex flex-col">
+        <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader className="pb-2">
             <DialogTitle className="flex items-center gap-2 text-xl text-foreground">
               <Share2 className="h-5 w-5" /> Share Profile
@@ -156,12 +196,12 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             </DialogDescription>
           </DialogHeader>
           
-          <div className="space-y-6 pt-3 flex-1 overflow-hidden">
+          <div className="space-y-6 pt-3">
             {/* Share Mode Selection - Enhanced Radio Group */}
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-foreground capitalize">Sharing Options</h3>
               <RadioGroup value={shareMode} onValueChange={value => setShareMode(value as "with-config" | "without-config")} className="flex flex-col space-y-3">
-                <div className={`flex items-center space-x-3 rounded-md border p-3 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "with-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("with-config")}>
+                <div className={`flex items-center space-x-3 rounded-md border p-3.5 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "with-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("with-config")}>
                   <RadioGroupItem value="with-config" id="with-config" className="border-primary/70" />
                   <Label htmlFor="with-config" className="flex-1 cursor-pointer">
                     <div className="font-medium text-foreground">Complete Configuration <Badge variant="outline" className="ml-2 bg-primary/10 text-xs font-normal">Recommended</Badge></div>
@@ -169,7 +209,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   </Label>
                 </div>
                 
-                <div className={`flex items-center space-x-3 rounded-md border p-3 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "without-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("without-config")}>
+                <div className={`flex items-center space-x-3 rounded-md border p-3.5 cursor-pointer hover:bg-muted/30 transition-colors ${shareMode === "without-config" ? "border-primary/50 bg-primary/5" : ""}`} onClick={() => setShareMode("without-config")}>
                   <RadioGroupItem value="without-config" id="without-config" className="border-primary/70" />
                   <Label htmlFor="without-config" className="flex-1 cursor-pointer">
                     <div className="font-medium text-foreground">Basic Profile</div>
@@ -179,18 +219,16 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
               </RadioGroup>
             </div>
             
-            {/* Combined Server Selection and Content View Section */}
-            <div className="flex flex-col space-y-2 flex-1 overflow-hidden">
+            {/* Server Selection Section - New */}
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-foreground">Select Servers To Share</h3>
-                <div className="flex items-center gap-2">
-                  <div className="text-sm text-muted-foreground">
-                    {selectedServers.length} of {servers.length} servers selected
-                  </div>
+                <h3 className="text-sm font-medium text-foreground capitalize">Select Servers to Share</h3>
+                <div className="flex items-center">
                   <Checkbox 
                     id="select-all" 
                     checked={selectedServers.length === servers.length}
                     onCheckedChange={(checked) => toggleAllServers(!!checked)}
+                    className="mr-2"
                   />
                   <Label htmlFor="select-all" className="text-sm cursor-pointer">
                     Select All
@@ -198,135 +236,133 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 </div>
               </div>
               
-              <div className="border rounded-lg overflow-hidden flex-1 flex flex-col">
-                {/* Profile header */}
-                <div className="bg-muted/30 p-3 border-b">
+              <div className="border rounded-md overflow-hidden">
+                {servers.map((server) => (
+                  <div key={server.id} className="flex items-center p-3 border-b last:border-b-0 bg-background hover:bg-muted/20 transition-colors">
+                    <Checkbox 
+                      id={`server-${server.id}`} 
+                      checked={selectedServers.includes(server.id)}
+                      onCheckedChange={(checked) => handleServerSelection(server.id, !!checked)}
+                      className="mr-3"
+                    />
+                    <div className="flex items-center gap-3 flex-1 cursor-pointer" onClick={() => handleServerSelection(server.id, !selectedServers.includes(server.id))}>
+                      <Server className="h-4 w-4 text-muted-foreground" />
+                      <span className="font-medium">{server.name}</span>
+                      <EndpointLabel 
+                        type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} 
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="text-sm text-muted-foreground">
+                {selectedServers.length} of {servers.length} servers selected
+              </div>
+            </div>
+            
+            {/* Profile Content Preview - Simplified */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-foreground capitalize">
+                Profile Details
+              </h3>
+              
+              <div className="rounded-lg border overflow-hidden shadow-sm">
+                {/* Profile name header */}
+                <div className="bg-muted/30 p-4 border-b">
                   <div className="flex items-center justify-between">
                     <div className="font-medium text-lg text-foreground">{profile.name}</div>
                     <Badge variant="outline" className="bg-secondary/50">{selectedServers.length} Server{selectedServers.length !== 1 ? 's' : ''}</Badge>
                   </div>
                 </div>
                 
-                {/* Servers list with integrated selection */}
-                <ScrollArea className="flex-1">
+                {/* Servers list with ScrollArea */}
+                <ScrollArea className="h-[240px]">
                   <div className="divide-y divide-border">
-                    {servers.map((server) => (
-                      <Accordion type="single" collapsible key={server.id} className="border-b last:border-b-0">
-                        <AccordionItem value={server.id} className="border-0">
-                          <div className="flex items-center">
-                            <Checkbox 
-                              id={`server-${server.id}`} 
-                              checked={selectedServers.includes(server.id)}
-                              onCheckedChange={(checked) => handleServerSelection(server.id, !!checked)}
-                              className="ml-3 mr-2"
-                            />
-                            <AccordionTrigger className="flex-1 py-3 px-2 hover:bg-muted/30 transition-colors hover:no-underline">
-                              <div className="flex items-center gap-3 text-left">
-                                <Server className="h-4 w-4 text-foreground" />
-                                <span className="font-medium text-foreground">{server.name}</span>
-                                <EndpointLabel 
-                                  type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} 
-                                />
-                              </div>
-                            </AccordionTrigger>
-                          </div>
-                          
-                          {selectedServers.includes(server.id) && (
-                            <AccordionContent className="pt-0 pb-5 px-4 pl-10 bg-muted/10">
-                              {/* Server description */}
-                              {server.description && (
-                                <p className="text-muted-foreground mb-4">
-                                  {server.description}
-                                </p>
+                    {filteredServers.map((server) => (
+                      <Accordion type="single" collapsible key={server.id}>
+                        <AccordionItem value={server.id} className="border-b-0">
+                          <AccordionTrigger className="py-3 px-3.5 hover:bg-muted/30 transition-colors hover:no-underline">
+                            <div className="flex items-center gap-3 text-left">
+                              <Server className="h-4 w-4 text-foreground" />
+                              <span className="font-medium text-foreground">{server.name}</span>
+                              <EndpointLabel 
+                                type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} 
+                              />
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="pt-0 pb-5 px-4 pl-10 bg-muted/10">
+                            {/* Server description */}
+                            {server.description && (
+                              <p className="text-muted-foreground mb-4">
+                                {server.description}
+                              </p>
+                            )}
+                            
+                            <div className="space-y-5">
+                              {/* Command Arguments section - only for STDIO */}
+                              {!server.connectionDetails?.includes('http') && 'arguments' in server && server.arguments && server.arguments.length > 0 && (
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-sm">Command Arguments</h4>
+                                  {/* Always show the complete command arguments regardless of share mode */}
+                                  <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm whitespace-pre-wrap">
+                                    {server.arguments.join(' ')}
+                                  </pre>
+                                </div>
                               )}
                               
-                              <div className="space-y-5">
-                                {/* Command Arguments section - only for STDIO */}
-                                {!server.connectionDetails?.includes('http') && 'arguments' in server && server.arguments && server.arguments.length > 0 && (
-                                  <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">Command Arguments</h4>
-                                    {/* Always show the complete command arguments regardless of share mode */}
-                                    <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm whitespace-pre-wrap">
-                                      {server.arguments.join(' ')}
-                                    </pre>
-                                  </div>
-                                )}
-                                
-                                {/* URL section - only for HTTP_SSE */}
-                                {server.connectionDetails?.includes('http') && 'url' in server && (
-                                  <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">URL</h4>
-                                    {shareMode === "with-config" ? (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm">
-                                        {server.url as string}
-                                      </div>
-                                    ) : (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-x-auto">
-                                        <div className="font-mono text-sm opacity-60">URL defined</div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                                
-                                {/* HTTP Headers - only for HTTP_SSE */}
-                                {server.connectionDetails?.includes('http') && 'headers' in server && server.headers && Object.keys(server.headers).length > 0 && (
-                                  <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">HTTP Headers</h4>
-                                    {shareMode === "with-config" ? (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
-                                        {Object.entries(server.headers).map(([key, value]) => (
-                                          <div key={key} className="font-mono text-sm flex items-start mb-1 last:mb-0">
-                                            <span className="font-medium min-w-[120px] inline-block">{key}:</span>
-                                            <span className="text-muted-foreground break-all">{value}</span>
+                              {/* URL section - only for HTTP_SSE */}
+                              {server.connectionDetails?.includes('http') && 'url' in server && (
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-sm">URL</h4>
+                                  {shareMode === "with-config" ? (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm">
+                                      {server.url as string}
+                                    </div>
+                                  ) : (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-x-auto">
+                                      <div className="font-mono text-sm opacity-60">URL defined</div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* HTTP Headers - only for HTTP_SSE */}
+                              {server.connectionDetails?.includes('http') && 'headers' in server && server.headers && Object.keys(server.headers).length > 0 && (
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-sm">HTTP Headers</h4>
+                                  {shareMode === "with-config" ? (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                      {Object.entries(server.headers).map(([key, value]) => (
+                                        <div key={key} className="font-mono text-sm flex items-start mb-1 last:mb-0">
+                                          <span className="font-medium min-w-[120px] inline-block">{key}:</span>
+                                          <span className="text-muted-foreground break-all">{value}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                      <div className="space-y-1">
+                                        {Object.keys(server.headers).map((key) => (
+                                          <div key={key} className="font-mono text-sm flex items-center">
+                                            <span className="font-medium">{key}</span>
                                           </div>
                                         ))}
                                       </div>
-                                    ) : (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
-                                        <div className="space-y-1">
-                                          {Object.keys(server.headers).map((key) => (
-                                            <div key={key} className="font-mono text-sm flex items-center">
-                                              <span className="font-medium">{key}</span>
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                                
-                                {/* Environment Variables section - for both types */}
-                                {'environment' in server && server.environment && Object.keys(server.environment).length > 0 && (
-                                  <div className="space-y-2">
-                                    <h4 className="font-medium text-sm">Environment Variables</h4>
-                                    
-                                    {shareMode === "with-config" ? (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
-                                        <div className="grid grid-cols-2 gap-2">
-                                          {/* Keys column */}
-                                          <div className="space-y-2">
-                                            {Object.keys(server.environment).map((key) => (
-                                              <div key={`key-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
-                                                <span className="font-medium text-foreground truncate">{key}</span>
-                                              </div>
-                                            ))}
-                                          </div>
-                                          
-                                          {/* Values column */}
-                                          <div className="space-y-2">
-                                            {Object.values(server.environment).map((value, index) => {
-                                              const key = Object.keys(server.environment!)[index];
-                                              return (
-                                                <div key={`value-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
-                                                  <span className="text-muted-foreground truncate">{value}</span>
-                                                </div>
-                                              );
-                                            })}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* Environment Variables section - for both types */}
+                              {'environment' in server && server.environment && Object.keys(server.environment).length > 0 && (
+                                <div className="space-y-2">
+                                  <h4 className="font-medium text-sm">Environment Variables</h4>
+                                  
+                                  {shareMode === "with-config" ? (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                      <div className="grid grid-cols-2 gap-2">
+                                        {/* Keys column */}
                                         <div className="space-y-2">
                                           {Object.keys(server.environment).map((key) => (
                                             <div key={`key-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
@@ -334,13 +370,35 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                                             </div>
                                           ))}
                                         </div>
+                                        
+                                        {/* Values column */}
+                                        <div className="space-y-2">
+                                          {Object.values(server.environment).map((value, index) => {
+                                            const key = Object.keys(server.environment!)[index];
+                                            return (
+                                              <div key={`value-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
+                                                <span className="text-muted-foreground truncate">{value}</span>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
                                       </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </AccordionContent>
-                          )}
+                                    </div>
+                                  ) : (
+                                    <div className="bg-muted/40 p-3 rounded-md overflow-hidden">
+                                      <div className="space-y-2">
+                                        {Object.keys(server.environment).map((key) => (
+                                          <div key={`key-${key}`} className="font-mono text-sm bg-muted/50 p-2 rounded flex items-center h-8">
+                                            <span className="font-medium text-foreground truncate">{key}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </AccordionContent>
                         </AccordionItem>
                       </Accordion>
                     ))}
@@ -351,7 +409,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             
             <Separator className="my-1" />
             
-            {/* Generate Link and Share Actions */}
+            {/* Generate Link and Share Actions - Enhanced */}
             <div className="space-y-4">
               {!generatedLink ? (
                 <Button 
