@@ -151,65 +151,6 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       </div>;
   };
 
-  // Function to render HTTP SSE specific configuration with URL at top and Headers below
-  const renderHttpSseConfig = (server: ServerInstance) => {
-    const isHttpServer = server.connectionDetails?.includes('http');
-    if (!isHttpServer) return null;
-    
-    return (
-      <div className="space-y-4 bg-muted/20 p-3 rounded-md">
-        {/* URL Section */}
-        {'url' in server && server.url && (
-          <div className="grid gap-1.5">
-            <div className="font-medium text-xs text-foreground uppercase">URL</div>
-            <div className="font-mono text-sm bg-muted/80 p-2 rounded border border-muted/50">
-              {String(server.url)}
-            </div>
-          </div>
-        )}
-        
-        {/* HTTP Headers Section */}
-        {'headers' in server && server.headers && Object.keys(server.headers).length > 0 && (
-          <div className="grid gap-1.5">
-            <div className="font-medium text-xs text-foreground uppercase">HTTP Headers</div>
-            <div className="border border-muted/50 rounded-md divide-y divide-muted/30">
-              {Object.entries(server.headers).map(([key, val]) => (
-                <div key={key} className="flex justify-between items-center p-2 font-mono text-xs">
-                  <span className="font-medium text-foreground/80">{key}</span>
-                  <span className="bg-muted/80 px-2 py-1 rounded">{val}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Function to render STDIO specific configuration
-  const renderStdioConfig = (server: ServerInstance) => {
-    const isStdioServer = !server.connectionDetails?.includes('http');
-    if (!isStdioServer) return null;
-    
-    return (
-      <div className="space-y-4">
-        {'arguments' in server && server.arguments && server.arguments.length > 0 && (
-          <div className="grid gap-1.5">
-            <div className="font-medium text-xs text-foreground capitalize">Command Arguments</div>
-            {renderConfigValue(server.arguments)}
-          </div>
-        )}
-        
-        {'environment' in server && server.environment && Object.keys(server.environment).length > 0 && (
-          <div className="grid gap-1.5">
-            <div className="font-medium text-xs text-foreground capitalize">Environment Variables</div>
-            {renderConfigValue(server.environment as Record<string, string>)}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -283,13 +224,14 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                               </p>
                             )}
                             
-                            {shareMode === "with-config" ? (
-                              server.connectionDetails?.includes('http') 
-                                ? renderHttpSseConfig(server) 
-                                : renderStdioConfig(server)
-                            ) : (
-                              <div className="text-sm text-muted-foreground italic">
-                                Basic configuration sharing enabled. Detailed parameters not included.
+                            {shareMode === "with-config" && (
+                              <div className="space-y-4">
+                                {getServerConfigDetails(server).map((detail, index) => (
+                                  <div key={index} className="grid gap-1.5">
+                                    <div className="font-medium text-xs text-foreground capitalize">{detail.name}</div>
+                                    {renderConfigValue(detail.value)}
+                                  </div>
+                                ))}
                               </div>
                             )}
                           </AccordionContent>
