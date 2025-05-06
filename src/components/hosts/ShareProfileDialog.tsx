@@ -14,16 +14,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProfileImportPreviewDialog } from "./ProfileImportPreviewDialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
+
 interface ServerConfigDetail {
   name: string;
   value: string | string[] | Record<string, string> | undefined;
 }
+
 interface ShareProfileDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   profile: Profile;
   servers: ServerInstance[];
 }
+
 export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   open,
   onOpenChange,
@@ -35,9 +38,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   const [isGeneratingLink, setIsGeneratingLink] = useState(false);
   const [showImportPreview, setShowImportPreview] = useState(false);
   const [selectedServers, setSelectedServers] = useState<string[]>([]);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
 
   // Initialize selected servers with all servers when dialog opens
   useEffect(() => {
@@ -50,6 +51,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
   useEffect(() => {
     setGeneratedLink(null);
   }, [shareMode, selectedServers]);
+
   const handleServerSelection = (serverId: string, checked: boolean) => {
     setSelectedServers(prev => {
       if (checked) {
@@ -61,6 +63,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     // Reset generated link when server selection changes
     setGeneratedLink(null);
   };
+
   const toggleAllServers = (checked: boolean) => {
     if (checked) {
       setSelectedServers(servers.map(server => server.id));
@@ -70,7 +73,9 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
     // Reset generated link when server selection changes
     setGeneratedLink(null);
   };
+
   const filteredServers = servers.filter(server => selectedServers.includes(server.id));
+
   const handleGenerateLink = () => {
     setIsGeneratingLink(true);
 
@@ -96,6 +101,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }, 1000);
   };
+
   const handleCopyLink = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink);
@@ -106,9 +112,11 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       });
     }
   };
+
   const handleShowImportPreview = () => {
     setShowImportPreview(true);
   };
+
   const handleImportConfirm = () => {
     // This would typically implement the actual import logic
     toast({
@@ -117,6 +125,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
       type: "success"
     });
   };
+
   const renderConfigValue = (value: string | string[] | Record<string, string> | undefined) => {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -133,6 +142,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           </div>)}
       </div>;
   };
+
   return <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-hidden flex flex-col">
@@ -293,10 +303,17 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
             
             {/* Generate Link and Share Actions */}
             <div className="space-y-4">
-              {!generatedLink ? <Button onClick={handleGenerateLink} className="w-full py-5 font-medium transition-all" disabled={isGeneratingLink || selectedServers.length === 0}>
+              {!generatedLink ? (
+                <Button 
+                  onClick={handleGenerateLink} 
+                  className="w-full py-5 font-medium transition-all"
+                  disabled={isGeneratingLink || selectedServers.length === 0}
+                >
                   <Upload className="h-4 w-4 mr-2" />
                   {isGeneratingLink ? "Generating Link..." : "Generate Share Link"}
-                </Button> : <div className="space-y-4">
+                </Button>
+              ) : (
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-medium text-foreground">Shareable Link 
@@ -314,27 +331,44 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                   </div>
                   
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Button onClick={handleCopyLink} variant="default" className="flex-1 py-5 font-medium hover:shadow-md transition-all">
+                    <Button 
+                      onClick={handleCopyLink} 
+                      variant="default" 
+                      className="flex-1 py-5 font-medium hover:shadow-md transition-all"
+                    >
                       <Copy className="h-4 w-4 mr-2" />
                       Copy Link
                     </Button>
                     
-                    <Button onClick={handleShowImportPreview} variant="outline" className="flex-1 py-5 font-medium hover:shadow-md transition-all">
+                    <Button 
+                      onClick={handleShowImportPreview} 
+                      variant="outline" 
+                      className="flex-1 py-5 font-medium hover:shadow-md transition-all"
+                    >
                       <Eye className="h-4 w-4 mr-2" />
                       Preview Import
                     </Button>
                   </div>
-                </div>}
+                </div>
+              )}
 
-              {selectedServers.length === 0 && <div className="text-center p-2 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-600 text-sm">
+              {selectedServers.length === 0 && (
+                <div className="text-center p-2 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-600 text-sm">
                   Please select at least one server to generate a share link
-                </div>}
+                </div>
+              )}
             </div>
           </div>
         </DialogContent>
       </Dialog>
       
       {/* Import Preview Dialog */}
-      <ProfileImportPreviewDialog open={showImportPreview} onOpenChange={setShowImportPreview} profile={profile} servers={filteredServers} onConfirmImport={handleImportConfirm} />
+      <ProfileImportPreviewDialog 
+        open={showImportPreview} 
+        onOpenChange={setShowImportPreview} 
+        profile={profile} 
+        servers={filteredServers} 
+        onConfirmImport={handleImportConfirm} 
+      />
     </>;
 };
