@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Copy, ChevronDown, ChevronUp, Server, Share2, Upload, Clock, Eye } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -207,7 +208,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                     {servers.map((server) => (
                       <Accordion type="single" collapsible key={server.id}>
                         <AccordionItem value={server.id} className="border-b-0">
-                          <AccordionTrigger className="py-3 px-3.5 hover:bg-muted/30 transition-colors">
+                          <AccordionTrigger className="py-3 px-3.5 hover:bg-muted/30 transition-colors hover:no-underline">
                             <div className="flex items-center gap-3 text-left">
                               <Server className="h-4 w-4 text-foreground" />
                               <span className="font-medium text-foreground">{server.name}</span>
