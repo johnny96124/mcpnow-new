@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ProfileImportPreviewDialog } from "./ProfileImportPreviewDialog";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface ServerConfigDetail {
   name: string;
@@ -204,49 +205,38 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                 {/* Servers list with ScrollArea */}
                 <ScrollArea className="h-[240px]">
                   <div className="divide-y divide-border">
-                    {servers.map((server, index) => (
-                      <Collapsible 
-                        key={server.id} 
-                        open={openConfigs[server.id]} 
-                        onOpenChange={() => toggleServerConfig(server.id)} 
-                        className={`${shareMode === "with-config" ? "" : "pointer-events-none"}`}
-                      >
-                        <div className="p-3.5 flex justify-between items-center bg-card hover:bg-muted/30 transition-colors">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-3">
+                    {servers.map((server) => (
+                      <Accordion type="single" collapsible key={server.id}>
+                        <AccordionItem value={server.id} className="border-b-0">
+                          <AccordionTrigger className="py-3 px-3.5 hover:bg-muted/30 transition-colors">
+                            <div className="flex items-center gap-3 text-left">
                               <Server className="h-4 w-4 text-foreground" />
                               <span className="font-medium text-foreground">{server.name}</span>
-                              <EndpointLabel type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} />
+                              <EndpointLabel 
+                                type={server.connectionDetails?.includes('http') ? 'HTTP_SSE' : 'STDIO'} 
+                              />
                             </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="pt-0 pb-3 px-4 pl-10 bg-muted/20">
                             {server.description && (
-                              <p className="text-xs text-muted-foreground pl-7 pr-4 mt-1">
+                              <p className="text-sm text-muted-foreground mb-3">
                                 {server.description}
                               </p>
                             )}
-                          </div>
-                          
-                          {shareMode === "with-config" && getServerConfigDetails(server).length > 0 ? (
-                            <CollapsibleTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-muted">
-                                {openConfigs[server.id] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                              </Button>
-                            </CollapsibleTrigger>
-                          ) : <div className="w-7 h-7"></div> /* Placeholder to maintain consistent spacing */}
-                        </div>
-                        
-                        {shareMode === "with-config" && (
-                          <CollapsibleContent>
-                            <div className="p-4 pt-2 pl-10 space-y-4 bg-muted/20 border-t">
-                              {getServerConfigDetails(server).map((detail, index) => (
-                                <div key={index} className="grid gap-1.5">
-                                  <div className="font-medium text-xs text-foreground capitalize">{detail.name}</div>
-                                  {renderConfigValue(detail.value)}
-                                </div>
-                              ))}
-                            </div>
-                          </CollapsibleContent>
-                        )}
-                      </Collapsible>
+                            
+                            {shareMode === "with-config" && (
+                              <div className="space-y-4">
+                                {getServerConfigDetails(server).map((detail, index) => (
+                                  <div key={index} className="grid gap-1.5">
+                                    <div className="font-medium text-xs text-foreground capitalize">{detail.name}</div>
+                                    {renderConfigValue(detail.value)}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
                     ))}
                   </div>
                 </ScrollArea>
