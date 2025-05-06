@@ -229,17 +229,10 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
                               {!server.connectionDetails?.includes('http') && 'arguments' in server && server.arguments && server.arguments.length > 0 && (
                                 <div className="space-y-2">
                                   <h4 className="font-medium text-sm">Command Arguments</h4>
-                                  {shareMode === "with-config" ? (
-                                    <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm whitespace-pre-wrap">
-                                      {server.arguments.join(' ')}
-                                    </pre>
-                                  ) : (
-                                    <div className="bg-muted/40 p-3 rounded-md overflow-x-auto">
-                                      <div className="font-mono text-sm opacity-60">
-                                        {server.arguments.length} argument{server.arguments.length !== 1 ? 's' : ''} defined
-                                      </div>
-                                    </div>
-                                  )}
+                                  {/* Always show the complete command arguments regardless of share mode */}
+                                  <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto font-mono text-sm whitespace-pre-wrap">
+                                    {server.arguments.join(' ')}
+                                  </pre>
                                 </div>
                               )}
                               
