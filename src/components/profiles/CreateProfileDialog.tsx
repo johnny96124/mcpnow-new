@@ -3,7 +3,7 @@ import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { PlusCircle, Trash2, Plus, Info, Check, CheckSquare, Square } from "lucide-react";
+import { PlusCircle, Trash2, Plus, Info } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,8 +26,6 @@ import { useToast } from "@/hooks/use-toast";
 import { ServerInstance, serverDefinitions } from "@/data/mockData";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 
 const profileSchema = z.object({
   name: z.string().min(1, { message: "Profile name is required" }),
@@ -64,8 +62,6 @@ export function CreateProfileDialog({
     { id: `selection-${Date.now()}`, definitionId: "", instanceId: "" }
   ]);
   
-  const [selectedInstances, setSelectedInstances] = useState<string[]>([]);
-  
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
@@ -88,7 +84,7 @@ export function CreateProfileDialog({
       ? selections
           .filter(selection => selection.instanceId)
           .map(selection => selection.instanceId)
-      : selectedInstances;
+      : [];
 
     onCreateProfile({
       name: values.name,
@@ -97,7 +93,6 @@ export function CreateProfileDialog({
     
     form.reset();
     setSelections([{ id: `selection-${Date.now()}`, definitionId: "", instanceId: "" }]);
-    setSelectedInstances([]);
     onOpenChange(false);
     
     toast({
@@ -169,37 +164,6 @@ export function CreateProfileDialog({
     
     return definitionIds.filter(defId => !usedDefinitionIds.includes(defId));
   };
-
-  // New functions for server selection
-  const toggleInstanceSelection = (instanceId: string) => {
-    setSelectedInstances(prev => 
-      prev.includes(instanceId) 
-        ? prev.filter(id => id !== instanceId) 
-        : [...prev, instanceId]
-    );
-  };
-
-  const selectAllInstances = () => {
-    setSelectedInstances(instances.map(instance => instance.id));
-  };
-
-  const deselectAllInstances = () => {
-    setSelectedInstances([]);
-  };
-  
-  // Initialize selected instances when dialog opens
-  useState(() => {
-    if (open && instances.length > 0) {
-      // By default, select all instances
-      selectAllInstances();
-    }
-    return () => {
-      if (!open) {
-        // Reset selections when dialog closes
-        setSelectedInstances([]);
-      }
-    };
-  });
   
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -226,72 +190,6 @@ export function CreateProfileDialog({
                 </FormItem>
               )}
             />
-
-            {instances.length > 0 && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-medium">Select Servers</h4>
-                  <div className="flex gap-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm"
-                      onClick={selectAllInstances}
-                    >
-                      <CheckSquare className="h-3.5 w-3.5 mr-1" />
-                      Select All
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      size="sm"
-                      onClick={deselectAllInstances}
-                      disabled={selectedInstances.length === 0}
-                    >
-                      <Square className="h-3.5 w-3.5 mr-1" />
-                      Deselect All
-                    </Button>
-                  </div>
-                </div>
-
-                <ScrollArea className="h-[200px] pr-4">
-                  <div className="space-y-2">
-                    {instances.map((instance) => (
-                      <div
-                        key={instance.id}
-                        className={`p-3 border rounded-lg cursor-pointer transition-colors flex items-center ${
-                          selectedInstances.includes(instance.id) 
-                            ? "border-primary/50 bg-primary/5" 
-                            : "hover:bg-accent/50"
-                        }`}
-                        onClick={() => toggleInstanceSelection(instance.id)}
-                      >
-                        <div className="mr-2">
-                          {selectedInstances.includes(instance.id) ? (
-                            <CheckSquare className="h-4 w-4 text-primary" />
-                          ) : (
-                            <Square className="h-4 w-4 text-muted-foreground" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium">{instance.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {instance.connectionDetails || getDefinitionName(instance.definitionId)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-
-                <Separator />
-
-                <div className="text-sm text-muted-foreground flex items-center">
-                  <Info className="h-4 w-4 mr-2" />
-                  <span>Selected {selectedInstances.length} of {instances.length} servers</span>
-                </div>
-              </div>
-            )}
 
             {showInstanceSelection && (
               <div className="space-y-4">
