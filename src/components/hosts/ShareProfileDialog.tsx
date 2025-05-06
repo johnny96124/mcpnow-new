@@ -163,7 +163,7 @@ export const ShareProfileDialog: React.FC<ShareProfileDialogProps> = ({
           <div className="grid gap-1.5">
             <div className="font-medium text-xs text-foreground uppercase">URL</div>
             <div className="font-mono text-sm bg-muted/80 p-2 rounded border border-muted/50">
-              {server.url}
+              {String(server.url)}
             </div>
           </div>
         )}
