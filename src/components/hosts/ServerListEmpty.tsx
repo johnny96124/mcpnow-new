@@ -23,7 +23,7 @@ export const ServerListEmpty: React.FC<ServerListEmptyProps> = ({
       </p>
       <Button 
         onClick={onAddServers} 
-        className={`${highlight ? 'animate-pulse ring-2 ring-primary ring-offset-2' : ''}`}
+        className={highlight ? 'animate-pulse ring-2 ring-primary ring-offset-2' : ''}
       >
         <Plus className="h-4 w-4 mr-2" />
         添加服务器

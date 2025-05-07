@@ -39,7 +39,8 @@ const Hosts = () => {
       markHostsOnboardingAsSeen();
     }
     
-    // Check for the highlight flag and clear it after use
+    // Enhanced check for the highlight flag
+    console.log("Checking highlightAddServers:", sessionStorage.getItem('highlightAddServers'));
     if (sessionStorage.getItem('highlightAddServers') === 'true') {
       setShouldHighlightAddServers(true);
       sessionStorage.removeItem('highlightAddServers');
@@ -49,10 +50,10 @@ const Hosts = () => {
         setSelectedHostId(hostsList[0].id);
       }
       
-      // Remove the highlight after a few seconds
+      // Keep the highlight active longer to ensure user sees it
       setTimeout(() => {
         setShouldHighlightAddServers(false);
-      }, 3000);
+      }, 5000); // Increased to 5 seconds for better visibility
     }
   }, []);
 
@@ -80,11 +81,22 @@ const Hosts = () => {
   const selectedHost = selectedHostId ? hostsList.find(h => h.id === selectedHostId) : null;
   const selectedProfileId = selectedHost ? hostProfiles[selectedHost.id] || "" : "";
 
+  // Auto-select first host on initial render
   useEffect(() => {
     if (hostsList.length > 0 && !selectedHostId) {
       setSelectedHostId(hostsList[0].id);
     }
   }, [hostsList, selectedHostId]);
+
+  // Show toast notification when highlighting Add Servers button
+  useEffect(() => {
+    if (shouldHighlightAddServers) {
+      toast({
+        title: "添加服务器",
+        description: "点击突出显示的按钮添加服务器到您的主机",
+      });
+    }
+  }, [shouldHighlightAddServers, toast]);
 
   const handleCreateConfigDialog = (hostId: string) => {
     const host = hostsList.find(h => h.id === hostId);

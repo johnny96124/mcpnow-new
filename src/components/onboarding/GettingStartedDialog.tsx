@@ -47,7 +47,7 @@ export const GettingStartedDialog = ({
     setShowHostDialog(false);
   };
 
-  // New function to navigate to Hosts page and highlight Add Servers button
+  // Updated function to navigate to Hosts page and highlight Add Servers button
   const handleNavigateToAddServers = () => {
     markOnboardingAsSeen();
     handleOpenChange(false);
@@ -55,8 +55,9 @@ export const GettingStartedDialog = ({
     // Navigate to the hosts page
     navigate("/");
     
-    // Use sessionStorage to tell the Hosts page to highlight the Add Servers button
+    // Use sessionStorage with 'true' string value to ensure proper comparison
     sessionStorage.setItem('highlightAddServers', 'true');
+    console.log("Set highlightAddServers flag:", sessionStorage.getItem('highlightAddServers'));
   };
 
   const beginnerGuideSteps = [{
