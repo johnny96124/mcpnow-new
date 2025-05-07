@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -7,10 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Server, FileText, Download, Info } from "lucide-react";
+import { Server, FileText, Download, Info, Copy, Check, Link } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ServerLogo } from "@/components/servers/ServerLogo";
+import { toast } from "@/components/ui/use-toast";
 import type { EndpointType } from "@/data/mockData";
 
 // Mock data for the shared profile - In a real app, you would fetch this from an API
@@ -65,6 +67,11 @@ export default function ProfileLandingPage() {
   const { shareId } = useParams<{ shareId: string }>();
   const [profile, setProfile] = useState(mockSharedProfile);
   const [isLoading, setIsLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const location = useLocation();
+  
+  // Get the full URL for sharing
+  const shareUrl = window.location.origin + location.pathname;
 
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
@@ -77,6 +84,36 @@ export default function ProfileLandingPage() {
       setIsLoading(false);
     }, 800);
   }, [shareId]);
+
+  // Reset copied state after 2 seconds
+  useEffect(() => {
+    if (copied) {
+      const timer = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [copied]);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(shareUrl)
+      .then(() => {
+        setCopied(true);
+        toast({
+          title: "Link copied!",
+          description: "The share link has been copied to your clipboard.",
+          type: "success"
+        });
+      })
+      .catch((err) => {
+        console.error("Failed to copy: ", err);
+        toast({
+          title: "Failed to copy",
+          description: "Please try again or copy the URL manually.",
+          type: "error"
+        });
+      });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -136,10 +173,34 @@ export default function ProfileLandingPage() {
                       )}
                     </div>
                   </div>
+                  
+                  {/* Replace "Shared By" with Share Link */}
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Shared By</h3>
-                    <p>{profile.createdBy}</p>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Share Link</h3>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-muted/40 rounded-l-md py-2 px-3 border-y border-l border-border text-sm truncate">
+                        {shareUrl}
+                      </div>
+                      <Button 
+                        size="sm" 
+                        className="rounded-l-none bg-purple-600 hover:bg-purple-700 text-white gap-1.5"
+                        onClick={handleCopyLink}
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="h-4 w-4" />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-4 w-4" />
+                            Copy
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </div>
+                  
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Created On</h3>
                     <p>{profile.createdAt}</p>
