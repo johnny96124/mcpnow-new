@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Server, Play, Share, Plus } from "lucide-react";
@@ -6,6 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogFo
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { markOnboardingAsSeen } from "@/utils/localStorage";
+import { AddHostDialog } from "@/components/new-layout/AddHostDialog";
+
 interface GettingStartedDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -17,12 +18,15 @@ export const GettingStartedDialog = ({
   const [expandedStep, setExpandedStep] = useState<number>(0);
   const [closing, setClosing] = useState(false);
   const [animationOrigin, setAnimationOrigin] = useState<string>("60 calc(100vh - 60)");
+  const [showAddHostDialog, setShowAddHostDialog] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
     if (!open && !closing) {
       setClosing(false);
     }
   }, [open, closing]);
+  
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       setAnimationOrigin("60 calc(100vh - 60)");
@@ -36,6 +40,13 @@ export const GettingStartedDialog = ({
       onOpenChange(true);
     }
   };
+  
+  const handleAddHost = (host: any) => {
+    // This would normally add the host to your state/store
+    console.log("Host added:", host);
+    setShowAddHostDialog(false);
+  };
+
   const beginnerGuideSteps = [{
     title: "添加本地已安装的MCP Host",
     description: "连接到您本地网络中可用的MCP主机。",
@@ -51,11 +62,9 @@ export const GettingStartedDialog = ({
             <li>系统会自动为新添加的主机创建默认配置文件，使您可以立即开始使用。</li>
           </ol>
           <div className="pt-4">
-            <Button asChild size="sm" className="gap-1 bg-blue-500 hover:bg-blue-600">
-              <Link to="/hosts">
-                管理主机
-                <ChevronRight className="h-4 w-4" />
-              </Link>
+            <Button size="sm" className="gap-1 bg-blue-500 hover:bg-blue-600" onClick={() => setShowAddHostDialog(true)}>
+              添加主机
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </>
@@ -129,7 +138,9 @@ export const GettingStartedDialog = ({
           </div>
         </>
   }];
-  return <Dialog open={open || closing} onOpenChange={handleOpenChange}>
+  
+  return <>
+    <Dialog open={open || closing} onOpenChange={handleOpenChange}>
       <DialogContent ref={dialogRef} className={`max-w-2xl ${closing ? 'animate-collapse' : 'animate-expand'}`} animationOrigin={animationOrigin} hideClose={true} size="xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">欢迎使用 MCP Now</DialogTitle>
@@ -167,5 +178,12 @@ export const GettingStartedDialog = ({
           </DialogClose>
         </DialogFooter>
       </DialogContent>
-    </Dialog>;
+    </Dialog>
+    
+    <AddHostDialog 
+      open={showAddHostDialog}
+      onOpenChange={setShowAddHostDialog}
+      onAddHost={handleAddHost}
+    />
+  </>;
 };
