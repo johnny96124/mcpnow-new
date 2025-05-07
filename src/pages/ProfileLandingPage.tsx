@@ -161,7 +161,9 @@ It contains server configurations and settings that you can import into MCP Now.
                   </div>
                   <CardTitle>Profile Information</CardTitle>
                 </div>
-                {/* Removed server count badge from here */}
+                <Badge variant="outline" className="bg-secondary/50">
+                  {profile.servers.length} Server{profile.servers.length !== 1 ? 's' : ''}
+                </Badge>
               </div>
             </CardHeader>
             
@@ -216,10 +218,6 @@ It contains server configurations and settings that you can import into MCP Now.
                 <div className="mt-8 border-t pt-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold tracking-tight">Included Servers</h2>
-                    {/* Added server count badge here */}
-                    <Badge variant="outline" className="bg-secondary/50">
-                      {profile.servers.length} Server{profile.servers.length !== 1 ? 's' : ''}
-                    </Badge>
                   </div>
                   
                   <div className="grid gap-4">
@@ -239,29 +237,27 @@ It contains server configurations and settings that you can import into MCP Now.
                           </AccordionTrigger>
                           
                           <AccordionContent className="p-0 border-t">
-                            {/* Modified tab navigation style to match the design */}
-                            <div className="px-6 pt-4 pb-0">
+                            {/* Modified tabs to be on the same line as the header */}
+                            <div className="px-6 py-4">
                               <Tabs defaultValue="configuration" className="w-full">
-                                <div className="border-b">
-                                  <div className="flex overflow-x-auto">
-                                    {/* Updated tabs to match the design in image 2 */}
-                                    <TabsList className="bg-transparent h-10 p-0 space-x-4">
-                                      <TabsTrigger value="configuration" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
-                                        Configuration
+                                <div className="flex justify-between items-center mb-4">
+                                  <h3 className="text-lg font-medium">Server Details</h3>
+                                  <TabsList className="bg-transparent h-8">
+                                    <TabsTrigger value="configuration" className="text-sm">
+                                      Configuration
+                                    </TabsTrigger>
+                                    <TabsTrigger value="environment" className="text-sm">
+                                      Environment Variables
+                                    </TabsTrigger>
+                                    {server.type === "HTTP_SSE" && 
+                                      <TabsTrigger value="headers" className="text-sm">
+                                        HTTP Headers
                                       </TabsTrigger>
-                                      
-                                      <TabsTrigger value="environment" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
-                                        Environment Variables
-                                      </TabsTrigger>
-                                      
-                                      {server.type === "HTTP_SSE" && <TabsTrigger value="headers" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
-                                          HTTP Headers
-                                        </TabsTrigger>}
-                                    </TabsList>
-                                  </div>
+                                    }
+                                  </TabsList>
                                 </div>
                                 
-                                <TabsContent value="configuration" className="space-y-4 p-6">
+                                <TabsContent value="configuration" className="space-y-4 pt-2">
                                   {server.type === "STDIO" && server.arguments.length > 0 && <div>
                                       <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
                                       <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
@@ -277,7 +273,7 @@ It contains server configurations and settings that you can import into MCP Now.
                                     </div>}
                                 </TabsContent>
                                 
-                                <TabsContent value="environment" className="p-6">
+                                <TabsContent value="environment" className="pt-2">
                                   {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                       {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                           <div className="font-mono text-xs font-medium mb-1">{key}</div>
@@ -290,7 +286,7 @@ It contains server configurations and settings that you can import into MCP Now.
                                     </div>}
                                 </TabsContent>
                                 
-                                {server.type === "HTTP_SSE" && <TabsContent value="headers" className="p-6">
+                                {server.type === "HTTP_SSE" && <TabsContent value="headers" className="pt-2">
                                     {Object.keys(server.headers).length > 0 ? <div className="space-y-4">
                                         {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                             <div className="font-mono text-xs font-medium mb-1">{key}</div>
