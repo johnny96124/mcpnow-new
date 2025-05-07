@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { Server, FileText, Download, Info } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ServerLogo } from "@/components/servers/ServerLogo";
+import type { EndpointType } from "@/data/mockData";
 
 // Mock data for the shared profile - In a real app, you would fetch this from an API
 const mockSharedProfile = {
@@ -26,7 +26,7 @@ const mockSharedProfile = {
       id: "server-1",
       name: "GitHub Copilot",
       description: "Official GitHub Copilot API integration for code completions and explanations",
-      type: "HTTP_SSE",
+      type: "HTTP_SSE" as EndpointType,
       status: "ready",
       arguments: [],
       url: "https://api.github.com/copilot/v1",
@@ -45,7 +45,7 @@ const mockSharedProfile = {
       id: "server-2",
       name: "Local File Assistant",
       description: "Local file processing and analysis for code repositories",
-      type: "STDIO",
+      type: "STDIO" as EndpointType,
       status: "ready",
       arguments: [
         "--model", "advanced-code-v2", 
@@ -177,7 +177,7 @@ export default function ProfileLandingPage() {
                       <div className="space-y-1">
                         <CardTitle className="flex items-center gap-2 text-xl">
                           {server.name}
-                          <EndpointLabel type={server.type} />
+                          <EndpointLabel type={server.type as EndpointType} />
                         </CardTitle>
                         {server.description && (
                           <p className="text-muted-foreground text-sm">{server.description}</p>
