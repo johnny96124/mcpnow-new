@@ -346,8 +346,8 @@ It contains server configurations and settings that you can import into MCP Now.
                     </div>
                   </div>
                 </div>
-                <div className="md:w-1/3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 flex items-center justify-center p-8">
-                  <img src="/lovable-uploads/654262e6-ff1d-42fc-b9cf-d9f672f96de1.png" alt="MCP Now Logo" className="max-w-full max-h-48" />
+                <div className="md:w-1/3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 flex items-center justify-center p-0">
+                  <img src="/lovable-uploads/654262e6-ff1d-42fc-b9cf-d9f672f96de1.png" alt="MCP Now Logo" className="w-full h-full object-cover object-center" />
                 </div>
               </div>
             </Card>
