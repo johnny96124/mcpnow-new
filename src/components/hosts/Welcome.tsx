@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -203,6 +202,7 @@ const Welcome = ({ onAddHosts, onSkip }: WelcomeProps) => {
                 </Button>
                 
                 <Button 
+                  id="add-host-manually-button"
                   onClick={onAddHosts} 
                   variant="outline" 
                   size="lg"

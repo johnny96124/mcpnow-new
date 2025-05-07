@@ -28,7 +28,11 @@ export const HostsEmptyState: React.FC<HostsEmptyStateProps> = ({
           <p className="text-muted-foreground mb-6 max-w-md">
             You haven't added any hosts yet. Add a host to get started with MCP Now.
           </p>
-          <Button onClick={onAddHost} size="lg">
+          <Button 
+            id="add-new-host-button" 
+            onClick={onAddHost} 
+            size="lg"
+          >
             <PlusCircle className="h-4 w-4 mr-2" />
             Add Your First Host
           </Button>

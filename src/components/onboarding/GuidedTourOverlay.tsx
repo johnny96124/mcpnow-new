@@ -6,12 +6,14 @@ interface GuidedTourOverlayProps {
   targetElementId: string;
   onClose: () => void;
   isVisible: boolean;
+  guidanceText?: string;
 }
 
 export const GuidedTourOverlay: React.FC<GuidedTourOverlayProps> = ({ 
   targetElementId,
   onClose,
-  isVisible
+  isVisible,
+  guidanceText = "点击此处添加服务器到您的配置文件"
 }) => {
   const [targetPosition, setTargetPosition] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
 
@@ -95,7 +97,7 @@ export const GuidedTourOverlay: React.FC<GuidedTourOverlayProps> = ({
           maxWidth: '250px'
         }}
       >
-        <p className="font-medium text-sm">点击此处添加服务器到您的配置文件</p>
+        <p className="font-medium text-sm">{guidanceText}</p>
       </div>
     </div>
   );

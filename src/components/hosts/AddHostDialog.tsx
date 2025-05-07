@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -9,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ConnectionStatus } from "@/data/mockData";
+import { GuidedTourOverlay } from "@/components/onboarding/GuidedTourOverlay";
+
 const hostSchema = z.object({
   name: z.string().min(1, {
     message: "Host name is required"
@@ -28,6 +31,7 @@ interface AddHostDialogProps {
     connectionStatus: ConnectionStatus;
   }) => void;
 }
+
 export function AddHostDialog({
   open,
   onOpenChange,
@@ -41,6 +45,11 @@ export function AddHostDialog({
       icon: "💻"
     }
   });
+
+  const [showTourOverlay, setShowTourOverlay] = useState<boolean>(
+    sessionStorage.getItem('highlightAddNewHost') === 'true'
+  );
+
   const handleSubmit = (values: HostFormValues) => {
     onAddHost({
       name: values.name,
@@ -52,55 +61,72 @@ export function AddHostDialog({
     form.reset();
     onOpenChange(false);
   };
-  return <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add Host Manually</DialogTitle>
-          <DialogDescription>
-            Add a new host connection to your MCP configuration.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField control={form.control} name="name" render={({
-            field
-          }) => <FormItem>
+
+  const handleCloseTour = () => {
+    setShowTourOverlay(false);
+    sessionStorage.removeItem('highlightAddNewHost');
+  };
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add Host Manually</DialogTitle>
+            <DialogDescription>
+              Add a new host connection to your MCP configuration.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+              <FormField control={form.control} name="name" render={({
+                field
+              }) => <FormItem>
                   <FormLabel>Host Name</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Cursor, VSCode, etc." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>} />
-            
-            <FormField control={form.control} name="configPath" render={({
-            field
-          }) => <FormItem>
+              
+              <FormField control={form.control} name="configPath" render={({
+                field
+              }) => <FormItem>
                   <FormLabel>Config Path</FormLabel>
                   <FormControl>
                     <Input placeholder="/path/to/config.json" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>} />
-            
-            <FormField control={form.control} name="icon" render={({
-            field
-          }) => <FormItem>
+              
+              <FormField control={form.control} name="icon" render={({
+                field
+              }) => <FormItem>
                   <FormLabel>Icon (Emoji)</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., 💻, 🖥️, ⌨️" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>} />
-            
-            <DialogFooter>
-              <Button type="submit" className="mt-4">
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Add Host
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>;
+              
+              <DialogFooter>
+                <Button type="submit" className="mt-4" id="add-host-submit">
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Add Host
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      <GuidedTourOverlay 
+        targetElementId="add-new-host-button"
+        onClose={handleCloseTour}
+        isVisible={showTourOverlay}
+        guidanceText="点击此处添加新主机到系统"
+      />
+    </>
+  );
 }
