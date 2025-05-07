@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -57,7 +56,6 @@ const mockSharedProfile = {
     }
   }]
 };
-
 export default function ProfileLandingPage() {
   const {
     shareId
@@ -92,7 +90,6 @@ export default function ProfileLandingPage() {
       return () => clearTimeout(timer);
     }
   }, [copied]);
-  
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
@@ -110,7 +107,6 @@ export default function ProfileLandingPage() {
       });
     });
   };
-  
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
@@ -225,8 +221,7 @@ It contains server configurations and settings that you can import into MCP Now.
                   </div>
                   
                   <div className="grid gap-4">
-                    {profile.servers.map(server => (
-                      <Accordion type="single" collapsible className="w-full" key={server.id}>
+                    {profile.servers.map(server => <Accordion type="single" collapsible className="w-full" key={server.id}>
                         <AccordionItem value={server.id} className="border rounded-lg overflow-hidden">
                           <AccordionTrigger className="px-6 py-4 hover:no-underline bg-muted/20">
                             <div className="flex items-center gap-4 w-full">
@@ -236,9 +231,7 @@ It contains server configurations and settings that you can import into MCP Now.
                                   {server.name}
                                   <EndpointLabel type={server.type as EndpointType} />
                                 </div>
-                                {server.description && (
-                                  <p className="text-muted-foreground text-sm">{server.description}</p>
-                                )}
+                                {server.description && <p className="text-muted-foreground text-sm">{server.description}</p>}
                               </div>
                             </div>
                           </AccordionTrigger>
@@ -251,28 +244,17 @@ It contains server configurations and settings that you can import into MCP Now.
                                   <div className="flex overflow-x-auto">
                                     {/* Updated tabs to match the design in image 2 */}
                                     <TabsList className="bg-transparent h-10 p-0 space-x-4">
-                                      <TabsTrigger 
-                                        value="configuration" 
-                                        className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
-                                      >
+                                      <TabsTrigger value="configuration" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
                                         Configuration
                                       </TabsTrigger>
                                       
-                                      <TabsTrigger 
-                                        value="environment" 
-                                        className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
-                                      >
+                                      <TabsTrigger value="environment" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
                                         Environment Variables
                                       </TabsTrigger>
                                       
-                                      {server.type === "HTTP_SSE" && (
-                                        <TabsTrigger 
-                                          value="headers" 
-                                          className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
-                                        >
+                                      {server.type === "HTTP_SSE" && <TabsTrigger value="headers" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
                                           HTTP Headers
-                                        </TabsTrigger>
-                                      )}
+                                        </TabsTrigger>}
                                     </TabsList>
                                   </div>
                                 </div>
@@ -322,8 +304,7 @@ It contains server configurations and settings that you can import into MCP Now.
                             </div>
                           </AccordionContent>
                         </AccordionItem>
-                      </Accordion>
-                    ))}
+                      </Accordion>)}
                   </div>
                 </div>
               </div>
@@ -341,12 +322,10 @@ It contains server configurations and settings that you can import into MCP Now.
                     <div className="bg-primary/10 p-2 rounded-full">
                       <Server className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="text-xl font-semibold">Simple AI Model Management</h3>
+                    <h3 className="text-xl font-semibold">All in one MCP management platform</h3>
                   </div>
                   
-                  <p className="text-muted-foreground mb-6">
-                    MCP Now helps you deploy and manage AI models with minimal effort. Connect your favorite models and start building right away.
-                  </p>
+                  <p className="text-muted-foreground mb-6">MCP Now helps you config and manage MCP servers with minimal effort. Connect your favorite hosts and start building right away.</p>
                   
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
