@@ -57,6 +57,7 @@ const mockSharedProfile = {
     }
   }]
 };
+
 export default function ProfileLandingPage() {
   const {
     shareId
@@ -152,9 +153,9 @@ It contains server configurations and settings that you can import into MCP Now.
           </div>
         </div>
         
-        {/* Profile Details Section */}
+        {/* Combined Profile Information and Servers Section */}
         <div className="container mx-auto max-w-4xl py-12 px-6 space-y-10">
-          {/* Profile Info Card */}
+          {/* Combined Card for Profile Information and Included Servers */}
           <Card>
             <CardHeader className="border-b bg-muted/30">
               <div className="flex items-center justify-between">
@@ -187,7 +188,7 @@ It contains server configurations and settings that you can import into MCP Now.
                     </div>
                   </div>
                   
-                  {/* Updated Share Link section to match the design */}
+                  {/* Share Link section */}
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Share Link</h3>
                     <div className="flex items-center gap-2">
@@ -216,118 +217,118 @@ It contains server configurations and settings that you can import into MCP Now.
                     </div>
                   </div>
                 </div>
+
+                {/* Servers Section - Integrated within the same card */}
+                <div className="mt-8 border-t pt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold tracking-tight">Included Servers</h2>
+                  </div>
+                  
+                  <div className="grid gap-4">
+                    {profile.servers.map(server => (
+                      <Accordion type="single" collapsible className="w-full" key={server.id}>
+                        <AccordionItem value={server.id} className="border rounded-lg overflow-hidden">
+                          <AccordionTrigger className="px-6 py-4 hover:no-underline bg-muted/20">
+                            <div className="flex items-center gap-4 w-full">
+                              <ServerLogo name={server.name} />
+                              <div className="space-y-1 text-left">
+                                <div className="flex items-center gap-2 text-xl font-semibold">
+                                  {server.name}
+                                  <EndpointLabel type={server.type as EndpointType} />
+                                </div>
+                                {server.description && (
+                                  <p className="text-muted-foreground text-sm">{server.description}</p>
+                                )}
+                              </div>
+                            </div>
+                          </AccordionTrigger>
+                          
+                          <AccordionContent className="p-0 border-t">
+                            {/* Modified tab navigation style to match the design */}
+                            <div className="px-6 pt-4 pb-0">
+                              <Tabs defaultValue="configuration" className="w-full">
+                                <div className="border-b">
+                                  <div className="flex overflow-x-auto">
+                                    {/* Updated tabs to match the design in image 2 */}
+                                    <TabsList className="bg-transparent h-10 p-0 space-x-4">
+                                      <TabsTrigger 
+                                        value="configuration" 
+                                        className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
+                                      >
+                                        Configuration
+                                      </TabsTrigger>
+                                      
+                                      <TabsTrigger 
+                                        value="environment" 
+                                        className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
+                                      >
+                                        Environment Variables
+                                      </TabsTrigger>
+                                      
+                                      {server.type === "HTTP_SSE" && (
+                                        <TabsTrigger 
+                                          value="headers" 
+                                          className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
+                                        >
+                                          HTTP Headers
+                                        </TabsTrigger>
+                                      )}
+                                    </TabsList>
+                                  </div>
+                                </div>
+                                
+                                <TabsContent value="configuration" className="space-y-4 p-6">
+                                  {server.type === "STDIO" && server.arguments.length > 0 && <div>
+                                      <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
+                                      <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
+                                        {server.arguments.join(' ')}
+                                      </pre>
+                                    </div>}
+                                  
+                                  {server.type === "HTTP_SSE" && <div>
+                                      <h3 className="text-sm font-medium mb-2">URL</h3>
+                                      <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
+                                        {server.url}
+                                      </pre>
+                                    </div>}
+                                </TabsContent>
+                                
+                                <TabsContent value="environment" className="p-6">
+                                  {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
+                                          <div className="font-mono text-xs font-medium mb-1">{key}</div>
+                                          <div className="font-mono text-xs text-muted-foreground truncate">
+                                            {value}
+                                          </div>
+                                        </div>)}
+                                    </div> : <div className="text-center text-muted-foreground py-4">
+                                      No environment variables configured
+                                    </div>}
+                                </TabsContent>
+                                
+                                {server.type === "HTTP_SSE" && <TabsContent value="headers" className="p-6">
+                                    {Object.keys(server.headers).length > 0 ? <div className="space-y-4">
+                                        {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
+                                            <div className="font-mono text-xs font-medium mb-1">{key}</div>
+                                            <div className="font-mono text-xs text-muted-foreground truncate">
+                                              {value}
+                                            </div>
+                                          </div>)}
+                                      </div> : <div className="text-center text-muted-foreground py-4">
+                                        No headers configured
+                                      </div>}
+                                  </TabsContent>}
+                              </Tabs>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    ))}
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
-          
-          {/* Servers Section - Updated with collapsible content */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-semibold tracking-tight">Included Servers</h2>
-            </div>
-            
-            <div className="grid gap-6">
-              {profile.servers.map(server => (
-                <Accordion type="single" collapsible className="w-full" key={server.id}>
-                  <AccordionItem value={server.id} className="border rounded-lg overflow-hidden">
-                    <AccordionTrigger className="px-6 py-4 hover:no-underline bg-muted/20">
-                      <div className="flex items-center gap-4 w-full">
-                        <ServerLogo name={server.name} />
-                        <div className="space-y-1 text-left">
-                          <div className="flex items-center gap-2 text-xl font-semibold">
-                            {server.name}
-                            <EndpointLabel type={server.type as EndpointType} />
-                          </div>
-                          {server.description && (
-                            <p className="text-muted-foreground text-sm">{server.description}</p>
-                          )}
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    
-                    <AccordionContent className="p-0 border-t">
-                      {/* Modified tab navigation style to match the design */}
-                      <div className="px-6 pt-4 pb-0">
-                        <Tabs defaultValue="configuration" className="w-full">
-                          <div className="border-b">
-                            <div className="flex overflow-x-auto">
-                              {/* Updated tabs to match the design in image 2 */}
-                              <TabsList className="bg-transparent h-10 p-0 space-x-4">
-                                <TabsTrigger 
-                                  value="configuration" 
-                                  className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
-                                >
-                                  Configuration
-                                </TabsTrigger>
-                                
-                                <TabsTrigger 
-                                  value="environment" 
-                                  className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
-                                >
-                                  Environment Variables
-                                </TabsTrigger>
-                                
-                                {server.type === "HTTP_SSE" && (
-                                  <TabsTrigger 
-                                    value="headers" 
-                                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
-                                  >
-                                    HTTP Headers
-                                  </TabsTrigger>
-                                )}
-                              </TabsList>
-                            </div>
-                          </div>
-                          
-                          <TabsContent value="configuration" className="space-y-4 p-6">
-                            {server.type === "STDIO" && server.arguments.length > 0 && <div>
-                                <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
-                                <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
-                                  {server.arguments.join(' ')}
-                                </pre>
-                              </div>}
-                            
-                            {server.type === "HTTP_SSE" && <div>
-                                <h3 className="text-sm font-medium mb-2">URL</h3>
-                                <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
-                                  {server.url}
-                                </pre>
-                              </div>}
-                          </TabsContent>
-                          
-                          <TabsContent value="environment" className="p-6">
-                            {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
-                                    <div className="font-mono text-xs font-medium mb-1">{key}</div>
-                                    <div className="font-mono text-xs text-muted-foreground truncate">
-                                      {value}
-                                    </div>
-                                  </div>)}
-                              </div> : <div className="text-center text-muted-foreground py-4">
-                                No environment variables configured
-                              </div>}
-                          </TabsContent>
-                          
-                          {server.type === "HTTP_SSE" && <TabsContent value="headers" className="p-6">
-                              {Object.keys(server.headers).length > 0 ? <div className="space-y-4">
-                                  {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
-                                      <div className="font-mono text-xs font-medium mb-1">{key}</div>
-                                      <div className="font-mono text-xs text-muted-foreground truncate">
-                                        {value}
-                                      </div>
-                                    </div>)}
-                                </div> : <div className="text-center text-muted-foreground py-4">
-                                  No headers configured
-                                </div>}
-                            </TabsContent>}
-                        </Tabs>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              ))}
-            </div>
-          </div>
           
           {/* About MCP Now Section */}
           <div className="space-y-6">
