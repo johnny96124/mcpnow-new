@@ -161,9 +161,7 @@ It contains server configurations and settings that you can import into MCP Now.
                   </div>
                   <CardTitle>Profile Information</CardTitle>
                 </div>
-                <Badge variant="outline" className="bg-secondary/50">
-                  {profile.servers.length} Server{profile.servers.length !== 1 ? 's' : ''}
-                </Badge>
+                {/* Removed server count badge from here */}
               </div>
             </CardHeader>
             
@@ -218,6 +216,10 @@ It contains server configurations and settings that you can import into MCP Now.
                 <div className="mt-8 border-t pt-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold tracking-tight">Included Servers</h2>
+                    {/* Added server count badge here */}
+                    <Badge variant="outline" className="bg-secondary/50">
+                      {profile.servers.length} Server{profile.servers.length !== 1 ? 's' : ''}
+                    </Badge>
                   </div>
                   
                   <div className="grid gap-4">
