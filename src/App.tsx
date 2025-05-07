@@ -18,6 +18,7 @@ import TrayPopup from "./pages/TrayPopup";
 import NewUserTrayPopup from "./pages/NewUserTrayPopup";
 import HostsNewUser from "./pages/HostsNewUser";
 import Introduction3 from "./pages/Introduction-3";
+import ProfileLandingPage from "./pages/ProfileLandingPage";
 
 function App() {
   const queryClient = new QueryClient();
@@ -71,6 +72,10 @@ function App() {
             {
               path: "/host-new",
               element: <DefaultLayout><HostNewLayout /></DefaultLayout>
+            },
+            {
+              path: "/shared-profile/:shareId",
+              element: <ProfileLandingPage />
             },
             {
               path: "/tray",
