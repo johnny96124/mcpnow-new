@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FileText, Server, AlertTriangle, CheckCircle, Info, Plus, ChevronDown, ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +36,7 @@ interface HostDetailViewProps {
   onDeleteProfile: (profileId: string) => void;
   onAddServersToProfile?: (servers: ServerInstance[]) => void;
   onImportProfile?: (profile: Profile) => void;
+  highlightAddServers?: boolean;
 }
 
 export const HostDetailView: React.FC<HostDetailViewProps> = ({
@@ -52,7 +53,8 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
   onCreateProfile,
   onDeleteProfile,
   onAddServersToProfile,
-  onImportProfile
+  onImportProfile,
+  highlightAddServers = false
 }) => {
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [serverSelectionDialogOpen, setServerSelectionDialogOpen] = useState(false);
@@ -62,6 +64,16 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
   const {
     toast
   } = useToast();
+  
+  // Effect to automatically open server selection dialog if highlighted
+  useEffect(() => {
+    if (highlightAddServers) {
+      toast({
+        title: "添加服务器",
+        description: "点击这里添加服务器至您的主机",
+      });
+    }
+  }, [highlightAddServers, toast]);
   
   const selectedProfile = profiles.find(p => p.id === selectedProfileId);
   const profileServers = serverInstances.filter(server => selectedProfile?.instances.includes(server.id));
@@ -271,7 +283,12 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
               
               {/* Only show the Add Servers button in the header when there are servers */}
               {profileServers.length > 0 && (
-                <Button onClick={() => setServerSelectionDialogOpen(true)} variant="outline" size="sm" className="whitespace-nowrap">
+                <Button 
+                  onClick={() => setServerSelectionDialogOpen(true)} 
+                  variant="outline" 
+                  size="sm" 
+                  className={`whitespace-nowrap ${highlightAddServers ? 'animate-pulse ring-2 ring-primary ring-offset-2' : ''}`}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Servers
                 </Button>
@@ -301,7 +318,10 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
                   </tbody>
                 </table>
               </div> : <div className="mt-4">
-                <ServerListEmpty onAddServers={() => setServerSelectionDialogOpen(true)} />
+                <ServerListEmpty 
+                  onAddServers={() => setServerSelectionDialogOpen(true)} 
+                  highlight={highlightAddServers}
+                />
               </div>}
           </div>
         </CardContent>

@@ -1,6 +1,5 @@
-
 import { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, Server, Play, Share, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,7 @@ export const GettingStartedDialog = ({
   open,
   onOpenChange
 }: GettingStartedDialogProps) => {
+  const navigate = useNavigate();
   const [expandedStep, setExpandedStep] = useState<number>(0);
   const [closing, setClosing] = useState(false);
   const [animationOrigin, setAnimationOrigin] = useState<string>("60 calc(100vh - 60)");
@@ -45,6 +45,18 @@ export const GettingStartedDialog = ({
   const handleAddHosts = (hosts: any[]) => {
     console.log("Hosts added:", hosts);
     setShowHostDialog(false);
+  };
+
+  // New function to navigate to Hosts page and highlight Add Servers button
+  const handleNavigateToAddServers = () => {
+    markOnboardingAsSeen();
+    handleOpenChange(false);
+    
+    // Navigate to the hosts page
+    navigate("/");
+    
+    // Use sessionStorage to tell the Hosts page to highlight the Add Servers button
+    sessionStorage.setItem('highlightAddServers', 'true');
   };
 
   const beginnerGuideSteps = [{
@@ -83,11 +95,13 @@ export const GettingStartedDialog = ({
             <li>根据需要为每个所选服务器提供附加配置，完成后服务器将被添加到当前配置文件并显示在已连接服务器列表中。</li>
           </ol>
           <div className="pt-4">
-            <Button asChild size="sm" className="gap-1 bg-purple-500 hover:bg-purple-600">
-              <Link to="/servers">
-                添加服务器
-                <ChevronRight className="h-4 w-4" />
-              </Link>
+            <Button 
+              size="sm" 
+              className="gap-1 bg-purple-500 hover:bg-purple-600" 
+              onClick={handleNavigateToAddServers}
+            >
+              添加服务器
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </>

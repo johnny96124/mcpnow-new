@@ -1,28 +1,35 @@
 
 import React from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Plus, Server } from "lucide-react";
 
 interface ServerListEmptyProps {
   onAddServers: () => void;
+  highlight?: boolean;
 }
 
-export const ServerListEmpty: React.FC<ServerListEmptyProps> = ({ onAddServers }) => {
+export const ServerListEmpty: React.FC<ServerListEmptyProps> = ({ 
+  onAddServers,
+  highlight = false
+}) => {
   return (
-    <div className="text-center py-12 space-y-4">
-      <div className="flex flex-col items-center gap-2">
-        <div className="bg-muted/30 p-3 rounded-full">
-          <Server className="h-6 w-6 text-muted-foreground" />
-        </div>
-        <h3 className="text-lg font-medium">No servers in this profile</h3>
-        <p className="text-muted-foreground max-w-md mx-auto">
-          Add servers to this profile to get started. You can add existing servers or create new ones.
-        </p>
+    <div className="border-2 border-dashed rounded-lg p-8 text-center flex flex-col items-center justify-center">
+      <div className="rounded-full bg-muted/50 p-4 mb-4">
+        <Plus className="h-6 w-6 text-muted-foreground" />
       </div>
-      <Button onClick={onAddServers}>
+      <h3 className="text-lg font-medium">未添加服务器</h3>
+      <p className="text-muted-foreground mb-4 max-w-[280px]">
+        添加服务器到此配置文件，以便在主机上运行
+      </p>
+      <Button 
+        onClick={onAddServers} 
+        className={`${highlight ? 'animate-pulse ring-2 ring-primary ring-offset-2' : ''}`}
+      >
         <Plus className="h-4 w-4 mr-2" />
-        Add Servers
+        添加服务器
       </Button>
     </div>
   );
 };
+
+export default ServerListEmpty;

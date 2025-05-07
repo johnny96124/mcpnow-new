@@ -26,6 +26,9 @@ const Hosts = () => {
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean>(
     localStorage.getItem('hostsOnboardingSeen') === 'true'
   );
+  const [shouldHighlightAddServers, setShouldHighlightAddServers] = useState<boolean>(
+    sessionStorage.getItem('highlightAddServers') === 'true'
+  );
 
   useEffect(() => {
     const markHostsOnboardingAsSeen = () => {
@@ -35,7 +38,23 @@ const Hosts = () => {
     if (hasSeenOnboarding) {
       markHostsOnboardingAsSeen();
     }
-  }, [hasSeenOnboarding]);
+    
+    // Check for the highlight flag and clear it after use
+    if (sessionStorage.getItem('highlightAddServers') === 'true') {
+      setShouldHighlightAddServers(true);
+      sessionStorage.removeItem('highlightAddServers');
+      
+      // Auto-select the first host to ensure the right panel is shown
+      if (hostsList.length > 0 && !selectedHostId) {
+        setSelectedHostId(hostsList[0].id);
+      }
+      
+      // Remove the highlight after a few seconds
+      setTimeout(() => {
+        setShouldHighlightAddServers(false);
+      }, 3000);
+    }
+  }, []);
 
   const [hostsList, setHostsList] = useState<Host[]>(initialHosts);
   const [unifiedHostDialogOpen, setUnifiedHostDialogOpen] = useState(false);
@@ -443,6 +462,7 @@ const Hosts = () => {
               onDeleteProfile={handleDeleteProfile}
               onAddServersToProfile={handleAddServersToProfile}
               onImportProfile={handleImportProfile}
+              highlightAddServers={shouldHighlightAddServers}
             />
           ) : (
             <div className="border border-dashed rounded-md p-8 text-center space-y-3">
