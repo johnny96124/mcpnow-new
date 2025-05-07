@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ServerLogo } from "@/components/servers/ServerLogo";
 import { toast } from "@/components/ui/use-toast";
+import { motion } from "framer-motion";
 import type { EndpointType } from "@/data/mockData";
 
 // Mock data for the shared profile - In a real app, you would fetch this from an API
@@ -107,11 +109,22 @@ export default function ProfileLandingPage() {
       });
     });
   };
+  
+  // Animation variants for the download button
+  const pulseAnimation = {
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: 1.8,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  };
+  
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <main className="flex-1">
-        {/* Hero Section */}
+        {/* Hero Section with Download CTA */}
         <div className="bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/30 dark:to-background py-16 px-6">
           <div className="container mx-auto max-w-4xl">
             <div className="flex flex-col gap-4 text-center">
@@ -121,29 +134,29 @@ export default function ProfileLandingPage() {
                 </Badge>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{profile.name}</h1>
-              <p className="text-muted-foreground max-w-2xl mx-auto">This profile has been shared with you. 
+              <p className="text-muted-foreground max-w-2xl mx-auto mb-8">This profile has been shared with you. 
 It contains server configurations and settings that you can import into MCP Now.</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* Updated Download CTA Section with centered button and text below */}
-        <div className="bg-blue-50 dark:bg-blue-950/20 py-10">
-          <div className="container mx-auto max-w-4xl px-6">
-            <div className="flex flex-col items-center space-y-8">
-              <div className="text-center space-y-3 max-w-2xl">
-                <h2 className="text-2xl font-semibold tracking-tight">Ready to use this profile?</h2>
-                <p className="text-muted-foreground">
-                  Download MCP Now to import this profile and start building right away.
-                </p>
-              </div>
               
-              <div className="flex flex-col items-center space-y-3">
-                <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 px-8 min-w-[240px]">
-                  <Download className="h-5 w-5" />
-                  Download MCP Now
-                </Button>
-                <p className="text-sm text-muted-foreground">Available on macOS</p>
+              {/* Enhanced Download CTA */}
+              <div className="bg-blue-50/70 dark:bg-blue-950/30 rounded-xl p-6 border border-blue-100 dark:border-blue-900/30 max-w-2xl mx-auto">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="text-blue-700 dark:text-blue-400 text-xl font-medium">
+                    Ready to unlock the power of this profile?
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-300 max-w-lg">
+                    Download MCP Now to instantly import this profile and supercharge your AI development workflow.
+                  </p>
+                  <motion.div 
+                    animate={pulseAnimation}
+                    className="mt-2"
+                  >
+                    <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 px-8 min-w-[240px] shadow-md">
+                      <Download className="h-5 w-5" />
+                      Download MCP Now
+                    </Button>
+                  </motion.div>
+                  <p className="text-sm text-muted-foreground">Available for macOS • Free download</p>
+                </div>
               </div>
             </div>
           </div>
@@ -353,6 +366,28 @@ It contains server configurations and settings that you can import into MCP Now.
                 </div>
               </div>
             </Card>
+            
+            {/* Bottom Download CTA */}
+            <div className="mt-12 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl p-6 border border-blue-100 dark:border-blue-900/30">
+              <div className="flex flex-col items-center space-y-4">
+                <h3 className="text-xl font-semibold text-blue-700 dark:text-blue-400">
+                  Experience the difference with MCP Now
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300 max-w-lg">
+                  Import this profile and start using these AI servers in just a few clicks.
+                </p>
+                <motion.div 
+                  animate={pulseAnimation}
+                  className="mt-2"
+                >
+                  <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 px-8 min-w-[240px] shadow-md">
+                    <Download className="h-5 w-5" />
+                    Download MCP Now
+                  </Button>
+                </motion.div>
+                <p className="text-sm text-muted-foreground">Available for macOS • Free download</p>
+              </div>
+            </div>
           </div>
         </div>
       </main>
