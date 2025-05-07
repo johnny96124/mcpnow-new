@@ -59,6 +59,18 @@ export const GettingStartedDialog = ({
     // Navigate to the hosts page
     navigate('/hosts');
   };
+  
+  // New function to navigate to manage servers and setup the step 3 guided tour
+  const handleNavigateToManageServers = () => {
+    markOnboardingAsSeen();
+    handleOpenChange(false);
+    
+    // Set flag in sessionStorage to trigger guided tour
+    sessionStorage.setItem('highlightManageServers', 'true');
+    
+    // Navigate to the hosts page where servers are managed
+    navigate('/hosts');
+  };
 
   const beginnerGuideSteps = [{
     title: "添加本地已安装的MCP Host",
@@ -121,11 +133,13 @@ export const GettingStartedDialog = ({
             <li>点击服务器项目可访问详细信息，调整环境变量、命令参数等设置，系统会在出现错误时显示通知并提供解决方案。</li>
           </ol>
           <div className="pt-4">
-            <Button asChild size="sm" className="gap-1 bg-green-500 hover:bg-green-600">
-              <Link to="/hosts">
-                管理服务器
-                <ChevronRight className="h-4 w-4" />
-              </Link>
+            <Button 
+              size="sm" 
+              className="gap-1 bg-green-500 hover:bg-green-600"
+              onClick={handleNavigateToManageServers}
+            >
+              管理服务器
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </>

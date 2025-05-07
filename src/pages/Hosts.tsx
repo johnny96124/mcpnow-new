@@ -30,6 +30,8 @@ const Hosts = () => {
 
   // Add state for guided tour overlay
   const [showGuidedTour, setShowGuidedTour] = useState<boolean>(false);
+  const [guidedTourTarget, setGuidedTourTarget] = useState<string>('');
+  const [guidedTourText, setGuidedTourText] = useState<string>('');
 
   useEffect(() => {
     const markHostsOnboardingAsSeen = () => {
@@ -43,8 +45,21 @@ const Hosts = () => {
     // Check if we should show the guided tour
     if (sessionStorage.getItem('highlightAddServers') === 'true') {
       setShowGuidedTour(true);
+      setGuidedTourTarget('add-servers-button');
+      setGuidedTourText('点击此处添加服务器到您的配置文件');
       // Clear the flag
       sessionStorage.removeItem('highlightAddServers');
+    } 
+    // Check for step 3 guided tour flag
+    else if (sessionStorage.getItem('highlightManageServers') === 'true') {
+      // First check if we have any server instances to highlight
+      if (initialServerInstances && initialServerInstances.length > 0) {
+        setShowGuidedTour(true);
+        setGuidedTourTarget(`server-row-${initialServerInstances[0].id}`);
+        setGuidedTourText('在这里管理服务器的状态和设置');
+        // Clear the flag
+        sessionStorage.removeItem('highlightManageServers');
+      }
     }
   }, [hasSeenOnboarding]);
 
@@ -493,11 +508,12 @@ const Hosts = () => {
         isCreateMode={configDialog.isCreateMode}
       />
 
-      {/* Add guided tour overlay */}
+      {/* Add guided tour overlay with dynamic target */}
       <GuidedTourOverlay
-        targetElementId="add-servers-button"
+        targetElementId={guidedTourTarget}
         onClose={handleCloseGuidedTour}
         isVisible={showGuidedTour}
+        customText={guidedTourText}
       />
     </div>
   );
