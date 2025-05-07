@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -21,62 +20,59 @@ const mockSharedProfile = {
   name: "General Development",
   description: "General development environment for AI projects",
   createdBy: "MCP User",
-  createdAt: "2025-01-15 14:30", // Added time information
-  shareMode: "complete", // "complete" or "basic"
-  servers: [
-    {
-      id: "server-1",
-      name: "GitHub Copilot",
-      description: "Official GitHub Copilot API integration for code completions and explanations",
-      type: "HTTP_SSE" as EndpointType,
-      status: "ready",
-      arguments: [],
-      url: "https://api.github.com/copilot/v1",
-      headers: {
-        "Authorization": "Bearer XXXX-XXXX-XXXX",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      environment: {
-        "GITHUB_COPILOT_TOKEN": "XXXX-XXXX-XXXX",
-        "GITHUB_API_VERSION": "2023-03-15",
-        "DEBUG_MODE": "false"
-      }
+  createdAt: "2025-01-15 14:30",
+  // Added time information
+  shareMode: "complete",
+  // "complete" or "basic"
+  servers: [{
+    id: "server-1",
+    name: "GitHub Copilot",
+    description: "Official GitHub Copilot API integration for code completions and explanations",
+    type: "HTTP_SSE" as EndpointType,
+    status: "ready",
+    arguments: [],
+    url: "https://api.github.com/copilot/v1",
+    headers: {
+      "Authorization": "Bearer XXXX-XXXX-XXXX",
+      "Content-Type": "application/json",
+      "Accept": "application/json"
     },
-    {
-      id: "server-2",
-      name: "Local File Assistant",
-      description: "Local file processing and analysis for code repositories",
-      type: "STDIO" as EndpointType,
-      status: "ready",
-      arguments: [
-        "--model", "advanced-code-v2", 
-        "--temperature", "0.7", 
-        "--log-level", "info"
-      ],
-      environment: {
-        "MAX_TOKENS": "4096",
-        "CONTEXT_WINDOW": "8192",
-        "MODEL_PATH": "/usr/local/models/code-v2"
-      }
+    environment: {
+      "GITHUB_COPILOT_TOKEN": "XXXX-XXXX-XXXX",
+      "GITHUB_API_VERSION": "2023-03-15",
+      "DEBUG_MODE": "false"
     }
-  ]
+  }, {
+    id: "server-2",
+    name: "Local File Assistant",
+    description: "Local file processing and analysis for code repositories",
+    type: "STDIO" as EndpointType,
+    status: "ready",
+    arguments: ["--model", "advanced-code-v2", "--temperature", "0.7", "--log-level", "info"],
+    environment: {
+      "MAX_TOKENS": "4096",
+      "CONTEXT_WINDOW": "8192",
+      "MODEL_PATH": "/usr/local/models/code-v2"
+    }
+  }]
 };
-
 export default function ProfileLandingPage() {
-  const { shareId } = useParams<{ shareId: string }>();
+  const {
+    shareId
+  } = useParams<{
+    shareId: string;
+  }>();
   const [profile, setProfile] = useState(mockSharedProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const location = useLocation();
-  
+
   // Get the full URL for sharing
   const shareUrl = window.location.origin + location.pathname;
-
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
     setIsLoading(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       // This would be replaced with actual API call
@@ -94,29 +90,24 @@ export default function ProfileLandingPage() {
       return () => clearTimeout(timer);
     }
   }, [copied]);
-
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl)
-      .then(() => {
-        setCopied(true);
-        toast({
-          title: "Link copied!",
-          description: "The share link has been copied to your clipboard.",
-          type: "success"
-        });
-      })
-      .catch((err) => {
-        console.error("Failed to copy: ", err);
-        toast({
-          title: "Failed to copy",
-          description: "Please try again or copy the URL manually.",
-          type: "error"
-        });
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setCopied(true);
+      toast({
+        title: "Link copied!",
+        description: "The share link has been copied to your clipboard.",
+        type: "success"
       });
+    }).catch(err => {
+      console.error("Failed to copy: ", err);
+      toast({
+        title: "Failed to copy",
+        description: "Please try again or copy the URL manually.",
+        type: "error"
+      });
+    });
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <main className="flex-1">
@@ -130,9 +121,8 @@ export default function ProfileLandingPage() {
                 </Badge>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{profile.name}</h1>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                This profile has been shared with you. It contains server configurations and settings that you can import into MCP Now.
-              </p>
+              <p className="text-muted-foreground max-w-2xl mx-auto">This profile has been shared with you. 
+ It contains server configurations and settings that you can import into MCP Now.</p>
             </div>
           </div>
         </div>
@@ -155,9 +145,7 @@ export default function ProfileLandingPage() {
               </div>
             </div>
             <div className="text-center mt-2">
-              <p className="text-sm text-muted-foreground">
-                Available for Windows, macOS, and Linux
-              </p>
+              <p className="text-sm text-muted-foreground">Available on macOS</p>
             </div>
           </div>
         </div>
@@ -193,9 +181,7 @@ export default function ProfileLandingPage() {
                       <Badge variant={profile.shareMode === "complete" ? "default" : "secondary"}>
                         {profile.shareMode === "complete" ? "Complete Configuration" : "Basic Profile"}
                       </Badge>
-                      {profile.shareMode === "complete" && (
-                        <span className="text-xs text-muted-foreground">Includes all parameters</span>
-                      )}
+                      {profile.shareMode === "complete" && <span className="text-xs text-muted-foreground">Includes all parameters</span>}
                     </div>
                   </div>
                   
@@ -204,11 +190,7 @@ export default function ProfileLandingPage() {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Share Link</h3>
                     <div className="flex items-center gap-2">
                       <span className="text-sm truncate flex-1">{shareUrl}</span>
-                      <button 
-                        onClick={handleCopyLink}
-                        className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors"
-                        aria-label="Copy link"
-                      >
+                      <button onClick={handleCopyLink} className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors" aria-label="Copy link">
                         {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                       </button>
                     </div>
@@ -243,8 +225,7 @@ export default function ProfileLandingPage() {
             </div>
             
             <div className="grid gap-6">
-              {profile.servers.map((server) => (
-                <Card key={server.id} className="overflow-hidden">
+              {profile.servers.map(server => <Card key={server.id} className="overflow-hidden">
                   <CardHeader className="border-b bg-muted/30 p-4 md:p-6">
                     <div className="flex items-center gap-4">
                       <ServerLogo name={server.name} />
@@ -253,9 +234,7 @@ export default function ProfileLandingPage() {
                           {server.name}
                           <EndpointLabel type={server.type as EndpointType} />
                         </CardTitle>
-                        {server.description && (
-                          <p className="text-muted-foreground text-sm">{server.description}</p>
-                        )}
+                        {server.description && <p className="text-muted-foreground text-sm">{server.description}</p>}
                       </div>
                     </div>
                   </CardHeader>
@@ -266,75 +245,54 @@ export default function ProfileLandingPage() {
                         <TabsList className="h-10">
                           <TabsTrigger value="configuration">Configuration</TabsTrigger>
                           <TabsTrigger value="environment">Environment Variables</TabsTrigger>
-                          {server.type === "HTTP_SSE" && (
-                            <TabsTrigger value="headers">HTTP Headers</TabsTrigger>
-                          )}
+                          {server.type === "HTTP_SSE" && <TabsTrigger value="headers">HTTP Headers</TabsTrigger>}
                         </TabsList>
                       </div>
                       
                       <TabsContent value="configuration" className="space-y-4 p-4 md:p-6">
-                        {server.type === "STDIO" && server.arguments.length > 0 && (
-                          <div>
+                        {server.type === "STDIO" && server.arguments.length > 0 && <div>
                             <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
                             <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
                               {server.arguments.join(' ')}
                             </pre>
-                          </div>
-                        )}
+                          </div>}
                         
-                        {server.type === "HTTP_SSE" && (
-                          <div>
+                        {server.type === "HTTP_SSE" && <div>
                             <h3 className="text-sm font-medium mb-2">URL</h3>
                             <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
                               {server.url}
                             </pre>
-                          </div>
-                        )}
+                          </div>}
                       </TabsContent>
                       
                       <TabsContent value="environment" className="p-4 md:p-6">
-                        {Object.keys(server.environment).length > 0 ? (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {Object.entries(server.environment).map(([key, value]) => (
-                              <div key={key} className="bg-muted/30 border rounded-md p-3">
+                        {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                 <div className="font-mono text-xs font-medium mb-1">{key}</div>
                                 <div className="font-mono text-xs text-muted-foreground truncate">
                                   {value}
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center text-muted-foreground py-4">
+                              </div>)}
+                          </div> : <div className="text-center text-muted-foreground py-4">
                             No environment variables configured
-                          </div>
-                        )}
+                          </div>}
                       </TabsContent>
                       
-                      {server.type === "HTTP_SSE" && (
-                        <TabsContent value="headers" className="p-4 md:p-6">
-                          {Object.keys(server.headers).length > 0 ? (
-                            <div className="space-y-4">
-                              {Object.entries(server.headers).map(([key, value]) => (
-                                <div key={key} className="bg-muted/30 border rounded-md p-3">
+                      {server.type === "HTTP_SSE" && <TabsContent value="headers" className="p-4 md:p-6">
+                          {Object.keys(server.headers).length > 0 ? <div className="space-y-4">
+                              {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                   <div className="font-mono text-xs font-medium mb-1">{key}</div>
                                   <div className="font-mono text-xs text-muted-foreground truncate">
                                     {value}
                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center text-muted-foreground py-4">
+                                </div>)}
+                            </div> : <div className="text-center text-muted-foreground py-4">
                               No headers configured
-                            </div>
-                          )}
-                        </TabsContent>
-                      )}
+                            </div>}
+                        </TabsContent>}
                     </Tabs>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
             </div>
           </div>
           
@@ -376,11 +334,7 @@ export default function ProfileLandingPage() {
                   </div>
                 </div>
                 <div className="md:w-1/3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 flex items-center justify-center p-8">
-                  <img 
-                    src="/lovable-uploads/654262e6-ff1d-42fc-b9cf-d9f672f96de1.png" 
-                    alt="MCP Now Logo"
-                    className="max-w-full max-h-48"
-                  />
+                  <img src="/lovable-uploads/654262e6-ff1d-42fc-b9cf-d9f672f96de1.png" alt="MCP Now Logo" className="max-w-full max-h-48" />
                 </div>
               </div>
             </Card>
@@ -391,6 +345,5 @@ export default function ProfileLandingPage() {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 }
