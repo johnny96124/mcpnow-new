@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -7,10 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Server, FileText, Download, Info } from "lucide-react";
+import { Server, FileText, Download, Info, Copy, CheckCircle } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ServerLogo } from "@/components/servers/ServerLogo";
+import { toast } from "@/hooks/use-toast";
 import type { EndpointType } from "@/data/mockData";
 
 // Mock data for the shared profile - In a real app, you would fetch this from an API
@@ -65,6 +67,8 @@ export default function ProfileLandingPage() {
   const { shareId } = useParams<{ shareId: string }>();
   const [profile, setProfile] = useState(mockSharedProfile);
   const [isLoading, setIsLoading] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
@@ -77,6 +81,23 @@ export default function ProfileLandingPage() {
       setIsLoading(false);
     }, 800);
   }, [shareId]);
+
+  const handleCopyLink = () => {
+    const shareLink = `${window.location.origin}${location.pathname}`;
+    navigator.clipboard.writeText(shareLink).then(() => {
+      setIsCopied(true);
+      toast({
+        title: "Link copied!",
+        description: "Share link has been copied to clipboard",
+        type: "success"
+      });
+      
+      // Reset copied state after 2 seconds
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -96,6 +117,27 @@ export default function ProfileLandingPage() {
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 This profile has been shared with you. It contains server configurations and settings that you can import into MCP Now.
               </p>
+              
+              {/* Share Link Button */}
+              <div className="flex justify-center mt-2">
+                <Button 
+                  variant="outline" 
+                  className="bg-purple-50 border-purple-200 hover:bg-purple-100 dark:bg-purple-900/20 dark:border-purple-800 text-purple-700 dark:text-purple-400 gap-2"
+                  onClick={handleCopyLink}
+                >
+                  {isCopied ? (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Link Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      Copy Share Link
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
