@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Server, FileText, Download, Info, Copy, Check, Link } from "lucide-react";
+import { Server, FileText, Download, Info, Copy, Check } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ServerLogo } from "@/components/servers/ServerLogo";
@@ -21,7 +20,7 @@ const mockSharedProfile = {
   name: "General Development",
   description: "General development environment for AI projects",
   createdBy: "MCP User",
-  createdAt: "2025-01-15",
+  createdAt: "2025-01-15 14:30", // Added time information
   shareMode: "complete", // "complete" or "basic"
   servers: [
     {
@@ -174,30 +173,18 @@ export default function ProfileLandingPage() {
                     </div>
                   </div>
                   
-                  {/* Replace "Shared By" with Share Link */}
+                  {/* Updated Share Link section to match the design */}
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Share Link</h3>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-muted/40 rounded-l-md py-2 px-3 border-y border-l border-border text-sm truncate">
-                        {shareUrl}
-                      </div>
-                      <Button 
-                        size="sm" 
-                        className="rounded-l-none bg-purple-600 hover:bg-purple-700 text-white gap-1.5"
+                      <span className="text-sm truncate flex-1">{shareUrl}</span>
+                      <button 
                         onClick={handleCopyLink}
+                        className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors"
+                        aria-label="Copy link"
                       >
-                        {copied ? (
-                          <>
-                            <Check className="h-4 w-4" />
-                            Copied
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="h-4 w-4" />
-                            Copy
-                          </>
-                        )}
-                      </Button>
+                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                      </button>
                     </div>
                   </div>
                   
