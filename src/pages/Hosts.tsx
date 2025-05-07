@@ -55,6 +55,12 @@ const Hosts = () => {
     }
   }, []);
 
+  // Add the missing function to handle closing the guided tour
+  const handleCloseGuidedTour = () => {
+    setShowGuidedTour(false);
+    setShouldHighlightAddServers(false);
+  };
+
   const [hostsList, setHostsList] = useState<Host[]>(initialHosts);
   const [unifiedHostDialogOpen, setUnifiedHostDialogOpen] = useState(false);
   const [selectedHostId, setSelectedHostId] = useState<string | null>(null);
