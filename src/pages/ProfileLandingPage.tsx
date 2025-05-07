@@ -121,31 +121,30 @@ export default function ProfileLandingPage() {
                 </Badge>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{profile.name}</h1>
-              <p className="text-muted-foreground max-w-2xl mx-auto">This profile has been shared with you. 
- It contains server configurations and settings that you can import into MCP Now.</p>
+              <p className="text-muted-foreground max-w-2xl mx-auto">This profile has been shared with you. 
+ It contains server configurations and settings that you can import into MCP Now.</p>
             </div>
           </div>
         </div>
         
-        {/* Download CTA Section - Moved from bottom to top */}
-        <div className="bg-blue-50 dark:bg-blue-950/20 py-8">
+        {/* Updated Download CTA Section with centered button and text below */}
+        <div className="bg-blue-50 dark:bg-blue-950/20 py-10">
           <div className="container mx-auto max-w-4xl px-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-4">
-              <div className="text-left space-y-2 flex-1">
+            <div className="flex flex-col items-center space-y-8">
+              <div className="text-center space-y-3 max-w-2xl">
                 <h2 className="text-2xl font-semibold tracking-tight">Ready to use this profile?</h2>
                 <p className="text-muted-foreground">
                   Download MCP Now to import this profile and start building right away.
                 </p>
               </div>
-              <div>
-                <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium px-[33px] py-0 mx-0 my-0">
+              
+              <div className="flex flex-col items-center space-y-3">
+                <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 px-8 min-w-[240px]">
                   <Download className="h-5 w-5" />
                   Download MCP Now
                 </Button>
+                <p className="text-sm text-muted-foreground">Available on macOS</p>
               </div>
-            </div>
-            <div className="text-center mt-2">
-              <p className="text-sm text-muted-foreground text-right">Available on macOS</p>
             </div>
           </div>
         </div>
