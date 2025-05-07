@@ -284,6 +284,7 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
               {/* Only show the Add Servers button in the header when there are servers */}
               {profileServers.length > 0 && (
                 <Button 
+                  id="add-servers-button-header"
                   onClick={() => setServerSelectionDialogOpen(true)} 
                   variant="outline" 
                   size="sm" 

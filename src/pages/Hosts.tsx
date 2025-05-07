@@ -12,6 +12,7 @@ import { serverInstances as initialServerInstances, profiles as initialProfiles 
 import { UnifiedHostDialog } from "@/components/hosts/UnifiedHostDialog";
 import Welcome from "@/components/hosts/Welcome";
 import { HostsEmptyState } from "@/components/hosts/HostsEmptyState";
+import GuidedTourOverlay from "@/components/onboarding/GuidedTourOverlay";
 
 const mockJsonConfig = {
   "mcpServers": {
@@ -29,6 +30,7 @@ const Hosts = () => {
   const [shouldHighlightAddServers, setShouldHighlightAddServers] = useState<boolean>(
     sessionStorage.getItem('highlightAddServers') === 'true'
   );
+  const [showGuidedTour, setShowGuidedTour] = useState<boolean>(false);
 
   useEffect(() => {
     const markHostsOnboardingAsSeen = () => {
@@ -43,17 +45,13 @@ const Hosts = () => {
     console.log("Checking highlightAddServers:", sessionStorage.getItem('highlightAddServers'));
     if (sessionStorage.getItem('highlightAddServers') === 'true') {
       setShouldHighlightAddServers(true);
+      setShowGuidedTour(true); // Show the guided tour
       sessionStorage.removeItem('highlightAddServers');
       
       // Auto-select the first host to ensure the right panel is shown
       if (hostsList.length > 0 && !selectedHostId) {
         setSelectedHostId(hostsList[0].id);
       }
-      
-      // Keep the highlight active longer to ensure user sees it
-      setTimeout(() => {
-        setShouldHighlightAddServers(false);
-      }, 5000); // Increased to 5 seconds for better visibility
     }
   }, []);
 
@@ -509,6 +507,15 @@ const Hosts = () => {
         isUpdateMode={configDialog.isUpdateMode} 
         isCreateMode={configDialog.isCreateMode}
       />
+      
+      {/* Guided Tour Overlay */}
+      {showGuidedTour && (
+        <GuidedTourOverlay
+          targetElementId="add-servers-button"
+          message="点击这里添加服务器到您的主机配置文件中"
+          onClose={handleCloseGuidedTour}
+        />
+      )}
     </div>
   );
 };

@@ -47,7 +47,7 @@ export const GettingStartedDialog = ({
     setShowHostDialog(false);
   };
 
-  // Updated function to navigate to Hosts page and highlight Add Servers button
+  // Updated function to navigate to Hosts page and setup guided tour
   const handleNavigateToAddServers = () => {
     markOnboardingAsSeen();
     handleOpenChange(false);
@@ -55,7 +55,7 @@ export const GettingStartedDialog = ({
     // Navigate to the hosts page
     navigate("/");
     
-    // Use sessionStorage with 'true' string value to ensure proper comparison
+    // Use sessionStorage to trigger guided tour with hand pointer
     sessionStorage.setItem('highlightAddServers', 'true');
     console.log("Set highlightAddServers flag:", sessionStorage.getItem('highlightAddServers'));
   };
@@ -154,7 +154,7 @@ export const GettingStartedDialog = ({
         </>
   }];
   
-  return <>
+  return (
     <Dialog open={open || closing} onOpenChange={handleOpenChange}>
       <DialogContent ref={dialogRef} className={`max-w-2xl ${closing ? 'animate-collapse' : 'animate-expand'}`} animationOrigin={animationOrigin} hideClose={true} size="xl">
         <DialogHeader>
@@ -200,5 +200,5 @@ export const GettingStartedDialog = ({
       onOpenChange={setShowHostDialog}
       onAddHosts={handleAddHosts}
     />
-  </>;
+  );
 };

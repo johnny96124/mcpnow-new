@@ -22,6 +22,7 @@ export const ServerListEmpty: React.FC<ServerListEmptyProps> = ({
         添加服务器到此配置文件，以便在主机上运行
       </p>
       <Button 
+        id="add-servers-button"
         onClick={onAddServers} 
         className={highlight ? 'animate-pulse ring-2 ring-primary ring-offset-2' : ''}
       >
