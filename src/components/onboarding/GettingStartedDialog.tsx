@@ -1,6 +1,6 @@
 
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ChevronRight, Server, Play, Share, Plus } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,6 @@ export const GettingStartedDialog = ({
   open,
   onOpenChange
 }: GettingStartedDialogProps) => {
-  const navigate = useNavigate();
   const [expandedStep, setExpandedStep] = useState<number>(0);
   const [closing, setClosing] = useState(false);
   const [animationOrigin, setAnimationOrigin] = useState<string>("60 calc(100vh - 60)");
@@ -46,19 +45,6 @@ export const GettingStartedDialog = ({
   const handleAddHosts = (hosts: any[]) => {
     console.log("Hosts added:", hosts);
     setShowHostDialog(false);
-  };
-
-  // Updated function to navigate to Hosts page and setup guided tour
-  const handleNavigateToAddServers = () => {
-    markOnboardingAsSeen();
-    handleOpenChange(false);
-    
-    // Navigate to the hosts page
-    navigate("/");
-    
-    // Use sessionStorage to trigger guided tour with hand pointer
-    sessionStorage.setItem('highlightAddServers', 'true');
-    console.log("Set highlightAddServers flag:", sessionStorage.getItem('highlightAddServers'));
   };
 
   const beginnerGuideSteps = [{
@@ -97,13 +83,11 @@ export const GettingStartedDialog = ({
             <li>根据需要为每个所选服务器提供附加配置，完成后服务器将被添加到当前配置文件并显示在已连接服务器列表中。</li>
           </ol>
           <div className="pt-4">
-            <Button 
-              size="sm" 
-              className="gap-1 bg-purple-500 hover:bg-purple-600" 
-              onClick={handleNavigateToAddServers}
-            >
-              添加服务器
-              <ChevronRight className="h-4 w-4" />
+            <Button asChild size="sm" className="gap-1 bg-purple-500 hover:bg-purple-600">
+              <Link to="/servers">
+                添加服务器
+                <ChevronRight className="h-4 w-4" />
+              </Link>
             </Button>
           </div>
         </>
@@ -155,53 +139,51 @@ export const GettingStartedDialog = ({
         </>
   }];
   
-  return (
-    <>
-      <Dialog open={open || closing} onOpenChange={handleOpenChange}>
-        <DialogContent ref={dialogRef} className={`max-w-2xl ${closing ? 'animate-collapse' : 'animate-expand'}`} animationOrigin={animationOrigin} hideClose={true} size="xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">欢迎使用 MCP Now</DialogTitle>
-            <DialogDescription className="text-base">
-              按照以下简单步骤开始配置和使用 MCP Now。
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
-            <Accordion type="single" defaultValue="step-0" collapsible className="w-full rounded-md overflow-hidden border">
-              {beginnerGuideSteps.map((step, index) => <AccordionItem key={`step-${index}`} value={`step-${index}`} className={index === beginnerGuideSteps.length - 1 ? "border-0" : ""}>
-                  <AccordionTrigger className="px-4 py-5 hover:bg-muted/30 data-[state=open]:bg-muted/20" icon={<div className={`${step.iconBg} ${step.iconColor} p-3 rounded-full`}>
-                        {step.icon}
-                      </div>}>
-                    <div>
-                      <h3 className="font-medium text-lg">步骤 {index + 1}: {step.title}</h3>
-                      <p className="text-muted-foreground text-sm text-left">{step.description}</p>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-6 pt-2 bg-muted/10">
-                    {step.content}
-                  </AccordionContent>
-                </AccordionItem>)}
-            </Accordion>
-          </div>
+  return <>
+    <Dialog open={open || closing} onOpenChange={handleOpenChange}>
+      <DialogContent ref={dialogRef} className={`max-w-2xl ${closing ? 'animate-collapse' : 'animate-expand'}`} animationOrigin={animationOrigin} hideClose={true} size="xl">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">欢迎使用 MCP Now</DialogTitle>
+          <DialogDescription className="text-base">
+            按照以下简单步骤开始配置和使用 MCP Now。
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="py-4">
+          <Accordion type="single" defaultValue="step-0" collapsible className="w-full rounded-md overflow-hidden border">
+            {beginnerGuideSteps.map((step, index) => <AccordionItem key={`step-${index}`} value={`step-${index}`} className={index === beginnerGuideSteps.length - 1 ? "border-0" : ""}>
+                <AccordionTrigger className="px-4 py-5 hover:bg-muted/30 data-[state=open]:bg-muted/20" icon={<div className={`${step.iconBg} ${step.iconColor} p-3 rounded-full`}>
+                      {step.icon}
+                    </div>}>
+                  <div>
+                    <h3 className="font-medium text-lg">步骤 {index + 1}: {step.title}</h3>
+                    <p className="text-muted-foreground text-sm text-left">{step.description}</p>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-6 pt-2 bg-muted/10">
+                  {step.content}
+                </AccordionContent>
+              </AccordionItem>)}
+          </Accordion>
+        </div>
 
-          <DialogFooter className="flex items-center justify-between sm:justify-between pt-2">
-            <div className="text-xs text-muted-foreground">
-              您可以随时从侧边栏重新打开此指南。
-            </div>
-            <DialogClose asChild>
-              <Button>
-                明白了
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      <UnifiedHostDialog 
-        open={showHostDialog}
-        onOpenChange={setShowHostDialog}
-        onAddHosts={handleAddHosts}
-      />
-    </>
-  );
+        <DialogFooter className="flex items-center justify-between sm:justify-between pt-2">
+          <div className="text-xs text-muted-foreground">
+            您可以随时从侧边栏重新打开此指南。
+          </div>
+          <DialogClose asChild>
+            <Button>
+              明白了
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    
+    <UnifiedHostDialog 
+      open={showHostDialog}
+      onOpenChange={setShowHostDialog}
+      onAddHosts={handleAddHosts}
+    />
+  </>;
 };

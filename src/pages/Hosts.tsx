@@ -12,7 +12,6 @@ import { serverInstances as initialServerInstances, profiles as initialProfiles 
 import { UnifiedHostDialog } from "@/components/hosts/UnifiedHostDialog";
 import Welcome from "@/components/hosts/Welcome";
 import { HostsEmptyState } from "@/components/hosts/HostsEmptyState";
-import GuidedTourOverlay from "@/components/onboarding/GuidedTourOverlay";
 
 const mockJsonConfig = {
   "mcpServers": {
@@ -27,10 +26,6 @@ const Hosts = () => {
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean>(
     localStorage.getItem('hostsOnboardingSeen') === 'true'
   );
-  const [shouldHighlightAddServers, setShouldHighlightAddServers] = useState<boolean>(
-    sessionStorage.getItem('highlightAddServers') === 'true'
-  );
-  const [showGuidedTour, setShowGuidedTour] = useState<boolean>(false);
 
   useEffect(() => {
     const markHostsOnboardingAsSeen = () => {
@@ -40,26 +35,7 @@ const Hosts = () => {
     if (hasSeenOnboarding) {
       markHostsOnboardingAsSeen();
     }
-    
-    // Enhanced check for the highlight flag
-    console.log("Checking highlightAddServers:", sessionStorage.getItem('highlightAddServers'));
-    if (sessionStorage.getItem('highlightAddServers') === 'true') {
-      setShouldHighlightAddServers(true);
-      setShowGuidedTour(true); // Show the guided tour
-      sessionStorage.removeItem('highlightAddServers');
-      
-      // Auto-select the first host to ensure the right panel is shown
-      if (hostsList.length > 0 && !selectedHostId) {
-        setSelectedHostId(hostsList[0].id);
-      }
-    }
-  }, []);
-
-  // Add the missing function to handle closing the guided tour
-  const handleCloseGuidedTour = () => {
-    setShowGuidedTour(false);
-    setShouldHighlightAddServers(false);
-  };
+  }, [hasSeenOnboarding]);
 
   const [hostsList, setHostsList] = useState<Host[]>(initialHosts);
   const [unifiedHostDialogOpen, setUnifiedHostDialogOpen] = useState(false);
@@ -85,22 +61,11 @@ const Hosts = () => {
   const selectedHost = selectedHostId ? hostsList.find(h => h.id === selectedHostId) : null;
   const selectedProfileId = selectedHost ? hostProfiles[selectedHost.id] || "" : "";
 
-  // Auto-select first host on initial render
   useEffect(() => {
     if (hostsList.length > 0 && !selectedHostId) {
       setSelectedHostId(hostsList[0].id);
     }
   }, [hostsList, selectedHostId]);
-
-  // Show toast notification when highlighting Add Servers button
-  useEffect(() => {
-    if (shouldHighlightAddServers) {
-      toast({
-        title: "添加服务器",
-        description: "点击突出显示的按钮添加服务器到您的主机",
-      });
-    }
-  }, [shouldHighlightAddServers, toast]);
 
   const handleCreateConfigDialog = (hostId: string) => {
     const host = hostsList.find(h => h.id === hostId);
@@ -478,7 +443,6 @@ const Hosts = () => {
               onDeleteProfile={handleDeleteProfile}
               onAddServersToProfile={handleAddServersToProfile}
               onImportProfile={handleImportProfile}
-              highlightAddServers={shouldHighlightAddServers}
             />
           ) : (
             <div className="border border-dashed rounded-md p-8 text-center space-y-3">
@@ -513,15 +477,6 @@ const Hosts = () => {
         isUpdateMode={configDialog.isUpdateMode} 
         isCreateMode={configDialog.isCreateMode}
       />
-      
-      {/* Guided Tour Overlay */}
-      {showGuidedTour && (
-        <GuidedTourOverlay
-          targetElementId="add-servers-button"
-          message="点击这里添加服务器到您的主机配置文件中"
-          onClose={handleCloseGuidedTour}
-        />
-      )}
     </div>
   );
 };
