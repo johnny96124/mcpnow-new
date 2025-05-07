@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Server, FileText, Download, Info, Copy, Check } from "lucide-react";
+import { Server, FileText, Download, Info, Copy, Check, ChevronDown } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ServerLogo } from "@/components/servers/ServerLogo";
@@ -90,6 +91,7 @@ export default function ProfileLandingPage() {
       return () => clearTimeout(timer);
     }
   }, [copied]);
+  
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
@@ -107,6 +109,7 @@ export default function ProfileLandingPage() {
       });
     });
   };
+  
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
@@ -122,7 +125,7 @@ export default function ProfileLandingPage() {
               </div>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{profile.name}</h1>
               <p className="text-muted-foreground max-w-2xl mx-auto">This profile has been shared with you. 
- It contains server configurations and settings that you can import into MCP Now.</p>
+It contains server configurations and settings that you can import into MCP Now.</p>
             </div>
           </div>
         </div>
@@ -217,81 +220,112 @@ export default function ProfileLandingPage() {
             </CardContent>
           </Card>
           
-          {/* Servers Section */}
+          {/* Servers Section - Updated with collapsible content */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold tracking-tight">Included Servers</h2>
             </div>
             
             <div className="grid gap-6">
-              {profile.servers.map(server => <Card key={server.id} className="overflow-hidden">
-                  <CardHeader className="border-b bg-muted/30 p-4 md:p-6">
-                    <div className="flex items-center gap-4">
-                      <ServerLogo name={server.name} />
-                      <div className="space-y-1">
-                        <CardTitle className="flex items-center gap-2 text-xl">
-                          {server.name}
-                          <EndpointLabel type={server.type as EndpointType} />
-                        </CardTitle>
-                        {server.description && <p className="text-muted-foreground text-sm">{server.description}</p>}
+              {profile.servers.map(server => (
+                <Accordion type="single" collapsible className="w-full" key={server.id}>
+                  <AccordionItem value={server.id} className="border rounded-lg overflow-hidden">
+                    <AccordionTrigger className="px-6 py-4 hover:no-underline bg-muted/20">
+                      <div className="flex items-center gap-4 w-full">
+                        <ServerLogo name={server.name} />
+                        <div className="space-y-1 text-left">
+                          <div className="flex items-center gap-2 text-xl font-semibold">
+                            {server.name}
+                            <EndpointLabel type={server.type as EndpointType} />
+                          </div>
+                          {server.description && (
+                            <p className="text-muted-foreground text-sm">{server.description}</p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="p-0">
-                    <Tabs defaultValue="configuration" className="w-full">
-                      <div className="border-b px-4 md:px-6">
-                        <TabsList className="h-10">
-                          <TabsTrigger value="configuration">Configuration</TabsTrigger>
-                          <TabsTrigger value="environment">Environment Variables</TabsTrigger>
-                          {server.type === "HTTP_SSE" && <TabsTrigger value="headers">HTTP Headers</TabsTrigger>}
-                        </TabsList>
+                    </AccordionTrigger>
+                    
+                    <AccordionContent className="p-0 border-t">
+                      {/* Modified tab navigation style to match the design */}
+                      <div className="px-6 pt-4 pb-0">
+                        <Tabs defaultValue="configuration" className="w-full">
+                          <div className="border-b">
+                            <div className="flex overflow-x-auto">
+                              {/* Updated tabs to match the design in image 2 */}
+                              <TabsList className="bg-transparent h-10 p-0 space-x-4">
+                                <TabsTrigger 
+                                  value="configuration" 
+                                  className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
+                                >
+                                  Configuration
+                                </TabsTrigger>
+                                
+                                <TabsTrigger 
+                                  value="environment" 
+                                  className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
+                                >
+                                  Environment Variables
+                                </TabsTrigger>
+                                
+                                {server.type === "HTTP_SSE" && (
+                                  <TabsTrigger 
+                                    value="headers" 
+                                    className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10"
+                                  >
+                                    HTTP Headers
+                                  </TabsTrigger>
+                                )}
+                              </TabsList>
+                            </div>
+                          </div>
+                          
+                          <TabsContent value="configuration" className="space-y-4 p-6">
+                            {server.type === "STDIO" && server.arguments.length > 0 && <div>
+                                <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
+                                <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
+                                  {server.arguments.join(' ')}
+                                </pre>
+                              </div>}
+                            
+                            {server.type === "HTTP_SSE" && <div>
+                                <h3 className="text-sm font-medium mb-2">URL</h3>
+                                <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
+                                  {server.url}
+                                </pre>
+                              </div>}
+                          </TabsContent>
+                          
+                          <TabsContent value="environment" className="p-6">
+                            {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
+                                    <div className="font-mono text-xs font-medium mb-1">{key}</div>
+                                    <div className="font-mono text-xs text-muted-foreground truncate">
+                                      {value}
+                                    </div>
+                                  </div>)}
+                              </div> : <div className="text-center text-muted-foreground py-4">
+                                No environment variables configured
+                              </div>}
+                          </TabsContent>
+                          
+                          {server.type === "HTTP_SSE" && <TabsContent value="headers" className="p-6">
+                              {Object.keys(server.headers).length > 0 ? <div className="space-y-4">
+                                  {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
+                                      <div className="font-mono text-xs font-medium mb-1">{key}</div>
+                                      <div className="font-mono text-xs text-muted-foreground truncate">
+                                        {value}
+                                      </div>
+                                    </div>)}
+                                </div> : <div className="text-center text-muted-foreground py-4">
+                                  No headers configured
+                                </div>}
+                            </TabsContent>}
+                        </Tabs>
                       </div>
-                      
-                      <TabsContent value="configuration" className="space-y-4 p-4 md:p-6">
-                        {server.type === "STDIO" && server.arguments.length > 0 && <div>
-                            <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
-                            <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
-                              {server.arguments.join(' ')}
-                            </pre>
-                          </div>}
-                        
-                        {server.type === "HTTP_SSE" && <div>
-                            <h3 className="text-sm font-medium mb-2">URL</h3>
-                            <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
-                              {server.url}
-                            </pre>
-                          </div>}
-                      </TabsContent>
-                      
-                      <TabsContent value="environment" className="p-4 md:p-6">
-                        {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
-                                <div className="font-mono text-xs font-medium mb-1">{key}</div>
-                                <div className="font-mono text-xs text-muted-foreground truncate">
-                                  {value}
-                                </div>
-                              </div>)}
-                          </div> : <div className="text-center text-muted-foreground py-4">
-                            No environment variables configured
-                          </div>}
-                      </TabsContent>
-                      
-                      {server.type === "HTTP_SSE" && <TabsContent value="headers" className="p-4 md:p-6">
-                          {Object.keys(server.headers).length > 0 ? <div className="space-y-4">
-                              {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
-                                  <div className="font-mono text-xs font-medium mb-1">{key}</div>
-                                  <div className="font-mono text-xs text-muted-foreground truncate">
-                                    {value}
-                                  </div>
-                                </div>)}
-                            </div> : <div className="text-center text-muted-foreground py-4">
-                              No headers configured
-                            </div>}
-                        </TabsContent>}
-                    </Tabs>
-                  </CardContent>
-                </Card>)}
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              ))}
             </div>
           </div>
           
@@ -338,8 +372,6 @@ export default function ProfileLandingPage() {
               </div>
             </Card>
           </div>
-          
-          {/* Removed the original Download Section that was here */}
         </div>
       </main>
       
