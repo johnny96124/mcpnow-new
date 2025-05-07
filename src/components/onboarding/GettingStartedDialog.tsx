@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, Server, Play, Share, Plus } from "lucide-react";
@@ -155,50 +156,52 @@ export const GettingStartedDialog = ({
   }];
   
   return (
-    <Dialog open={open || closing} onOpenChange={handleOpenChange}>
-      <DialogContent ref={dialogRef} className={`max-w-2xl ${closing ? 'animate-collapse' : 'animate-expand'}`} animationOrigin={animationOrigin} hideClose={true} size="xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">欢迎使用 MCP Now</DialogTitle>
-          <DialogDescription className="text-base">
-            按照以下简单步骤开始配置和使用 MCP Now。
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="py-4">
-          <Accordion type="single" defaultValue="step-0" collapsible className="w-full rounded-md overflow-hidden border">
-            {beginnerGuideSteps.map((step, index) => <AccordionItem key={`step-${index}`} value={`step-${index}`} className={index === beginnerGuideSteps.length - 1 ? "border-0" : ""}>
-                <AccordionTrigger className="px-4 py-5 hover:bg-muted/30 data-[state=open]:bg-muted/20" icon={<div className={`${step.iconBg} ${step.iconColor} p-3 rounded-full`}>
-                      {step.icon}
-                    </div>}>
-                  <div>
-                    <h3 className="font-medium text-lg">步骤 {index + 1}: {step.title}</h3>
-                    <p className="text-muted-foreground text-sm text-left">{step.description}</p>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6 pt-2 bg-muted/10">
-                  {step.content}
-                </AccordionContent>
-              </AccordionItem>)}
-          </Accordion>
-        </div>
-
-        <DialogFooter className="flex items-center justify-between sm:justify-between pt-2">
-          <div className="text-xs text-muted-foreground">
-            您可以随时从侧边栏重新打开此指南。
+    <>
+      <Dialog open={open || closing} onOpenChange={handleOpenChange}>
+        <DialogContent ref={dialogRef} className={`max-w-2xl ${closing ? 'animate-collapse' : 'animate-expand'}`} animationOrigin={animationOrigin} hideClose={true} size="xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">欢迎使用 MCP Now</DialogTitle>
+            <DialogDescription className="text-base">
+              按照以下简单步骤开始配置和使用 MCP Now。
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <Accordion type="single" defaultValue="step-0" collapsible className="w-full rounded-md overflow-hidden border">
+              {beginnerGuideSteps.map((step, index) => <AccordionItem key={`step-${index}`} value={`step-${index}`} className={index === beginnerGuideSteps.length - 1 ? "border-0" : ""}>
+                  <AccordionTrigger className="px-4 py-5 hover:bg-muted/30 data-[state=open]:bg-muted/20" icon={<div className={`${step.iconBg} ${step.iconColor} p-3 rounded-full`}>
+                        {step.icon}
+                      </div>}>
+                    <div>
+                      <h3 className="font-medium text-lg">步骤 {index + 1}: {step.title}</h3>
+                      <p className="text-muted-foreground text-sm text-left">{step.description}</p>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="px-6 pb-6 pt-2 bg-muted/10">
+                    {step.content}
+                  </AccordionContent>
+                </AccordionItem>)}
+            </Accordion>
           </div>
-          <DialogClose asChild>
-            <Button>
-              明白了
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-    
-    <UnifiedHostDialog 
-      open={showHostDialog}
-      onOpenChange={setShowHostDialog}
-      onAddHosts={handleAddHosts}
-    />
+
+          <DialogFooter className="flex items-center justify-between sm:justify-between pt-2">
+            <div className="text-xs text-muted-foreground">
+              您可以随时从侧边栏重新打开此指南。
+            </div>
+            <DialogClose asChild>
+              <Button>
+                明白了
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      <UnifiedHostDialog 
+        open={showHostDialog}
+        onOpenChange={setShowHostDialog}
+        onAddHosts={handleAddHosts}
+      />
+    </>
   );
 };
