@@ -323,31 +323,29 @@ export default function ProfileLandingPage() {
                     <div className="bg-primary/10 p-2 rounded-full">
                       <Server className="h-5 w-5 text-primary" />
                     </div>
-                    <h3 className="text-xl font-semibold">The Ultimate AI Model Management Platform</h3>
+                    <h3 className="text-xl font-semibold">Simple AI Model Management</h3>
                   </div>
                   
                   <p className="text-muted-foreground mb-6">
-                    MCP Now simplifies AI model deployment and management for developers, researchers, and enterprises.
-                    With powerful tools for configuring, monitoring, and scaling your AI servers, MCP Now helps you get
-                    the most out of your models with minimal friction.
+                    MCP Now helps you deploy and manage AI models with minimal effort. Connect your favorite models and start building right away.
                   </p>
                   
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Seamless integration with popular AI models</span>
+                      <span>Quick integration with popular AI models</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Real-time monitoring and analytics</span>
+                      <span>Built-in monitoring tools</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Share and collaborate on profiles with your team</span>
+                      <span>Easy profile sharing</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Optimized for both local and cloud deployments</span>
+                      <span>Works locally or in the cloud</span>
                     </div>
                   </div>
                 </div>
