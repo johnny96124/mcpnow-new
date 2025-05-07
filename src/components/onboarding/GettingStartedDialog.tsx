@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Server, Play, Share, Plus } from "lucide-react";
@@ -45,12 +46,10 @@ export const GettingStartedDialog = ({
           <p className="text-muted-foreground mb-4">
             开始使用MCP Now的第一步是添加您本地已安装的MCP主机：
           </p>
-          <ol className="list-decimal list-inside space-y-3 text-sm">
-            <li className="py-1">打开应用后，系统会自动扫描本地网络中可用的主机</li>
-            <li className="py-1">从发现列表中选择一个或多个主机，或使用"手动添加"选项</li>
-            <li className="py-1">提供必要的连接详情（主机名称、图标和连接地址）</li>
-            <li className="py-1">系统将自动为新添加的主机创建默认配置文件</li>
-          </ol>
+          <div className="space-y-3 text-sm">
+            <p>启动应用后，系统会自动扫描本地网络中的可用主机，您可以从列表中选择或使用"手动添加"选项，并提供必要的连接详情。</p>
+            <p>系统会自动为新添加的主机创建默认配置文件，使您可以立即开始使用。</p>
+          </div>
           <div className="pt-4">
             <Button asChild size="sm" className="gap-1 bg-blue-500 hover:bg-blue-600">
               <Link to="/hosts">
@@ -70,12 +69,10 @@ export const GettingStartedDialog = ({
           <p className="text-muted-foreground mb-4">
             连接主机后，您需要添加和配置服务器：
           </p>
-          <ol className="list-decimal list-inside space-y-3 text-sm">
-            <li className="py-1">在主机详情页面，选择一个配置文件</li>
-            <li className="py-1">点击"添加服务器"按钮，从可用服务器类型中选择</li>
-            <li className="py-1">根据需要为每个所选服务器提供附加配置</li>
-            <li className="py-1">完成后，服务器将被添加到当前配置文件并显示在已连接服务器列表中</li>
-          </ol>
+          <div className="space-y-3 text-sm">
+            <p>在主机详情页面，选择一个配置文件，点击"添加服务器"按钮，从可用服务器类型中选择所需服务器。</p>
+            <p>根据需要为每个所选服务器提供附加配置，完成后服务器将被添加到当前配置文件并显示在已连接服务器列表中。</p>
+          </div>
           <div className="pt-4">
             <Button asChild size="sm" className="gap-1 bg-purple-500 hover:bg-purple-600">
               <Link to="/servers">
@@ -95,13 +92,10 @@ export const GettingStartedDialog = ({
           <p className="text-muted-foreground mb-4">
             添加服务器后，您可以灵活管理它们的运行状态：
           </p>
-          <ol className="list-decimal list-inside space-y-3 text-sm">
-            <li className="py-1">通过服务器列表中的开关控制每个服务器的状态（运行/停止）</li>
-            <li className="py-1">系统会提供有关连接状态的直观反馈（连接中、运行中、错误）</li>
-            <li className="py-1">点击服务器项目可访问每个服务器的详细信息</li>
-            <li className="py-1">根据需要调整环境变量、命令参数和其他设置</li>
-            <li className="py-1">出现错误时，系统会显示通知并提供问题解决方案</li>
-          </ol>
+          <div className="space-y-3 text-sm">
+            <p>通过服务器列表中的开关控制每个服务器的状态（运行/停止），系统会提供连接状态的直观反馈（连接中、运行中、错误）。</p>
+            <p>点击服务器项目可访问详细信息，调整环境变量、命令参数等设置，系统会在出现错误时显示通知并提供解决方案。</p>
+          </div>
           <div className="pt-4">
             <Button asChild size="sm" className="gap-1 bg-green-500 hover:bg-green-600">
               <Link to="/hosts">
@@ -121,13 +115,10 @@ export const GettingStartedDialog = ({
           <p className="text-muted-foreground mb-4">
             轻松与团队成员或朋友共享您的MCP配置：
           </p>
-          <ol className="list-decimal list-inside space-y-3 text-sm">
-            <li className="py-1">在主机详情页面点击"共享配置文件"按钮</li>
-            <li className="py-1">选择是共享完整配置还是仅共享基本配置文件</li>
-            <li className="py-1">选择要在共享配置文件中包含的特定服务器</li>
-            <li className="py-1">点击"生成共享链接"创建独特链接</li>
-            <li className="py-1">复制链接并分享给他人，对方可以在确认前预览他们将导入的内容</li>
-          </ol>
+          <div className="space-y-3 text-sm">
+            <p>在主机详情页面点击"共享配置文件"按钮，选择共享完整配置或仅共享基本配置文件，并选择要包含的特定服务器。</p>
+            <p>点击"生成共享链接"创建独特链接，复制并分享给他人，对方可以在确认前预览他们将导入的内容。</p>
+          </div>
           <div className="pt-4">
             <Button asChild size="sm" className="gap-1 bg-amber-500 hover:bg-amber-600">
               <Link to="/profiles">
