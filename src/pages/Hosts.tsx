@@ -12,6 +12,7 @@ import { serverInstances as initialServerInstances, profiles as initialProfiles 
 import { UnifiedHostDialog } from "@/components/hosts/UnifiedHostDialog";
 import Welcome from "@/components/hosts/Welcome";
 import { HostsEmptyState } from "@/components/hosts/HostsEmptyState";
+import { GuidedTourOverlay } from "@/components/onboarding/GuidedTourOverlay";
 
 const mockJsonConfig = {
   "mcpServers": {
@@ -27,6 +28,9 @@ const Hosts = () => {
     localStorage.getItem('hostsOnboardingSeen') === 'true'
   );
 
+  // Add state for guided tour overlay
+  const [showGuidedTour, setShowGuidedTour] = useState<boolean>(false);
+
   useEffect(() => {
     const markHostsOnboardingAsSeen = () => {
       localStorage.setItem('hostsOnboardingSeen', 'true');
@@ -35,7 +39,18 @@ const Hosts = () => {
     if (hasSeenOnboarding) {
       markHostsOnboardingAsSeen();
     }
+
+    // Check if we should show the guided tour
+    if (sessionStorage.getItem('highlightAddServers') === 'true') {
+      setShowGuidedTour(true);
+      // Clear the flag
+      sessionStorage.removeItem('highlightAddServers');
+    }
   }, [hasSeenOnboarding]);
+
+  const handleCloseGuidedTour = () => {
+    setShowGuidedTour(false);
+  };
 
   const [hostsList, setHostsList] = useState<Host[]>(initialHosts);
   const [unifiedHostDialogOpen, setUnifiedHostDialogOpen] = useState(false);
@@ -476,6 +491,13 @@ const Hosts = () => {
         isFixMode={configDialog.isFixMode} 
         isUpdateMode={configDialog.isUpdateMode} 
         isCreateMode={configDialog.isCreateMode}
+      />
+
+      {/* Add guided tour overlay */}
+      <GuidedTourOverlay
+        targetElementId="add-servers-button"
+        onClose={handleCloseGuidedTour}
+        isVisible={showGuidedTour}
       />
     </div>
   );

@@ -19,7 +19,10 @@ export const ServerListEmpty: React.FC<ServerListEmptyProps> = ({ onAddServers }
           Add servers to this profile to get started. You can add existing servers or create new ones.
         </p>
       </div>
-      <Button onClick={onAddServers}>
+      <Button 
+        id="add-servers-button" 
+        onClick={onAddServers}
+      >
         <Plus className="h-4 w-4 mr-2" />
         Add Servers
       </Button>
