@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronRight, Server, Play, Share, Plus } from "lucide-react";
@@ -47,19 +48,7 @@ export const GettingStartedDialog = ({
     setShowHostDialog(false);
   };
 
-  // Updated function to navigate to Hosts page and set up guided tour for the "Add New Host" button
-  const handleNavigateToAddHost = () => {
-    markOnboardingAsSeen();
-    handleOpenChange(false);
-    
-    // Set flag in sessionStorage to trigger guided tour for the Add New Host button
-    sessionStorage.setItem('highlightAddNewHost', 'true');
-    
-    // Navigate to the hosts page
-    navigate('/hosts');
-  };
-
-  // Keep the existing function for highlighting "Add Servers" button
+  // Updated function to navigate to Hosts page and setup guided tour
   const handleNavigateToAddServers = () => {
     markOnboardingAsSeen();
     handleOpenChange(false);
@@ -86,7 +75,7 @@ export const GettingStartedDialog = ({
             <li>系统会自动为新添加的主机创建默认配置文件，使您可以立即开始使用。</li>
           </ol>
           <div className="pt-4">
-            <Button size="sm" className="gap-1 bg-blue-500 hover:bg-blue-600" onClick={handleNavigateToAddHost}>
+            <Button size="sm" className="gap-1 bg-blue-500 hover:bg-blue-600" onClick={() => setShowHostDialog(true)}>
               添加主机
               <ChevronRight className="h-4 w-4" />
             </Button>
