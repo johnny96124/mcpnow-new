@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -109,7 +108,7 @@ export default function ProfileLandingPage() {
       });
     });
   };
-  
+
   // Animation variants for the download button
   const pulseAnimation = {
     scale: [1, 1.05, 1],
@@ -119,7 +118,6 @@ export default function ProfileLandingPage() {
       ease: "easeInOut"
     }
   };
-  
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
@@ -146,10 +144,7 @@ It contains server configurations and settings that you can import into MCP Now.
                   <p className="text-gray-600 dark:text-gray-300 max-w-lg">
                     Download MCP Now to instantly import this profile and supercharge your AI development workflow.
                   </p>
-                  <motion.div 
-                    animate={pulseAnimation}
-                    className="mt-2"
-                  >
+                  <motion.div animate={pulseAnimation} className="mt-2">
                     <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 px-8 min-w-[240px] shadow-md">
                       <Download className="h-5 w-5" />
                       Download MCP Now
@@ -368,26 +363,7 @@ It contains server configurations and settings that you can import into MCP Now.
             </Card>
             
             {/* Bottom Download CTA */}
-            <div className="mt-12 bg-blue-50/70 dark:bg-blue-950/30 rounded-xl p-6 border border-blue-100 dark:border-blue-900/30">
-              <div className="flex flex-col items-center space-y-4">
-                <h3 className="text-xl font-semibold text-blue-700 dark:text-blue-400">
-                  Experience the difference with MCP Now
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300 max-w-lg">
-                  Import this profile and start using these AI servers in just a few clicks.
-                </p>
-                <motion.div 
-                  animate={pulseAnimation}
-                  className="mt-2"
-                >
-                  <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 px-8 min-w-[240px] shadow-md">
-                    <Download className="h-5 w-5" />
-                    Download MCP Now
-                  </Button>
-                </motion.div>
-                <p className="text-sm text-muted-foreground">Available for macOS • Free download</p>
-              </div>
-            </div>
+            
           </div>
         </div>
       </main>
