@@ -312,8 +312,8 @@ It contains server configurations and settings that you can import into MCP Now.
           </Card>
           
           {/* About MCP Now Section */}
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold tracking-tight">About MCP Now</h2>
+          <div className="space-y-6 text-center">
+            <h2 className="text-2xl font-semibold tracking-tight text-center">About MCP Now</h2>
             
             <Card className="overflow-hidden">
               <div className="md:flex">
