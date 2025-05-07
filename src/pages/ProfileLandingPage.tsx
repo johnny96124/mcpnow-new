@@ -138,14 +138,14 @@ export default function ProfileLandingPage() {
                 </p>
               </div>
               <div>
-                <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 px-8 py-6 text-md font-medium">
+                <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium px-[33px] py-0 mx-0 my-0">
                   <Download className="h-5 w-5" />
                   Download MCP Now
                 </Button>
               </div>
             </div>
             <div className="text-center mt-2">
-              <p className="text-sm text-muted-foreground">Available on macOS</p>
+              <p className="text-sm text-muted-foreground text-right">Available on macOS</p>
             </div>
           </div>
         </div>
