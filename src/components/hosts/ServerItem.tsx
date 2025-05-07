@@ -9,8 +9,7 @@ import { toast } from "@/components/ui/use-toast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ServerErrorDialog } from "@/components/hosts/ServerErrorDialog";
 import { ServerDetailsDialog } from "@/components/hosts/ServerDetailsDialog";
-import { AddInstanceDialog } from "./AddInstanceDialog";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { AddInstanceDialog } from "@/components/servers/AddInstanceDialog";
 
 interface ServerItemProps {
   server: ServerInstance;
