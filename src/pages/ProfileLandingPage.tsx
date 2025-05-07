@@ -237,7 +237,7 @@ export default function ProfileLandingPage() {
                   <CardContent className="p-0">
                     <Tabs defaultValue="configuration" className="w-full">
                       <div className="border-b px-4 md:px-6">
-                        <TabsList className="h-12">
+                        <TabsList className="h-10">
                           <TabsTrigger value="configuration">Configuration</TabsTrigger>
                           <TabsTrigger value="environment">Environment Variables</TabsTrigger>
                           {server.type === "HTTP_SSE" && (

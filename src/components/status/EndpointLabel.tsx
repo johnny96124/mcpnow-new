@@ -14,26 +14,24 @@ export function EndpointLabel({ type, className }: EndpointLabelProps) {
   switch(type) {
     case 'HTTP_SSE':
       labelText = 'HTTP SSE';
-      typeClasses = "text-blue-600";
+      typeClasses = "text-blue-500 font-medium";
       break;
     case 'STDIO':
       labelText = 'STDIO';
-      typeClasses = "text-purple-600";
+      typeClasses = "text-purple-500 font-medium";
       break;
     case 'WS':
       labelText = 'WebSocket';
-      typeClasses = "text-green-600";
+      typeClasses = "text-green-500 font-medium";
       break;
     case 'Custom':
       labelText = 'Custom';
-      typeClasses = "text-gray-600";
+      typeClasses = "text-gray-500 font-medium";
       break;
   }
   
-  const baseClasses = "px-2 py-0.5 text-xs font-medium rounded-md";
-  
   return (
-    <span className={cn(baseClasses, typeClasses, className)}>
+    <span className={cn("text-sm", typeClasses, className)}>
       {labelText}
     </span>
   );
