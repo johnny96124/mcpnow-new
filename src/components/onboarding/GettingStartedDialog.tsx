@@ -1,49 +1,31 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import {
-  ChevronRight,
-  Server,
-  Play,
-  Share,
-  Plus,
-} from "lucide-react";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogClose,
-  DialogFooter,
-  DialogDescription
-} from "@/components/ui/dialog";
+import { ChevronRight, Server, Play, Share, Plus } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { markOnboardingAsSeen } from "@/utils/localStorage";
-
 interface GettingStartedDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-export const GettingStartedDialog = ({ open, onOpenChange }: GettingStartedDialogProps) => {
+export const GettingStartedDialog = ({
+  open,
+  onOpenChange
+}: GettingStartedDialogProps) => {
   const [expandedStep, setExpandedStep] = useState<number>(0);
   const [closing, setClosing] = useState(false);
   const [animationOrigin, setAnimationOrigin] = useState<string>("60 calc(100vh - 60)");
   const dialogRef = useRef<HTMLDivElement>(null);
-  
   useEffect(() => {
     if (!open && !closing) {
       setClosing(false);
     }
   }, [open, closing]);
-
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       setAnimationOrigin("60 calc(100vh - 60)");
-      
       setClosing(true);
-      
       setTimeout(() => {
         markOnboardingAsSeen();
         setClosing(false);
@@ -53,16 +35,13 @@ export const GettingStartedDialog = ({ open, onOpenChange }: GettingStartedDialo
       onOpenChange(true);
     }
   };
-
-  const beginnerGuideSteps = [
-    {
-      title: "添加本地已安装的MCP Host",
-      description: "连接到您本地网络中可用的MCP主机。",
-      icon: <Server className="h-6 w-6 text-blue-500" />,
-      iconBg: "bg-blue-100 dark:bg-blue-900/40",
-      iconColor: "text-blue-600 dark:text-blue-300",
-      content: (
-        <>
+  const beginnerGuideSteps = [{
+    title: "添加本地已安装的MCP Host",
+    description: "连接到您本地网络中可用的MCP主机。",
+    icon: <Server className="h-6 w-6 text-blue-500" />,
+    iconBg: "bg-blue-100 dark:bg-blue-900/40",
+    iconColor: "text-blue-600 dark:text-blue-300",
+    content: <>
           <p className="text-muted-foreground mb-4">
             开始使用MCP Now的第一步是添加您本地已安装的MCP主机：
           </p>
@@ -81,16 +60,13 @@ export const GettingStartedDialog = ({ open, onOpenChange }: GettingStartedDialo
             </Button>
           </div>
         </>
-      )
-    },
-    {
-      title: "添加MCP Server至Host",
-      description: "为您的主机选择并配置服务器。",
-      icon: <Plus className="h-6 w-6 text-purple-500" />,
-      iconBg: "bg-purple-100 dark:bg-purple-900/40",
-      iconColor: "text-purple-600 dark:text-purple-300",
-      content: (
-        <>
+  }, {
+    title: "添加MCP Server至Host",
+    description: "为您的主机选择并配置服务器。",
+    icon: <Plus className="h-6 w-6 text-purple-500" />,
+    iconBg: "bg-purple-100 dark:bg-purple-900/40",
+    iconColor: "text-purple-600 dark:text-purple-300",
+    content: <>
           <p className="text-muted-foreground mb-4">
             连接主机后，您需要添加和配置服务器：
           </p>
@@ -109,16 +85,13 @@ export const GettingStartedDialog = ({ open, onOpenChange }: GettingStartedDialo
             </Button>
           </div>
         </>
-      )
-    },
-    {
-      title: "运行Server并动态管理",
-      description: "启动、监控和管理您的服务器。",
-      icon: <Play className="h-6 w-6 text-green-500" />,
-      iconBg: "bg-green-100 dark:bg-green-900/40", 
-      iconColor: "text-green-600 dark:text-green-300",
-      content: (
-        <>
+  }, {
+    title: "运行Server并动态管理",
+    description: "启动、监控和管理您的服务器。",
+    icon: <Play className="h-6 w-6 text-green-500" />,
+    iconBg: "bg-green-100 dark:bg-green-900/40",
+    iconColor: "text-green-600 dark:text-green-300",
+    content: <>
           <p className="text-muted-foreground mb-4">
             添加服务器后，您可以灵活管理它们的运行状态：
           </p>
@@ -138,16 +111,13 @@ export const GettingStartedDialog = ({ open, onOpenChange }: GettingStartedDialo
             </Button>
           </div>
         </>
-      )
-    },
-    {
-      title: "分享MCP Now给更多的人",
-      description: "与他人共享您的MCP配置。",
-      icon: <Share className="h-6 w-6 text-amber-500" />,
-      iconBg: "bg-amber-100 dark:bg-amber-900/40",
-      iconColor: "text-amber-600 dark:text-amber-300",
-      content: (
-        <>
+  }, {
+    title: "分享MCP Now给更多的人",
+    description: "与他人共享您的MCP配置。",
+    icon: <Share className="h-6 w-6 text-amber-500" />,
+    iconBg: "bg-amber-100 dark:bg-amber-900/40",
+    iconColor: "text-amber-600 dark:text-amber-300",
+    content: <>
           <p className="text-muted-foreground mb-4">
             轻松与团队成员或朋友共享您的MCP配置：
           </p>
@@ -167,19 +137,9 @@ export const GettingStartedDialog = ({ open, onOpenChange }: GettingStartedDialo
             </Button>
           </div>
         </>
-      )
-    }
-  ];
-
-  return (
-    <Dialog open={open || closing} onOpenChange={handleOpenChange}>
-      <DialogContent 
-        ref={dialogRef}
-        className={`max-w-2xl ${closing ? 'animate-collapse' : 'animate-expand'}`}
-        animationOrigin={animationOrigin}
-        hideClose={true}
-        size="xl"
-      >
+  }];
+  return <Dialog open={open || closing} onOpenChange={handleOpenChange}>
+      <DialogContent ref={dialogRef} className={`max-w-2xl ${closing ? 'animate-collapse' : 'animate-expand'}`} animationOrigin={animationOrigin} hideClose={true} size="xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">欢迎使用 MCP Now</DialogTitle>
           <DialogDescription className="text-base">
@@ -188,36 +148,20 @@ export const GettingStartedDialog = ({ open, onOpenChange }: GettingStartedDialo
         </DialogHeader>
         
         <div className="py-4">
-          <Accordion 
-            type="single" 
-            defaultValue="step-0" 
-            collapsible 
-            className="w-full rounded-md overflow-hidden border"
-          >
-            {beginnerGuideSteps.map((step, index) => (
-              <AccordionItem 
-                key={`step-${index}`} 
-                value={`step-${index}`}
-                className={index === beginnerGuideSteps.length - 1 ? "border-0" : ""}
-              >
-                <AccordionTrigger 
-                  className="px-4 py-5 hover:bg-muted/30 data-[state=open]:bg-muted/20"
-                  icon={
-                    <div className={`${step.iconBg} ${step.iconColor} p-3 rounded-full`}>
+          <Accordion type="single" defaultValue="step-0" collapsible className="w-full rounded-md overflow-hidden border">
+            {beginnerGuideSteps.map((step, index) => <AccordionItem key={`step-${index}`} value={`step-${index}`} className={index === beginnerGuideSteps.length - 1 ? "border-0" : ""}>
+                <AccordionTrigger className="px-4 py-5 hover:bg-muted/30 data-[state=open]:bg-muted/20" icon={<div className={`${step.iconBg} ${step.iconColor} p-3 rounded-full`}>
                       {step.icon}
-                    </div>
-                  }
-                >
+                    </div>}>
                   <div>
                     <h3 className="font-medium text-lg">步骤 {index + 1}: {step.title}</h3>
-                    <p className="text-muted-foreground text-sm">{step.description}</p>
+                    <p className="text-muted-foreground text-sm text-left">{step.description}</p>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-6 pt-2 bg-muted/10">
                   {step.content}
                 </AccordionContent>
-              </AccordionItem>
-            ))}
+              </AccordionItem>)}
           </Accordion>
         </div>
 
@@ -232,7 +176,5 @@ export const GettingStartedDialog = ({ open, onOpenChange }: GettingStartedDialo
           </DialogClose>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
-  );
+    </Dialog>;
 };
-
