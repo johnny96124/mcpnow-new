@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronRight, Server, Play, Share, Plus } from "lucide-react";
@@ -5,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogFo
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { markOnboardingAsSeen } from "@/utils/localStorage";
-import { AddHostDialog } from "@/components/new-layout/AddHostDialog";
+import { UnifiedHostDialog } from "@/components/hosts/UnifiedHostDialog";
 
 interface GettingStartedDialogProps {
   open: boolean;
@@ -18,7 +19,7 @@ export const GettingStartedDialog = ({
   const [expandedStep, setExpandedStep] = useState<number>(0);
   const [closing, setClosing] = useState(false);
   const [animationOrigin, setAnimationOrigin] = useState<string>("60 calc(100vh - 60)");
-  const [showAddHostDialog, setShowAddHostDialog] = useState(false);
+  const [showHostDialog, setShowHostDialog] = useState(false);
   const dialogRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
@@ -41,10 +42,9 @@ export const GettingStartedDialog = ({
     }
   };
   
-  const handleAddHost = (host: any) => {
-    // This would normally add the host to your state/store
-    console.log("Host added:", host);
-    setShowAddHostDialog(false);
+  const handleAddHosts = (hosts: any[]) => {
+    console.log("Hosts added:", hosts);
+    setShowHostDialog(false);
   };
 
   const beginnerGuideSteps = [{
@@ -62,7 +62,7 @@ export const GettingStartedDialog = ({
             <li>系统会自动为新添加的主机创建默认配置文件，使您可以立即开始使用。</li>
           </ol>
           <div className="pt-4">
-            <Button size="sm" className="gap-1 bg-blue-500 hover:bg-blue-600" onClick={() => setShowAddHostDialog(true)}>
+            <Button size="sm" className="gap-1 bg-blue-500 hover:bg-blue-600" onClick={() => setShowHostDialog(true)}>
               添加主机
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -180,10 +180,10 @@ export const GettingStartedDialog = ({
       </DialogContent>
     </Dialog>
     
-    <AddHostDialog 
-      open={showAddHostDialog}
-      onOpenChange={setShowAddHostDialog}
-      onAddHost={handleAddHost}
+    <UnifiedHostDialog 
+      open={showHostDialog}
+      onOpenChange={setShowHostDialog}
+      onAddHosts={handleAddHosts}
     />
   </>;
 };
