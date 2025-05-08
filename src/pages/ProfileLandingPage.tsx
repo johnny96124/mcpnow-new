@@ -8,8 +8,7 @@ import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { ProfileStatusBadge } from "@/components/status/ProfileStatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Server, FileText, Download, Info, Copy, Check, ChevronDown, Clock, InfoIcon } from "lucide-react";
+import { Server, FileText, Download, Info, Copy, Check, ChevronDown, Clock } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ServerLogo } from "@/components/servers/ServerLogo";
@@ -60,7 +59,6 @@ const mockSharedProfile = {
     }
   }]
 };
-
 export default function ProfileLandingPage() {
   const {
     shareId
@@ -70,7 +68,6 @@ export default function ProfileLandingPage() {
   const [profile, setProfile] = useState(mockSharedProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [sharingOpen, setSharingOpen] = useState(false); // State for sharing details collapsible
   const location = useLocation();
   const isMobile = useIsMobile();
 
@@ -139,6 +136,16 @@ export default function ProfileLandingPage() {
     });
   };
 
+  // Animation variants for the download button
+  const pulseAnimation = {
+    scale: [1, 1.05, 1],
+    transition: {
+      duration: 1.8,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -147,67 +154,97 @@ export default function ProfileLandingPage() {
         <div className="flex flex-col gap-8">
           {/* Profile Info Header */}
           <div className="mb-4">
-            <div className="flex flex-col gap-2">
-              <Badge variant="outline" className="self-start bg-blue-100/50 dark:bg-blue-900/20 text-primary font-medium mb-1">
-                Shared Profile
-              </Badge>
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold tracking-tight">{profile.name}</h1>
-                <ProfileStatusBadge isValid={isProfileValid} className="mt-1" />
+            <div className="flex justify-between items-start mb-2">
+              <div>
+                <Badge variant="outline" className="bg-blue-100/50 dark:bg-blue-900/20 text-primary font-medium mb-2">
+                  Shared Profile
+                </Badge>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold tracking-tight">{profile.name}</h1>
+                  <ProfileStatusBadge isValid={isProfileValid} className="mt-1" />
+                </div>
               </div>
-              {profile.description && (
-                <p className="text-muted-foreground mt-1">{profile.description}</p>
-              )}
             </div>
-            
-            {/* Sharing details as a subtle collapsible element */}
-            <div className="mt-4">
-              <Collapsible
-                open={sharingOpen}
-                onOpenChange={setSharingOpen}
-                className="w-full border rounded-md border-border/40"
-              >
-                <CollapsibleTrigger className="flex w-full items-center justify-between p-3 text-sm text-muted-foreground hover:bg-accent/50 transition-colors rounded-md">
-                  <div className="flex items-center gap-2">
-                    <InfoIcon className="h-4 w-4" />
-                    <span>Sharing Details</span>
-                  </div>
-                  <ChevronDown className={`h-4 w-4 transition-transform ${sharingOpen ? 'rotate-180' : ''}`} />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="px-4 pb-3 pt-1">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          </div>
+          
+          {/* Sharing Details - Collapsible */}
+          <Accordion type="single" collapsible defaultValue="sharing-details" className="w-full">
+            <AccordionItem value="sharing-details" className="border rounded-lg overflow-hidden">
+              <AccordionTrigger className="px-6 py-4 hover:no-underline bg-muted/20">
+                <div className="flex items-center gap-2 text-lg font-semibold">
+                  <Info className="h-5 w-5" />
+                  Sharing Details
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="p-0">
+                <CardContent className="pt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="font-medium text-muted-foreground mb-1">Created On</h3>
-                      <p>{formatDate(createDate)}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-muted-foreground mb-1">Expires On</h3>
-                      <p>{formatDate(expiryDate)}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-muted-foreground mb-1">Sharing Mode</h3>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Sharing Mode</h3>
                       <div className="flex items-center gap-2">
                         <Badge variant={profile.shareMode === "complete" ? "default" : "secondary"}>
-                          {profile.shareMode === "complete" ? "Complete" : "Basic"}
+                          {profile.shareMode === "complete" ? "Complete Configuration" : "Basic Configuration"}
                         </Badge>
+                        {profile.shareMode === "complete" && <span className="text-xs text-muted-foreground">Includes all parameters</span>}
                       </div>
                     </div>
+                    
                     <div>
-                      <h3 className="font-medium text-muted-foreground mb-1">Shared Link</h3>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Shared Link</h3>
                       <div className="flex items-center gap-2">
-                        <span className="truncate flex-1">{shareUrl}</span>
+                        <span className="text-sm truncate flex-1">{shareUrl}</span>
                         <button onClick={handleCopyLink} className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors" aria-label="Copy link">
                           {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                         </button>
                       </div>
                     </div>
+                    
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Created On</h3>
+                      <div className="space-y-1">
+                        <p>{formatDate(createDate)}</p>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Expired On</h3>
+                      <div className="space-y-1">
+                        <p>{formatDate(expiryDate)}</p>
+                      </div>
+                    </div>
                   </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-          </div>
+                </CardContent>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
           
-          {/* Server List - Main content */}
+          {/* Download CTA Card - Simplified */}
+          <Card className="overflow-hidden border-blue-100 dark:border-blue-800">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 px-6 py-8">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-20 h-20 mb-2">
+                  <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
+                </div>
+                
+                <h2 className="text-2xl font-bold tracking-tight">Import this profile with MCP Now</h2>
+                
+                <p className="text-muted-foreground">
+                  Download the MCP Now client to import the <span className="font-medium text-blue-600 dark:text-blue-400">{profile.name}</span> configuration with one click
+                </p>
+                
+                <motion.div animate={pulseAnimation} className="w-full max-w-xs">
+                  <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
+                    <Download className="h-5 w-5" />
+                    Import Now
+                  </Button>
+                </motion.div>
+                
+                <p className="text-xs text-muted-foreground">Available for macOS • Free download</p>
+              </div>
+            </div>
+          </Card>
+          
+          {/* Server List - The main focus */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
               <Server className="h-5 w-5" /> 
@@ -326,34 +363,6 @@ export default function ProfileLandingPage() {
           </div>
         </div>
       </main>
-      
-      {/* Download CTA - Floating banner at the bottom for better organization */}
-      <div className="sticky bottom-0 w-full bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/80 dark:to-blue-900/80 border-t border-blue-200 dark:border-blue-800 py-4 backdrop-blur-sm z-10 shadow-lg">
-        <div className="container mx-auto flex items-center justify-between max-w-5xl px-4">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 flex-shrink-0 hidden sm:block">
-              <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
-            </div>
-            <div className="flex flex-col">
-              <h3 className="font-semibold">Import this profile with MCP Now</h3>
-              <p className="text-sm text-muted-foreground hidden sm:block">Free download for macOS</p>
-            </div>
-          </div>
-          <div>
-            <motion.div 
-              animate={{
-                scale: [1, 1.05, 1],
-                transition: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-              }}
-            >
-              <Button size="lg" variant="default" className="bg-blue-500 hover:bg-blue-600 gap-2 text-md h-10 sm:h-12">
-                <Download className="h-5 w-5" />
-                <span>Import Now</span>
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </div>
       
       <Footer />
     </div>
