@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -270,7 +269,7 @@ export default function ProfileLandingPage() {
             <div className="space-y-4">
               <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
                 <Server className="h-5 w-5" /> 
-                Included Services
+                Included Servers
               </h2>
               
               <div className="space-y-4">
@@ -388,4 +387,3 @@ export default function ProfileLandingPage() {
     </div>
   );
 }
-
