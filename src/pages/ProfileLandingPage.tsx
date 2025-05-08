@@ -84,7 +84,6 @@ export default function ProfileLandingPage() {
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    
     return `${year}-${month}-${day} ${hours}:${minutes}`;
   };
 
@@ -93,7 +92,7 @@ export default function ProfileLandingPage() {
 
   // Check if the profile is valid (not expired)
   const isProfileValid = daysRemaining > 0;
-  
+
   // ... keep existing code (useEffect hooks and handler functions)
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
@@ -160,7 +159,7 @@ export default function ProfileLandingPage() {
                     <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
                   </div>
                   
-                  <h2 className="text-2xl font-bold tracking-tight">Import this configuration with MCP Now</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">Import this profile with MCP Now</h2>
                   
                   <p className="text-muted-foreground">Download the MCP Now client to import the <span className="font-medium text-blue-600 dark:text-blue-400">{profile.name}</span> configuration with one click and use these AI services instantly</p>
                   
