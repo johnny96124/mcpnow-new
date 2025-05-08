@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -162,7 +161,7 @@ export default function ServerLandingPage() {
                   <motion.div animate={pulseAnimation} className="w-full max-w-xs">
                     <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
                       <Download className="h-5 w-5" />
-                      Download MCP Now
+                      Import Now
                     </Button>
                   </motion.div>
                   
@@ -198,17 +197,39 @@ export default function ServerLandingPage() {
           
           {/* Right column - Server Info */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Server Info Header */}
+            {/* Server Info Header with the new layout */}
             <div className="mb-4">
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <Badge variant="outline" className="bg-blue-100/50 dark:bg-blue-900/20 text-primary font-medium mb-2">
                     Shared Server
                   </Badge>
-                  <div className="flex items-center gap-3">
-                    <h1 className="text-3xl font-bold tracking-tight">{server.name}</h1>
-                    <ProfileStatusBadge isValid={isLinkValid} className="mt-1" />
+                </div>
+              </div>
+              
+              {/* New server header layout based on the image */}
+              <div className="flex items-start gap-4">
+                <ServerLogo name={server.name} className="w-16 h-16 flex-shrink-0" />
+                
+                <div className="space-y-2">
+                  <div>
+                    <h1 className="text-3xl font-bold tracking-tight flex flex-wrap items-center gap-2">
+                      {server.name}
+                      <ProfileStatusBadge isValid={isLinkValid} className="mt-1" />
+                    </h1>
+                    
+                    <div className="flex items-center gap-2 mt-2">
+                      <EndpointLabel type={server.type} />
+                      {server.officialStatus === "verified" && (
+                        <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                          <Shield className="h-3 w-3 mr-1" />
+                          Verified
+                        </Badge>
+                      )}
+                    </div>
                   </div>
+                  
+                  <p className="text-gray-600 dark:text-gray-300">{server.description}</p>
                 </div>
               </div>
             </div>
@@ -273,26 +294,8 @@ export default function ServerLandingPage() {
                   {/* Divider */}
                   <Separator className="my-2" />
                   
-                  {/* Server Details Section */}
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-4">
-                      <ServerLogo name={server.name} className="w-12 h-12" />
-                      <div>
-                        <h2 className="font-semibold text-lg">{server.name}</h2>
-                        <div className="flex items-center gap-2 mt-1">
-                          <EndpointLabel type={server.type} />
-                          {server.officialStatus === "verified" && (
-                            <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                              <Shield className="h-3 w-3 mr-1" />
-                              Verified
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <p className="text-muted-foreground">{server.description}</p>
-                    
+                  {/* Server Details Section (moved from layout with the ServerLogo) */}
+                  <div className="space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Left details column */}
                       <div className="space-y-5">
@@ -347,15 +350,6 @@ export default function ServerLandingPage() {
                             </a>
                           </div>
                         )}
-                        
-                        <div>
-                          <h3 className="text-sm font-medium flex items-center gap-1.5 mb-2">
-                            <Terminal className="h-4 w-4" /> Server Type
-                          </h3>
-                          <div className="flex items-center gap-2">
-                            <EndpointLabel type={server.type} />
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </div>
