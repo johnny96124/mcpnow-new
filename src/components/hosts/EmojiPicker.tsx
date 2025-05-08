@@ -61,7 +61,6 @@ export function EmojiPicker({ selectedEmoji, onEmojiSelected, className }: Emoji
       <PopoverContent className="w-80 p-0" align="start">
         <ScrollArea className="h-80 max-h-[60vh] rounded-md">
           <div className="p-4">
-            <h4 className="mb-2 text-sm font-medium text-muted-foreground">Objects</h4>
             <div className="grid grid-cols-8 gap-2">
               {objectIcons.map((emoji) => (
                 <Button
