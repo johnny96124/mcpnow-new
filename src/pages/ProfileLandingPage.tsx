@@ -91,10 +91,9 @@ export default function ProfileLandingPage() {
 
   // Calculate days remaining until expiration
   const daysRemaining = Math.max(0, Math.ceil((expiryDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)));
-  
+
   // Check if the profile is valid (not expired)
   const isProfileValid = daysRemaining > 0;
-
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
     setIsLoading(true);
@@ -217,7 +216,7 @@ export default function ProfileLandingPage() {
                 </div>
                 
               </div>
-              <p className="text-muted-foreground">{profile.description}</p>
+              
             </div>
             
             {/* Key Profile Information */}
