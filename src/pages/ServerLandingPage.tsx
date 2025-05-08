@@ -26,7 +26,8 @@ const mockSharedServer = {
   author: "GitHub",
   createdAt: "2025-01-15 14:30",
   type: "HTTP_SSE" as EndpointType,
-  shareMode: "complete", // "complete" or "basic"
+  shareMode: "complete",
+  // "complete" or "basic"
   status: "ready",
   version: "1.2.0",
   officialStatus: "verified",
@@ -54,9 +55,12 @@ const mockSharedServer = {
   repository: "https://github.com/github/copilot-api",
   features: ["Code completion", "Code explanation", "Test generation", "Documentation"]
 };
-
 export default function ServerLandingPage() {
-  const { shareId } = useParams<{ shareId: string }>();
+  const {
+    shareId
+  } = useParams<{
+    shareId: string;
+  }>();
   const [server, setServer] = useState(mockSharedServer);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -85,7 +89,6 @@ export default function ServerLandingPage() {
 
   // Check if the server link is valid (not expired)
   const isLinkValid = daysRemaining > 0;
-
   useEffect(() => {
     // In a real application, you'd fetch the server data using the shareId
     setIsLoading(true);
@@ -107,19 +110,18 @@ export default function ServerLandingPage() {
       return () => clearTimeout(timer);
     }
   }, [copied]);
-
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
       toast({
         title: "Link copied!",
-        description: "The share link has been copied to your clipboard.",
+        description: "The share link has been copied to your clipboard."
       });
     }).catch(err => {
       console.error("Failed to copy: ", err);
       toast({
         title: "Failed to copy",
-        description: "Please try again or copy the URL manually.",
+        description: "Please try again or copy the URL manually."
       });
     });
   };
@@ -133,9 +135,7 @@ export default function ServerLandingPage() {
       ease: "easeInOut"
     }
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <main className="flex-1 container mx-auto py-12 px-4 max-w-7xl">
@@ -220,12 +220,10 @@ export default function ServerLandingPage() {
                     
                     <div className="flex items-center gap-2 mt-2">
                       <EndpointLabel type={server.type} />
-                      {server.officialStatus === "verified" && (
-                        <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                      {server.officialStatus === "verified" && <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                           <Shield className="h-3 w-3 mr-1" />
                           Verified
-                        </Badge>
-                      )}
+                        </Badge>}
                     </div>
                   </div>
                   
@@ -241,7 +239,7 @@ export default function ServerLandingPage() {
                   {/* Top section with key server information */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-3">Share Details</h3>
+                      
                       <div className="space-y-4">
                         <div>
                           <p className="text-sm font-medium mb-1">Share Mode</p>
@@ -249,9 +247,7 @@ export default function ServerLandingPage() {
                             <Badge variant={server.shareMode === "complete" ? "default" : "secondary"}>
                               {server.shareMode === "complete" ? "Complete Configuration" : "Basic Configuration"}
                             </Badge>
-                            {server.shareMode === "complete" && (
-                              <span className="text-xs text-muted-foreground">Includes all parameters</span>
-                            )}
+                            {server.shareMode === "complete" && <span className="text-xs text-muted-foreground">Includes all parameters</span>}
                           </div>
                         </div>
 
@@ -259,11 +255,7 @@ export default function ServerLandingPage() {
                           <p className="text-sm font-medium mb-1">Shareable Link</p>
                           <div className="flex items-center gap-2">
                             <span className="text-sm truncate flex-1">{shareUrl}</span>
-                            <button 
-                              onClick={handleCopyLink} 
-                              className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors" 
-                              aria-label="Copy link"
-                            >
+                            <button onClick={handleCopyLink} className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors" aria-label="Copy link">
                               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                             </button>
                           </div>
@@ -272,7 +264,7 @@ export default function ServerLandingPage() {
                     </div>
                     
                     <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-3">Date Information</h3>
+                      
                       <div className="space-y-4">
                         <div>
                           <p className="text-sm font-medium mb-1">Created On</p>
@@ -282,10 +274,7 @@ export default function ServerLandingPage() {
                         <div>
                           <p className="text-sm font-medium mb-1">Expired On</p>
                           <p>{formatDate(expiryDate)}</p>
-                          <div className="flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400 mt-1">
-                            <Clock className="h-3.5 w-3.5" />
-                            <span>{isLinkValid ? `${daysRemaining} days remaining` : "Link has expired"}</span>
-                          </div>
+                          
                         </div>
                       </div>
                     </div>
@@ -311,9 +300,7 @@ export default function ServerLandingPage() {
                             <List className="h-4 w-4" /> Features
                           </h3>
                           <ul className="text-sm space-y-1 list-disc list-inside">
-                            {server.features.map((feature, index) => (
-                              <li key={index}>{feature}</li>
-                            ))}
+                            {server.features.map((feature, index) => <li key={index}>{feature}</li>)}
                           </ul>
                         </div>
                         
@@ -334,22 +321,15 @@ export default function ServerLandingPage() {
                           <p className="text-sm">{server.version}</p>
                         </div>
                         
-                        {server.repository && (
-                          <div>
+                        {server.repository && <div>
                             <h3 className="text-sm font-medium flex items-center gap-1.5 mb-2">
                               <FileText className="h-4 w-4" /> Repository
                             </h3>
-                            <a 
-                              href={server.repository} 
-                              target="_blank" 
-                              rel="noreferrer"
-                              className="text-sm text-blue-600 hover:underline flex items-center gap-1"
-                            >
+                            <a href={server.repository} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline flex items-center gap-1">
                               {server.repository}
                               <ExternalLink className="h-3.5 w-3.5" />
                             </a>
-                          </div>
-                        )}
+                          </div>}
                       </div>
                     </div>
                   </div>
@@ -358,8 +338,7 @@ export default function ServerLandingPage() {
             </Card>
             
             {/* Server Configuration Section - Only show if this is a complete share */}
-            {server.shareMode === "complete" && (
-              <Card className="mt-6">
+            {server.shareMode === "complete" && <Card className="mt-6">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">Configuration Details</CardTitle>
                 </CardHeader>
@@ -373,108 +352,80 @@ export default function ServerLandingPage() {
                     </TabsList>
                     
                     <TabsContent value="general" className="space-y-4">
-                      {server.type === "HTTP_SSE" && (
-                        <div>
+                      {server.type === "HTTP_SSE" && <div>
                           <h3 className="text-sm font-medium mb-2">URL</h3>
                           <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
                             {server.url}
                           </pre>
                           
-                          {server.apiDocUrl && (
-                            <div className="mt-3">
+                          {server.apiDocUrl && <div className="mt-3">
                               <Button variant="outline" size="sm" onClick={() => window.open(server.apiDocUrl, '_blank')} className="gap-1.5">
                                 <ExternalLink className="h-3.5 w-3.5" />
                                 View API Documentation
                               </Button>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                            </div>}
+                        </div>}
                       
-                      {server.type === "STDIO" && server.arguments.length > 0 && (
-                        <div>
+                      {server.type === "STDIO" && server.arguments.length > 0 && <div>
                           <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
                           <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
                             {server.arguments.join(' ')}
                           </pre>
-                        </div>
-                      )}
+                        </div>}
                     </TabsContent>
                     
                     <TabsContent value="environment" className="space-y-4">
-                      {Object.keys(server.environment).length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {Object.entries(server.environment).map(([key, value]) => (
-                            <div key={key} className="bg-muted/30 border rounded-md p-3">
+                      {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                               <div className="font-mono text-xs font-medium mb-1">{key}</div>
                               <div className="font-mono text-xs text-muted-foreground truncate">
                                 {value}
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center text-muted-foreground py-4">
+                            </div>)}
+                        </div> : <div className="text-center text-muted-foreground py-4">
                           No environment variables configured
-                        </div>
-                      )}
+                        </div>}
                     </TabsContent>
                     
-                    {server.type === "HTTP_SSE" && (
-                      <TabsContent value="headers" className="space-y-4">
-                        {Object.keys(server.headers).length > 0 ? (
-                          <div className="space-y-3">
-                            {Object.entries(server.headers).map(([key, value]) => (
-                              <div key={key} className="bg-muted/30 border rounded-md p-3">
+                    {server.type === "HTTP_SSE" && <TabsContent value="headers" className="space-y-4">
+                        {Object.keys(server.headers).length > 0 ? <div className="space-y-3">
+                            {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                 <div className="font-mono text-xs font-medium mb-1">{key}</div>
                                 <div className="font-mono text-xs text-muted-foreground truncate">
                                   {value}
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center text-muted-foreground py-4">
+                              </div>)}
+                          </div> : <div className="text-center text-muted-foreground py-4">
                             No HTTP headers configured
-                          </div>
-                        )}
-                      </TabsContent>
-                    )}
+                          </div>}
+                      </TabsContent>}
                     
                     <TabsContent value="requirements" className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {Object.entries(server.requirements).map(([key, value]) => {
-                          const label = {
-                            'apiKey': 'API Key Required',
-                            'localModel': 'Local Model Required',
-                            'internetAccess': 'Internet Access Required',
-                            'minimumMemory': 'Minimum Memory'
-                          }[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                          
-                          const valueDisplay = typeof value === 'boolean' 
-                            ? (value ? 'Yes' : 'No')
-                            : value;
-                            
-                          return (
-                            <div key={key} className="bg-muted/30 border rounded-md p-3">
+                      const label = {
+                        'apiKey': 'API Key Required',
+                        'localModel': 'Local Model Required',
+                        'internetAccess': 'Internet Access Required',
+                        'minimumMemory': 'Minimum Memory'
+                      }[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                      const valueDisplay = typeof value === 'boolean' ? value ? 'Yes' : 'No' : value;
+                      return <div key={key} className="bg-muted/30 border rounded-md p-3">
                               <div className="text-xs font-medium mb-1">{label}</div>
                               <div className="text-xs text-muted-foreground">
                                 {String(valueDisplay)}
                               </div>
-                            </div>
-                          );
-                        })}
+                            </div>;
+                    })}
                       </div>
                     </TabsContent>
                   </Tabs>
                 </CardContent>
-              </Card>
-            )}
+              </Card>}
           </div>
         </div>
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 }
