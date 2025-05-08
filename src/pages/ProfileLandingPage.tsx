@@ -254,10 +254,7 @@ export default function ProfileLandingPage() {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Expired On</h3>
                     <div className="space-y-1">
                       <p>{formatDate(expiryDate)}</p>
-                      <div className="flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>{isProfileValid ? `${daysRemaining} days remaining` : "Link has expired"}</span>
-                      </div>
+                      
                     </div>
                   </div>
                 </div>
