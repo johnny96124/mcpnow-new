@@ -141,9 +141,8 @@ It contains server configurations and settings that you can import into MCP Now.
                   <div className="text-blue-700 dark:text-blue-400 text-xl font-medium">
                     Ready to unlock the power of this profile?
                   </div>
-                  <p className="text-gray-600 dark:text-gray-300 max-w-lg">
-                    Download MCP Now to instantly import this profile and supercharge your AI development workflow.
-                  </p>
+                  <p className="text-gray-600 dark:text-gray-300 max-w-lg">Download MCP Now to instantly import this MCP server profile 
+and supercharge your AI development workflow.</p>
                   <motion.div animate={pulseAnimation} className="mt-2">
                     <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 px-8 min-w-[240px] shadow-md">
                       <Download className="h-5 w-5" />
