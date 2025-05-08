@@ -4,6 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Monitor } from "lucide-react";
 
 interface EmojiPickerProps {
   selectedEmoji: string;
@@ -45,6 +46,8 @@ export function EmojiPicker({ selectedEmoji, onEmojiSelected, className }: Emoji
     setOpen(false);
   };
 
+  const hasSelectedEmoji = selectedEmoji && selectedEmoji !== "";
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -53,7 +56,11 @@ export function EmojiPicker({ selectedEmoji, onEmojiSelected, className }: Emoji
           className={cn("w-full flex items-center justify-between text-left font-normal", className)}
         >
           <div className="flex items-center gap-2">
-            <span className="text-xl">{selectedEmoji}</span>
+            {hasSelectedEmoji ? (
+              <span className="text-xl">{selectedEmoji}</span>
+            ) : (
+              <Monitor className="h-5 w-5 text-muted-foreground" />
+            )}
             <span>Select icon</span>
           </div>
         </Button>
