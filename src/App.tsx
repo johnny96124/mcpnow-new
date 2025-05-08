@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
@@ -9,21 +10,19 @@ import ServersNewUser from './pages/ServersNewUser';
 import Profiles from './pages/Profiles';
 import ProfilesNewUser from './pages/ProfilesNewUser';
 import Settings from './pages/Settings';
-import Introduction2 from './pages/Introduction2';
-import Introduction3 from './pages/Introduction3';
 import Discovery from './pages/Discovery';
 import DiscoveryNoNetwork from './pages/DiscoveryNoNetwork';
 import NewUserDashboard from './pages/NewUserDashboard';
 import TrayPopup from './pages/TrayPopup';
 import NewUserTrayPopup from './pages/NewUserTrayPopup';
 import NewLayout from './pages/NewLayout';
-import HostNewlayout from './pages/HostNewlayout';
 import EmptyDashboard from './pages/EmptyDashboard';
 import ProfileLandingPage from './pages/ProfileLandingPage';
 import ServerLandingPage from './pages/ServerLandingPage';
 import NotFound from './pages/NotFound';
 import ProfileExpiredPage from './pages/ProfileExpiredPage';
 import ServerExpiredPage from './pages/ServerExpiredPage';
+import HostNewlayout from './pages/Host-newlayout';
 
 function App() {
   return (
@@ -38,8 +37,6 @@ function App() {
         <Route path="/profiles" element={<Profiles />} />
         <Route path="/profiles-new-user" element={<ProfilesNewUser />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="/introduction-2" element={<Introduction2 />} />
-        <Route path="/introduction-3" element={<Introduction3 />} />
         <Route path="/discovery" element={<Discovery />} />
         <Route path="/discovery-no-network" element={<DiscoveryNoNetwork />} />
         <Route path="/new-user-dashboard" element={<NewUserDashboard />} />
