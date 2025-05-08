@@ -8,8 +8,7 @@ import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { ProfileStatusBadge } from "@/components/status/ProfileStatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Server, FileText, Download, Info, Copy, Check, ChevronDown, ChevronUp, Clock, Terminal, Shield, ExternalLink, User, Tag, List } from "lucide-react";
+import { Server, FileText, Download, Info, Copy, Check, ChevronDown, Clock, Terminal, Shield, ExternalLink, User, Tag, List } from "lucide-react";
 import Navbar from "@/components/marketing/Navbar";
 import Footer from "@/components/marketing/Footer";
 import { ServerLogo } from "@/components/servers/ServerLogo";
@@ -66,9 +65,6 @@ export default function ServerLandingPage() {
   const [server, setServer] = useState(mockSharedServer);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [isSharingOpen, setSharingOpen] = useState(false);
-  const [isServerInfoOpen, setServerInfoOpen] = useState(false);
-  const [isConfigOpen, setConfigOpen] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobile();
 
@@ -144,119 +140,142 @@ export default function ServerLandingPage() {
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-1 container mx-auto py-12 px-4 max-w-5xl">
-        <div className="flex flex-col gap-8">
-          {/* Sharing Details - Collapsible */}
-          <Card className="w-full border-slate-200 dark:border-slate-800 overflow-hidden">
-            <Collapsible
-              open={isSharingOpen}
-              onOpenChange={setSharingOpen}
-              className="w-full"
-            >
-              <CollapsibleTrigger className="w-full flex items-center justify-between bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/50 p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400">
-                    <Info className="h-6 w-6" />
-                  </div>
-                  <div className="text-left">
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-700 dark:text-slate-300">
-                      Server Sharing Details
-                    </h1>
-                    <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                      <Clock className="h-4 w-4" />
-                      <span>Expires in {daysRemaining} days ({formatDate(expiryDate)})</span>
-                      <ProfileStatusBadge isValid={isLinkValid} />
-                    </div>
-                  </div>
-                </div>
-                {isSharingOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent>
-                <div className="p-6 pt-4 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/50">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Sharing Mode</h3>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={server.shareMode === "complete" ? "default" : "secondary"}>
-                          {server.shareMode === "complete" ? "Complete Configuration" : "Basic Configuration"}
-                        </Badge>
-                        {server.shareMode === "complete" && <span className="text-xs text-muted-foreground">Includes all parameters</span>}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Shared Link</h3>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm truncate flex-1">{shareUrl}</span>
-                        <button onClick={handleCopyLink} className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors" aria-label="Copy link">
-                          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                        </button>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Created On</h3>
-                      <div className="space-y-1">
-                        <p>{formatDate(createDate)}</p>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Expires On</h3>
-                      <div className="space-y-1">
-                        <p>{formatDate(expiryDate)}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
+      <main className="flex-1 container mx-auto py-12 px-4 max-w-7xl">
+        {/* Two-column layout: Download CTA on left, Server details on right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Download Section - Simplified */}
-          <Card className="w-full border-blue-100 dark:border-blue-800 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 px-6 py-8">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-20 h-20 mb-2">
-                  <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
+          {/* Left column - Download CTA and MCP Info - Now with sticky positioning */}
+          <div className="lg:col-span-5 space-y-8">
+            <div className={isMobile ? "" : "sticky top-8"}>
+              {/* Download CTA Card */}
+              <Card className="overflow-hidden border-blue-100 dark:border-blue-800">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 px-6 py-8">
+                  <div className="flex flex-col items-center text-center space-y-4">
+                    <div className="w-20 h-20 mb-2">
+                      <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
+                    </div>
+                    
+                    <h2 className="text-2xl font-bold tracking-tight">Import this server with MCP Now</h2>
+                    
+                    <p className="text-muted-foreground">
+                      Download the MCP Now client to import <span className="font-medium text-blue-600 dark:text-blue-400">{server.name}</span> with one click and start using it instantly
+                    </p>
+                    
+                    <motion.div animate={pulseAnimation} className="w-full max-w-xs">
+                      <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
+                        <Download className="h-5 w-5" />
+                        Import Now
+                      </Button>
+                    </motion.div>
+                    
+                    <p className="text-xs text-muted-foreground">Available for macOS • Free download</p>
+                  </div>
                 </div>
                 
-                <h2 className="text-2xl font-bold tracking-tight">Import this server with MCP Now</h2>
-                
-                <p className="text-muted-foreground">
-                  Download the MCP Now client to import <span className="font-medium text-blue-600 dark:text-blue-400">{server.name}</span> with one click and start using it instantly
-                </p>
-                
-                <motion.div animate={pulseAnimation} className="w-full max-w-xs">
-                  <Button size="lg" variant="default" className="bg-blue-500 hover:bg-blue-600 gap-2 text-md font-medium h-12 w-full shadow-md">
-                    <Download className="h-5 w-5" />
-                    Import Now
-                  </Button>
-                </motion.div>
-                
-                <p className="text-xs text-muted-foreground">Available for macOS • Free download</p>
-              </div>
+                <CardContent className="py-6">
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-center">What is MCP Now?</h3>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                        <Server className="h-5 w-5" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        MCP Now is a desktop tool that unifies AI service management, allowing you to easily configure, use, and share different AI model services
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        With the server sharing feature, you can import server configurations shared by others with one click, without manual setup
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </Card>
+          </div>
           
-          {/* Server details section - Collapsible */}
-          <Card className="w-full border-slate-200 dark:border-slate-800 overflow-hidden">
-            <Collapsible
-              open={isServerInfoOpen}
-              onOpenChange={setServerInfoOpen}
-              className="w-full"
-            >
-              <CollapsibleTrigger className="w-full flex items-center justify-between bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/50 p-6">
-                <div className="flex items-center gap-3">
-                  <Server className="h-5 w-5 text-slate-500 dark:text-slate-400" /> 
-                  <h2 className="text-xl font-semibold tracking-tight text-slate-700 dark:text-slate-300">Server Information</h2>
+          {/* Right column - Server Info */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Server Info Header */}
+            <div className="mb-4">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <Badge variant="outline" className="bg-blue-100/50 dark:bg-blue-900/20 text-primary font-medium mb-2">
+                    Shared Server
+                  </Badge>
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold tracking-tight">{server.name}</h1>
+                    <ProfileStatusBadge isValid={isLinkValid} className="mt-1" />
+                  </div>
                 </div>
-                {isServerInfoOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-              </CollapsibleTrigger>
+              </div>
               
-              <CollapsibleContent>
-                <div className="p-6 bg-white dark:bg-slate-950">
+              <div className="flex items-center gap-2 mt-2">
+                <EndpointLabel type={server.type} />
+                {server.officialStatus === "verified" && <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                    <Shield className="h-3 w-3 mr-1" />
+                    Verified
+                  </Badge>}
+              </div>
+              <p className="text-gray-600 dark:text-gray-300 mt-2">{server.description}</p>
+            </div>
+            
+            {/* Key Server Information */}
+            <Card className="mb-6">
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Sharing Mode</h3>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={server.shareMode === "complete" ? "default" : "secondary"}>
+                        {server.shareMode === "complete" ? "Complete Configuration" : "Basic Configuration"}
+                      </Badge>
+                      {server.shareMode === "complete" && <span className="text-xs text-muted-foreground">Includes all parameters</span>}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Shared Link</h3>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm truncate flex-1">{shareUrl}</span>
+                      <button onClick={handleCopyLink} className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors" aria-label="Copy link">
+                        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Created On</h3>
+                    <div className="space-y-1">
+                      <p>{formatDate(createDate)}</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Expired On</h3>
+                    <div className="space-y-1">
+                      <p>{formatDate(expiryDate)}</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Server details section */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                <Info className="h-5 w-5" /> 
+                Server Information
+              </h2>
+              
+              {/* Server Details Card */}
+              <Card>
+                <CardContent className="pt-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Left column */}
                     <div className="space-y-5">
@@ -293,8 +312,7 @@ export default function ServerLandingPage() {
                         <p className="text-sm">{server.version}</p>
                       </div>
                       
-                      {server.repository && (
-                        <div>
+                      {server.repository && <div>
                           <h3 className="text-sm font-medium flex items-center gap-1.5 mb-2">
                             <FileText className="h-4 w-4" /> Repository
                           </h3>
@@ -302,33 +320,22 @@ export default function ServerLandingPage() {
                             {server.repository}
                             <ExternalLink className="h-3.5 w-3.5" />
                           </a>
-                        </div>
-                      )}
+                        </div>}
                     </div>
                   </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
-          
-          {/* Server Configuration Section - Only show if this is a complete share */}
-          {server.shareMode === "complete" && (
-            <Card className="w-full border-slate-200 dark:border-slate-800 overflow-hidden">
-              <Collapsible
-                open={isConfigOpen}
-                onOpenChange={setConfigOpen}
-                className="w-full"
-              >
-                <CollapsibleTrigger className="w-full flex items-center justify-between bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/50 p-6">
-                  <div className="flex items-center gap-3">
-                    <Terminal className="h-5 w-5 text-slate-500 dark:text-slate-400" /> 
-                    <h2 className="text-xl font-semibold tracking-tight text-slate-700 dark:text-slate-300">Configuration Details</h2>
-                  </div>
-                  {isConfigOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                </CollapsibleTrigger>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* Server Configuration Section - Only show if this is a complete share */}
+            {server.shareMode === "complete" && <div className="space-y-4">
+                <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                  <Server className="h-5 w-5" /> 
+                  Configuration Details
+                </h2>
                 
-                <CollapsibleContent>
-                  <div className="p-6 bg-white dark:bg-slate-950">
+                <Card>
+                  <CardContent className="pt-6">
                     <Tabs defaultValue="general" className="w-full">
                       <TabsList className="mb-4">
                         <TabsTrigger value="general">General</TabsTrigger>
@@ -338,96 +345,75 @@ export default function ServerLandingPage() {
                       </TabsList>
                       
                       <TabsContent value="general" className="space-y-4">
-                        {server.type === "HTTP_SSE" && (
-                          <div>
+                        {server.type === "HTTP_SSE" && <div>
                             <h3 className="text-sm font-medium mb-2">URL</h3>
                             <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
                               {server.url}
                             </pre>
                             
-                            {server.apiDocUrl && <div className="mt-3"></div>}
-                          </div>
-                        )}
+                            {server.apiDocUrl && <div className="mt-3">
+                                
+                              </div>}
+                          </div>}
                         
-                        {server.type === "STDIO" && server.arguments.length > 0 && (
-                          <div>
+                        {server.type === "STDIO" && server.arguments.length > 0 && <div>
                             <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
                             <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
                               {server.arguments.join(' ')}
                             </pre>
-                          </div>
-                        )}
+                          </div>}
                       </TabsContent>
                       
                       <TabsContent value="environment" className="space-y-4">
-                        {Object.keys(server.environment).length > 0 ? (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {Object.entries(server.environment).map(([key, value]) => (
-                              <div key={key} className="bg-muted/30 border rounded-md p-3">
+                        {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                 <div className="font-mono text-xs font-medium mb-1">{key}</div>
                                 <div className="font-mono text-xs text-muted-foreground truncate">
                                   {value}
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center text-muted-foreground py-4">
+                              </div>)}
+                          </div> : <div className="text-center text-muted-foreground py-4">
                             No environment variables configured
-                          </div>
-                        )}
+                          </div>}
                       </TabsContent>
                       
-                      {server.type === "HTTP_SSE" && (
-                        <TabsContent value="headers" className="space-y-4">
-                          {Object.keys(server.headers).length > 0 ? (
-                            <div className="space-y-3">
-                              {Object.entries(server.headers).map(([key, value]) => (
-                                <div key={key} className="bg-muted/30 border rounded-md p-3">
+                      {server.type === "HTTP_SSE" && <TabsContent value="headers" className="space-y-4">
+                          {Object.keys(server.headers).length > 0 ? <div className="space-y-3">
+                              {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                   <div className="font-mono text-xs font-medium mb-1">{key}</div>
                                   <div className="font-mono text-xs text-muted-foreground truncate">
                                     {value}
                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center text-muted-foreground py-4">
+                                </div>)}
+                            </div> : <div className="text-center text-muted-foreground py-4">
                               No HTTP headers configured
-                            </div>
-                          )}
-                        </TabsContent>
-                      )}
+                            </div>}
+                        </TabsContent>}
                       
                       <TabsContent value="requirements" className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           {Object.entries(server.requirements).map(([key, value]) => {
-                            const label = {
-                              'apiKey': 'API Key Required',
-                              'localModel': 'Local Model Required',
-                              'internetAccess': 'Internet Access Required',
-                              'minimumMemory': 'Minimum Memory'
-                            }[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                            
-                            const valueDisplay = typeof value === 'boolean' ? value ? 'Yes' : 'No' : value;
-                            
-                            return (
-                              <div key={key} className="bg-muted/30 border rounded-md p-3">
+                        const label = {
+                          'apiKey': 'API Key Required',
+                          'localModel': 'Local Model Required',
+                          'internetAccess': 'Internet Access Required',
+                          'minimumMemory': 'Minimum Memory'
+                        }[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                        const valueDisplay = typeof value === 'boolean' ? value ? 'Yes' : 'No' : value;
+                        return <div key={key} className="bg-muted/30 border rounded-md p-3">
                                 <div className="text-xs font-medium mb-1">{label}</div>
                                 <div className="text-xs text-muted-foreground">
                                   {String(valueDisplay)}
                                 </div>
-                              </div>
-                            );
-                          })}
+                              </div>;
+                      })}
                         </div>
                       </TabsContent>
                     </Tabs>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            </Card>
-          )}
+                  </CardContent>
+                </Card>
+              </div>}
+          </div>
         </div>
       </main>
       
