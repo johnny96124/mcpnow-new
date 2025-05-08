@@ -157,31 +157,31 @@ export default function ProfileLandingPage() {
                     <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
                   </div>
                   
-                  <h2 className="text-2xl font-bold tracking-tight">使用 MCP Now 导入此配置</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">Import this configuration with MCP Now</h2>
                   
-                  <p className="text-muted-foreground">下载 MCP Now 客户端，一键导入 <span className="font-medium text-blue-600 dark:text-blue-400">{profile.name}</span> 配置文件，立即使用这些 AI 服务</p>
+                  <p className="text-muted-foreground">Download the MCP Now client to import the <span className="font-medium text-blue-600 dark:text-blue-400">{profile.name}</span> configuration with one click and use these AI services instantly</p>
                   
                   <motion.div animate={pulseAnimation} className="w-full max-w-xs">
                     <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
                       <Download className="h-5 w-5" />
-                      下载 MCP Now
+                      Download MCP Now
                     </Button>
                   </motion.div>
                   
-                  <p className="text-xs text-muted-foreground">适用于 macOS • 免费下载</p>
+                  <p className="text-xs text-muted-foreground">Available for macOS • Free download</p>
                 </div>
               </div>
               
               <CardContent className="py-6">
                 <div className="space-y-4">
-                  <h3 className="font-medium text-center">MCP Now 是什么？</h3>
+                  <h3 className="font-medium text-center">What is MCP Now?</h3>
                   
                   <div className="flex items-start gap-3">
                     <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
                       <Server className="h-5 w-5" />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      MCP Now 是一款统一管理 AI 服务的桌面工具，让您可以轻松配置、使用和共享不同的 AI 模型服务
+                      MCP Now is a desktop tool that unifies AI service management, allowing you to easily configure, use, and share different AI model services
                     </p>
                   </div>
                   
@@ -190,7 +190,7 @@ export default function ProfileLandingPage() {
                       <FileText className="h-5 w-5" />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      通过配置文件分享功能，您可以一键导入他人分享的服务配置，无需手动设置
+                      With the configuration sharing feature, you can import service configurations shared by others with one click, without manual setup
                     </p>
                   </div>
                 </div>
@@ -205,12 +205,12 @@ export default function ProfileLandingPage() {
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <Badge variant="outline" className="bg-blue-100/50 dark:bg-blue-900/20 text-primary font-medium mb-2">
-                    分享的配置
+                    Shared Configuration
                   </Badge>
                   <h1 className="text-3xl font-bold tracking-tight">{profile.name}</h1>
                 </div>
                 <Badge variant="outline" className="bg-secondary/50">
-                  {profile.servers.length} 个服务
+                  {profile.servers.length} Services
                 </Badge>
               </div>
               <p className="text-muted-foreground">{profile.description}</p>
@@ -221,17 +221,17 @@ export default function ProfileLandingPage() {
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">分享模式</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Sharing Mode</h3>
                     <div className="flex items-center gap-2">
                       <Badge variant={profile.shareMode === "complete" ? "default" : "secondary"}>
-                        {profile.shareMode === "complete" ? "完整配置" : "基础配置"}
+                        {profile.shareMode === "complete" ? "Complete Configuration" : "Basic Configuration"}
                       </Badge>
-                      {profile.shareMode === "complete" && <span className="text-xs text-muted-foreground">包含所有参数</span>}
+                      {profile.shareMode === "complete" && <span className="text-xs text-muted-foreground">Includes all parameters</span>}
                     </div>
                   </div>
                   
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">分享链接</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Shared Link</h3>
                     <div className="flex items-center gap-2">
                       <span className="text-sm truncate flex-1">{shareUrl}</span>
                       <button onClick={handleCopyLink} className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors" aria-label="Copy link">
@@ -241,25 +241,25 @@ export default function ProfileLandingPage() {
                   </div>
                   
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">创建于</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Created On</h3>
                     <div className="space-y-1">
                       <p>{profile.createdAt}</p>
                       <div className="flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400">
                         <Clock className="h-3.5 w-3.5" />
-                        <span>链接将在 {formatDate(expiryDate)} 过期</span>
+                        <span>Link expires on {formatDate(expiryDate)}</span>
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {daysRemaining > 0 ? (
-                          <span>还有 {daysRemaining} 天可用</span>
+                          <span>{daysRemaining} days remaining</span>
                         ) : (
-                          <span className="text-red-500">已过期</span>
+                          <span className="text-red-500">Expired</span>
                         )}
                       </div>
                     </div>
                   </div>
                   
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">创建者</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Created By</h3>
                     <p>{profile.createdBy}</p>
                   </div>
                 </div>
@@ -270,7 +270,7 @@ export default function ProfileLandingPage() {
             <div className="space-y-4">
               <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
                 <Server className="h-5 w-5" /> 
-                包含的服务
+                Included Services
               </h2>
               
               <div className="space-y-4">
@@ -297,16 +297,16 @@ export default function ProfileLandingPage() {
                               <div className="flex overflow-x-auto">
                                 <TabsList className="bg-transparent h-10 p-0 space-x-4">
                                   <TabsTrigger value="configuration" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
-                                    配置信息
+                                    Configuration
                                   </TabsTrigger>
                                   
                                   <TabsTrigger value="environment" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
-                                    环境变量
+                                    Environment Variables
                                   </TabsTrigger>
                                   
                                   {server.type === "HTTP_SSE" && (
                                     <TabsTrigger value="headers" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
-                                      HTTP 头信息
+                                      HTTP Headers
                                     </TabsTrigger>
                                   )}
                                 </TabsList>
@@ -316,7 +316,7 @@ export default function ProfileLandingPage() {
                             <TabsContent value="configuration" className="space-y-4 p-6">
                               {server.type === "STDIO" && server.arguments.length > 0 && (
                                 <div>
-                                  <h3 className="text-sm font-medium mb-2">命令参数</h3>
+                                  <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
                                   <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
                                     {server.arguments.join(' ')}
                                   </pre>
@@ -347,7 +347,7 @@ export default function ProfileLandingPage() {
                                 </div>
                               ) : (
                                 <div className="text-center text-muted-foreground py-4">
-                                  没有配置环境变量
+                                  No environment variables configured
                                 </div>
                               )}
                             </TabsContent>
@@ -367,7 +367,7 @@ export default function ProfileLandingPage() {
                                   </div>
                                 ) : (
                                   <div className="text-center text-muted-foreground py-4">
-                                    没有配置 HTTP 头信息
+                                    No HTTP headers configured
                                   </div>
                                 )}
                               </TabsContent>
@@ -388,3 +388,4 @@ export default function ProfileLandingPage() {
     </div>
   );
 }
+
