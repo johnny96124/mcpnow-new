@@ -203,7 +203,7 @@ export default function ProfileLandingPage() {
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <Badge variant="outline" className="bg-blue-100/50 dark:bg-blue-900/20 text-primary font-medium mb-2">
-                    Shared Configuration
+                    Shared Profile
                   </Badge>
                   <h1 className="text-3xl font-bold tracking-tight">{profile.name}</h1>
                 </div>
