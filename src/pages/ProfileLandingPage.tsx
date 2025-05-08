@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -58,9 +57,12 @@ const mockSharedProfile = {
     }
   }]
 };
-
 export default function ProfileLandingPage() {
-  const { shareId } = useParams<{ shareId: string; }>();
+  const {
+    shareId
+  } = useParams<{
+    shareId: string;
+  }>();
   const [profile, setProfile] = useState(mockSharedProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -88,7 +90,6 @@ export default function ProfileLandingPage() {
 
   // Calculate days remaining until expiration
   const daysRemaining = Math.max(0, Math.ceil((expiryDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)));
-
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
     setIsLoading(true);
@@ -110,7 +111,6 @@ export default function ProfileLandingPage() {
       return () => clearTimeout(timer);
     }
   }, [copied]);
-
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
@@ -138,9 +138,7 @@ export default function ProfileLandingPage() {
       ease: "easeInOut"
     }
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <main className="flex-1 container mx-auto py-12 px-4 max-w-7xl">
@@ -209,9 +207,7 @@ export default function ProfileLandingPage() {
                   </Badge>
                   <h1 className="text-3xl font-bold tracking-tight">{profile.name}</h1>
                 </div>
-                <Badge variant="outline" className="bg-secondary/50">
-                  {profile.servers.length} Services
-                </Badge>
+                
               </div>
               <p className="text-muted-foreground">{profile.description}</p>
             </div>
@@ -249,11 +245,7 @@ export default function ProfileLandingPage() {
                         <span>Link expires on {formatDate(expiryDate)}</span>
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {daysRemaining > 0 ? (
-                          <span>{daysRemaining} days remaining</span>
-                        ) : (
-                          <span className="text-red-500">Expired</span>
-                        )}
+                        {daysRemaining > 0 ? <span>{daysRemaining} days remaining</span> : <span className="text-red-500">Expired</span>}
                       </div>
                     </div>
                   </div>
@@ -277,8 +269,7 @@ export default function ProfileLandingPage() {
               </h2>
               
               <div className="space-y-4">
-                {profile.servers.map(server => (
-                  <Accordion type="single" collapsible className="w-full" key={server.id}>
+                {profile.servers.map(server => <Accordion type="single" collapsible className="w-full" key={server.id}>
                     <AccordionItem value={server.id} className="border rounded-lg overflow-hidden">
                       <AccordionTrigger className="px-6 py-4 hover:no-underline bg-muted/20">
                         <div className="flex items-center gap-4 w-full">
@@ -307,80 +298,59 @@ export default function ProfileLandingPage() {
                                     Environment Variables
                                   </TabsTrigger>
                                   
-                                  {server.type === "HTTP_SSE" && (
-                                    <TabsTrigger value="headers" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
+                                  {server.type === "HTTP_SSE" && <TabsTrigger value="headers" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
                                       HTTP Headers
-                                    </TabsTrigger>
-                                  )}
+                                    </TabsTrigger>}
                                 </TabsList>
                               </div>
                             </div>
                             
                             <TabsContent value="configuration" className="space-y-4 p-6">
-                              {server.type === "STDIO" && server.arguments.length > 0 && (
-                                <div>
+                              {server.type === "STDIO" && server.arguments.length > 0 && <div>
                                   <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
                                   <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
                                     {server.arguments.join(' ')}
                                   </pre>
-                                </div>
-                              )}
+                                </div>}
                               
-                              {server.type === "HTTP_SSE" && (
-                                <div>
+                              {server.type === "HTTP_SSE" && <div>
                                   <h3 className="text-sm font-medium mb-2">URL</h3>
                                   <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
                                     {server.url}
                                   </pre>
-                                </div>
-                              )}
+                                </div>}
                             </TabsContent>
                             
                             <TabsContent value="environment" className="p-6">
-                              {Object.keys(server.environment).length > 0 ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                  {Object.entries(server.environment).map(([key, value]) => (
-                                    <div key={key} className="bg-muted/30 border rounded-md p-3">
+                              {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                       <div className="font-mono text-xs font-medium mb-1">{key}</div>
                                       <div className="font-mono text-xs text-muted-foreground truncate">
                                         {value}
                                       </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <div className="text-center text-muted-foreground py-4">
+                                    </div>)}
+                                </div> : <div className="text-center text-muted-foreground py-4">
                                   No environment variables configured
-                                </div>
-                              )}
+                                </div>}
                             </TabsContent>
                             
-                            {server.type === "HTTP_SSE" && (
-                              <TabsContent value="headers" className="p-6">
-                                {Object.keys(server.headers).length > 0 ? (
-                                  <div className="space-y-4">
-                                    {Object.entries(server.headers).map(([key, value]) => (
-                                      <div key={key} className="bg-muted/30 border rounded-md p-3">
+                            {server.type === "HTTP_SSE" && <TabsContent value="headers" className="p-6">
+                                {Object.keys(server.headers).length > 0 ? <div className="space-y-4">
+                                    {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                         <div className="font-mono text-xs font-medium mb-1">{key}</div>
                                         <div className="font-mono text-xs text-muted-foreground truncate">
                                           {value}
                                         </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <div className="text-center text-muted-foreground py-4">
+                                      </div>)}
+                                  </div> : <div className="text-center text-muted-foreground py-4">
                                     No HTTP headers configured
-                                  </div>
-                                )}
-                              </TabsContent>
-                            )}
+                                  </div>}
+                              </TabsContent>}
                           </Tabs>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
-                  </Accordion>
-                ))}
+                  </Accordion>)}
               </div>
             </div>
           </div>
@@ -388,6 +358,5 @@ export default function ProfileLandingPage() {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 }
