@@ -2,7 +2,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Server, FileText, Download, Clock, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/marketing/Navbar";
@@ -21,18 +20,18 @@ export default function ProfileExpiredPage() {
       <main className="flex-1 container mx-auto py-12 px-4 max-w-5xl">
         <div className="flex flex-col gap-8 items-center">
           {/* Expired Notice */}
-          <Card className="w-full border-red-200 dark:border-red-900 overflow-hidden">
-            <div className="bg-gradient-to-r from-red-50 to-red-100 dark:from-red-950/30 dark:to-red-900/20 p-8">
+          <Card className="w-full border-slate-200 dark:border-slate-800 overflow-hidden">
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-900/50 dark:to-slate-800/50 p-8">
               <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center text-red-600 dark:text-red-400">
+                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400">
                   <AlertCircle className="h-8 w-8" />
                 </div>
                 
-                <h1 className="text-3xl font-bold tracking-tight text-red-700 dark:text-red-400">
+                <h1 className="text-3xl font-bold tracking-tight text-slate-700 dark:text-slate-300">
                   Profile Share Link Expired
                 </h1>
                 
-                <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                   <Clock className="h-5 w-5" />
                   <span>This shared profile link has expired</span>
                 </div>
@@ -46,8 +45,8 @@ export default function ProfileExpiredPage() {
           </Card>
           
           {/* Download Section */}
-          <Card className="w-full border-blue-100 dark:border-blue-800 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 px-6 py-8">
+          <Card className="w-full border-blue-100 dark:border-blue-900/30 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-950/30 dark:to-indigo-900/20 px-6 py-8">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="w-20 h-20 mb-2">
                   <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
@@ -61,12 +60,12 @@ export default function ProfileExpiredPage() {
                 
                 <motion.div 
                   animate={{
-                    scale: [1, 1.05, 1],
-                    transition: { duration: 1.8, repeat: Infinity, ease: "easeInOut" }
+                    scale: [1, 1.03, 1],
+                    transition: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                   }}
                   className="w-full max-w-xs"
                 >
-                  <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
+                  <Button size="lg" variant="default" className="bg-indigo-500 hover:bg-indigo-600 gap-2 text-md font-medium h-12 w-full shadow-md">
                     <Download className="h-5 w-5" />
                     Download Now
                   </Button>
@@ -81,7 +80,7 @@ export default function ProfileExpiredPage() {
                 <h3 className="font-medium text-center">What is MCP Now?</h3>
                 
                 <div className="flex items-start gap-3">
-                  <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                  <div className="mt-1 text-indigo-500 dark:text-indigo-400 flex-shrink-0">
                     <Server className="h-5 w-5" />
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -90,7 +89,7 @@ export default function ProfileExpiredPage() {
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                  <div className="mt-1 text-indigo-500 dark:text-indigo-400 flex-shrink-0">
                     <FileText className="h-5 w-5" />
                   </div>
                   <p className="text-sm text-muted-foreground">
