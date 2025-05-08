@@ -7,7 +7,8 @@ import {
   BookOpen,
   Telescope,
   Home,
-  Link
+  Link,
+  Server
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -98,6 +99,20 @@ export function MainSidebar({ collapsed = false }: MainSidebarProps) {
           >
             <Link className="h-4 w-4 mr-2" />
             {!collapsed && "Profile Landing"}
+          </NavLink>
+          
+          <NavLink 
+            to="/shared-server/demo" 
+            className={({ isActive }) => 
+              cn(
+                "sidebar-item text-sm", 
+                isActive && "sidebar-item-active",
+                collapsed && "justify-center px-0"
+              )
+            }
+          >
+            <Server className="h-4 w-4 mr-2" />
+            {!collapsed && "Server Landing"}
           </NavLink>
 
           <NavLink 

@@ -19,6 +19,7 @@ import NewUserTrayPopup from "./pages/NewUserTrayPopup";
 import HostsNewUser from "./pages/HostsNewUser";
 import Introduction3 from "./pages/Introduction-3";
 import ProfileLandingPage from "./pages/ProfileLandingPage";
+import ServerLandingPage from "./pages/ServerLandingPage";
 
 function App() {
   const queryClient = new QueryClient();
@@ -76,6 +77,10 @@ function App() {
             {
               path: "/shared-profile/:shareId",
               element: <ProfileLandingPage />
+            },
+            {
+              path: "/shared-server/:shareId",
+              element: <ServerLandingPage />
             },
             {
               path: "/tray",
