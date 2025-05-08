@@ -191,7 +191,7 @@ It contains server configurations and settings that you can import into MCP Now.
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Profile Name</h3>
-                    <p className="font-medium">{profile.name}</p>
+                    <p className="font-normal">{profile.name}</p>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Share Mode</h3>
