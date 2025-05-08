@@ -77,16 +77,15 @@ export default function ProfileLandingPage() {
   const expiryDate = new Date(createDate);
   expiryDate.setDate(expiryDate.getDate() + 7); // Links expire after 7 days
 
-  // Format the date to display
+  // Format the date to display - Updated to use dashes instead of any other separators
   const formatDate = (date: Date) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    return date.toLocaleDateString(undefined, options);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
   };
 
   // Calculate days remaining until expiration
@@ -94,6 +93,8 @@ export default function ProfileLandingPage() {
 
   // Check if the profile is valid (not expired)
   const isProfileValid = daysRemaining > 0;
+  
+  // ... keep existing code (useEffect hooks and handler functions)
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
     setIsLoading(true);
@@ -246,7 +247,7 @@ export default function ProfileLandingPage() {
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Created On</h3>
                     <div className="space-y-1">
-                      <p>{profile.createdAt}</p>
+                      <p>{formatDate(createDate)}</p>
                     </div>
                   </div>
                   
