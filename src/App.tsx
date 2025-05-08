@@ -1,103 +1,60 @@
-
-import React from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from "@/components/theme/theme-provider";
-import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
-import { ServerProvider } from "@/context/ServerContext";
-import DefaultLayout from "@/layouts/DefaultLayout";
-import Dashboard from "@/pages/Dashboard";
-import Hosts from "@/pages/Hosts";
-import Servers from "@/pages/Servers";
-import Profiles from "@/pages/Profiles";
-import Discovery from "@/pages/Discovery";
-import Settings from "@/pages/Settings";
-import HostNewLayout from "./pages/Host-newlayout";
-import NotFound from "./pages/NotFound";
-import TrayPopup from "./pages/TrayPopup";
-import NewUserTrayPopup from "./pages/NewUserTrayPopup";
-import HostsNewUser from "./pages/HostsNewUser";
-import Introduction3 from "./pages/Introduction-3";
-import ProfileLandingPage from "./pages/ProfileLandingPage";
-import ServerLandingPage from "./pages/ServerLandingPage";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import Dashboard from './pages/Dashboard';
+import Hosts from './pages/Hosts';
+import HostsNewUser from './pages/HostsNewUser';
+import Servers from './pages/Servers';
+import ServersNewUser from './pages/ServersNewUser';
+import Profiles from './pages/Profiles';
+import ProfilesNewUser from './pages/ProfilesNewUser';
+import Settings from './pages/Settings';
+import Introduction2 from './pages/Introduction2';
+import Introduction3 from './pages/Introduction3';
+import Discovery from './pages/Discovery';
+import DiscoveryNoNetwork from './pages/DiscoveryNoNetwork';
+import NewUserDashboard from './pages/NewUserDashboard';
+import TrayPopup from './pages/TrayPopup';
+import NewUserTrayPopup from './pages/NewUserTrayPopup';
+import NewLayout from './pages/NewLayout';
+import HostNewlayout from './pages/HostNewlayout';
+import EmptyDashboard from './pages/EmptyDashboard';
+import ProfileLandingPage from './pages/ProfileLandingPage';
+import ServerLandingPage from './pages/ServerLandingPage';
+import NotFound from './pages/NotFound';
+import ProfileExpiredPage from './pages/ProfileExpiredPage';
+import ServerExpiredPage from './pages/ServerExpiredPage';
 
 function App() {
-  const queryClient = new QueryClient();
-
   return (
-    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <QueryClientProvider client={queryClient}>
-        <ServerProvider>
-          <Toaster />
-          <RouterProvider router={createBrowserRouter([
-            {
-              path: "/",
-              element: <DefaultLayout><Hosts /></DefaultLayout>
-            },
-            {
-              path: "/index",
-              element: <Navigate to="/" replace />
-            },
-            {
-              path: "/introduction-3",
-              element: <Introduction3 />
-            },
-            {
-              path: "/dashboard",
-              element: <DefaultLayout><Dashboard /></DefaultLayout>
-            },
-            {
-              path: "/hosts",
-              element: <Navigate to="/" replace />
-            },
-            {
-              path: "/hosts-new-user",
-              element: <DefaultLayout><HostsNewUser /></DefaultLayout>
-            },
-            {
-              path: "/servers",
-              element: <DefaultLayout><Servers /></DefaultLayout>
-            },
-            {
-              path: "/profiles",
-              element: <DefaultLayout><Profiles /></DefaultLayout>
-            },
-            {
-              path: "/discovery",
-              element: <DefaultLayout><Discovery /></DefaultLayout>
-            },
-            {
-              path: "/settings",
-              element: <DefaultLayout><Settings /></DefaultLayout>
-            },
-            {
-              path: "/host-new",
-              element: <DefaultLayout><HostNewLayout /></DefaultLayout>
-            },
-            {
-              path: "/shared-profile/:shareId",
-              element: <ProfileLandingPage />
-            },
-            {
-              path: "/shared-server/:shareId",
-              element: <ServerLandingPage />
-            },
-            {
-              path: "/tray",
-              element: <TrayPopup />
-            },
-            {
-              path: "/tray-new-user",
-              element: <NewUserTrayPopup />
-            },
-            {
-              path: "*",
-              element: <DefaultLayout><NotFound /></DefaultLayout>
-            }
-          ])} />
-        </ServerProvider>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/hosts" element={<Hosts />} />
+        <Route path="/hosts-new-user" element={<HostsNewUser />} />
+        <Route path="/servers" element={<Servers />} />
+        <Route path="/servers-new-user" element={<ServersNewUser />} />
+        <Route path="/profiles" element={<Profiles />} />
+        <Route path="/profiles-new-user" element={<ProfilesNewUser />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/introduction-2" element={<Introduction2 />} />
+        <Route path="/introduction-3" element={<Introduction3 />} />
+        <Route path="/discovery" element={<Discovery />} />
+        <Route path="/discovery-no-network" element={<DiscoveryNoNetwork />} />
+        <Route path="/new-user-dashboard" element={<NewUserDashboard />} />
+        <Route path="/tray-popup" element={<TrayPopup />} />
+        <Route path="/new-user-tray-popup" element={<NewUserTrayPopup />} />
+        <Route path="/new-layout" element={<NewLayout />} />
+        <Route path="/host-newlayout" element={<HostNewlayout />} />
+        <Route path="/empty-dashboard" element={<EmptyDashboard />} />
+        <Route path="/shared-profile/:shareId" element={<ProfileLandingPage />} />
+        <Route path="/shared-server/:shareId" element={<ServerLandingPage />} />
+        <Route path="/shared-profile-expired" element={<ProfileExpiredPage />} />
+        <Route path="/shared-server-expired" element={<ServerExpiredPage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
   );
 }
 

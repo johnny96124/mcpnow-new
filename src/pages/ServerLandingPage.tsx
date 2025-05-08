@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -195,6 +195,18 @@ export default function ServerLandingPage() {
                     </div>
                   </div>
                 </CardContent>
+              </Card>
+
+              {/* Demo button for expired view */}
+              <Card className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-800">
+                <div className="text-center">
+                  <h3 className="text-sm font-medium mb-2">Demo: View Expired Server Page</h3>
+                  <Link to="/shared-server-expired">
+                    <Button variant="outline" className="w-full border-yellow-300 dark:border-yellow-700">
+                      Show Expired Page
+                    </Button>
+                  </Link>
+                </div>
               </Card>
             </div>
           </div>
