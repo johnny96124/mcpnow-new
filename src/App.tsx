@@ -20,8 +20,6 @@ import HostsNewUser from "./pages/HostsNewUser";
 import Introduction3 from "./pages/Introduction-3";
 import ProfileLandingPage from "./pages/ProfileLandingPage";
 import ServerLandingPage from "./pages/ServerLandingPage";
-import ProfileExpiredPage from "./pages/ProfileExpiredPage";
-import ServerExpiredPage from "./pages/ServerExpiredPage";
 
 function App() {
   const queryClient = new QueryClient();
@@ -83,14 +81,6 @@ function App() {
             {
               path: "/shared-server/:shareId",
               element: <ServerLandingPage />
-            },
-            {
-              path: "/shared-profile-expired",
-              element: <ProfileExpiredPage />
-            },
-            {
-              path: "/shared-server-expired",
-              element: <ServerExpiredPage />
             },
             {
               path: "/tray",

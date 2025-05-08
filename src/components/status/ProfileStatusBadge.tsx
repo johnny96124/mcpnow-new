@@ -1,31 +1,22 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
-import { Clock, CheckCircle } from "lucide-react";
 
 interface ProfileStatusBadgeProps {
   isValid: boolean;
   className?: string;
 }
 
-export function ProfileStatusBadge({
-  isValid,
-  className
-}: ProfileStatusBadgeProps) {
+export function ProfileStatusBadge({ isValid, className }: ProfileStatusBadgeProps) {
   return (
     <div className={cn(
-      "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium",
+      "inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium",
       isValid 
-        ? "bg-green-50 text-green-700 border border-green-200 dark:bg-green-950/30 dark:text-green-400 dark:border-green-800" 
-        : "bg-slate-50 text-slate-700 border border-slate-200 dark:bg-slate-900/50 dark:text-slate-400 dark:border-slate-800",
+        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800"
+        : "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border border-red-200 dark:border-red-800",
       className
     )}>
-      {isValid ? (
-        <CheckCircle className="h-3 w-3" />
-      ) : (
-        <Clock className="h-3 w-3" />
-      )}
-      <span>{isValid ? 'Active' : 'Expired'}</span>
+      {isValid ? "Valid" : "Expired"}
     </div>
   );
 }
