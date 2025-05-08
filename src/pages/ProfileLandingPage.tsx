@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -58,9 +57,12 @@ const mockSharedProfile = {
     }
   }]
 };
-
 export default function ProfileLandingPage() {
-  const { shareId } = useParams<{ shareId: string }>();
+  const {
+    shareId
+  } = useParams<{
+    shareId: string;
+  }>();
   const [profile, setProfile] = useState(mockSharedProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -68,24 +70,23 @@ export default function ProfileLandingPage() {
 
   // Get the full URL for sharing
   const shareUrl = window.location.origin + location.pathname;
-  
+
   // Calculate expiration time - 7 days from creation
   const createDate = new Date(profile.createdAt);
   const expiryDate = new Date(createDate);
   expiryDate.setDate(expiryDate.getDate() + 7); // Links expire after 7 days
-  
+
   // Format the date to display
   const formatDate = (date: Date) => {
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'short', 
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     };
     return date.toLocaleDateString(undefined, options);
   };
-
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
     setIsLoading(true);
@@ -107,7 +108,6 @@ export default function ProfileLandingPage() {
       return () => clearTimeout(timer);
     }
   }, [copied]);
-  
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
@@ -135,7 +135,6 @@ export default function ProfileLandingPage() {
       ease: "easeInOut"
     }
   };
-
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
@@ -180,9 +179,7 @@ It contains server configurations and settings that you can import into MCP Now.
             <CardHeader className="border-b bg-muted/30">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-md bg-primary/10">
-                    <FileText className="h-5 w-5 text-primary" />
-                  </div>
+                  
                   <CardTitle>Profile Information</CardTitle>
                 </div>
                 {/* Removed server count badge from here */}
