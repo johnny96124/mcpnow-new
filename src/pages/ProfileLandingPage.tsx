@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -57,12 +58,9 @@ const mockSharedProfile = {
     }
   }]
 };
+
 export default function ProfileLandingPage() {
-  const {
-    shareId
-  } = useParams<{
-    shareId: string;
-  }>();
+  const { shareId } = useParams<{ shareId: string; }>();
   const [profile, setProfile] = useState(mockSharedProfile);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -87,6 +85,10 @@ export default function ProfileLandingPage() {
     };
     return date.toLocaleDateString(undefined, options);
   };
+
+  // Calculate days remaining until expiration
+  const daysRemaining = Math.max(0, Math.ceil((expiryDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)));
+
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
     setIsLoading(true);
@@ -108,6 +110,7 @@ export default function ProfileLandingPage() {
       return () => clearTimeout(timer);
     }
   }, [copied]);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
@@ -135,75 +138,100 @@ export default function ProfileLandingPage() {
       ease: "easeInOut"
     }
   };
-  return <div className="min-h-screen flex flex-col">
+
+  return (
+    <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-1">
-        {/* Hero Section with Download CTA */}
-        <div className="bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/30 dark:to-background py-16 px-6">
-          <div className="container mx-auto max-w-4xl">
-            <div className="flex flex-col gap-4 text-center">
-              <div className="flex justify-center">
-                <Badge variant="outline" className="bg-blue-100/50 dark:bg-blue-900/20 text-primary font-medium">
-                  Shared Profile
-                </Badge>
-              </div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{profile.name}</h1>
-              <p className="text-muted-foreground max-w-2xl mx-auto mb-8">This profile has been shared with you. 
-It contains server configurations and settings that you can import into MCP Now.</p>
-              
-              {/* Enhanced Download CTA */}
-              <div className="bg-blue-50/70 dark:bg-blue-950/30 rounded-xl p-6 border border-blue-100 dark:border-blue-900/30 max-w-2xl mx-auto">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="text-blue-700 dark:text-blue-400 text-xl font-medium">Ready to use these MCP server profile?</div>
-                  <p className="text-gray-600 dark:text-gray-300 max-w-lg">Download MCP Now to instantly import this profile and add these servers to your development environment.</p>
-                  <motion.div animate={pulseAnimation} className="mt-2">
-                    <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 px-8 min-w-[240px] shadow-md">
+      <main className="flex-1 container mx-auto py-12 px-4 max-w-7xl">
+        {/* Two-column layout: Download CTA on left, Profile details on right */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* Left column - Download CTA and MCP Info */}
+          <div className="lg:col-span-5 space-y-8">
+            {/* Download CTA Card */}
+            <Card className="overflow-hidden border-blue-100 dark:border-blue-800">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 px-6 py-8">
+                <div className="flex flex-col items-center text-center space-y-4">
+                  <div className="w-20 h-20 mb-2">
+                    <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
+                  </div>
+                  
+                  <h2 className="text-2xl font-bold tracking-tight">使用 MCP Now 导入此配置</h2>
+                  
+                  <p className="text-muted-foreground">下载 MCP Now 客户端，一键导入 <span className="font-medium text-blue-600 dark:text-blue-400">{profile.name}</span> 配置文件，立即使用这些 AI 服务</p>
+                  
+                  <motion.div animate={pulseAnimation} className="w-full max-w-xs">
+                    <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
                       <Download className="h-5 w-5" />
-                      Download MCP Now
+                      下载 MCP Now
                     </Button>
                   </motion.div>
-                  <p className="text-sm text-muted-foreground">Available for macOS • Free download</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Combined Profile Information and Servers Section */}
-        <div className="container mx-auto max-w-4xl py-12 px-6 space-y-10">
-          {/* Combined Card for Profile Information and Included Servers */}
-          <Card>
-            <CardHeader className="border-b bg-muted/30">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
                   
-                  <CardTitle>Profile Information</CardTitle>
+                  <p className="text-xs text-muted-foreground">适用于 macOS • 免费下载</p>
                 </div>
-                {/* Removed server count badge from here */}
               </div>
-            </CardHeader>
+              
+              <CardContent className="py-6">
+                <div className="space-y-4">
+                  <h3 className="font-medium text-center">MCP Now 是什么？</h3>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                      <Server className="h-5 w-5" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      MCP Now 是一款统一管理 AI 服务的桌面工具，让您可以轻松配置、使用和共享不同的 AI 模型服务
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      通过配置文件分享功能，您可以一键导入他人分享的服务配置，无需手动设置
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Right column - Profile and Servers */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Profile Info Header */}
+            <div className="mb-4">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <Badge variant="outline" className="bg-blue-100/50 dark:bg-blue-900/20 text-primary font-medium mb-2">
+                    分享的配置
+                  </Badge>
+                  <h1 className="text-3xl font-bold tracking-tight">{profile.name}</h1>
+                </div>
+                <Badge variant="outline" className="bg-secondary/50">
+                  {profile.servers.length} 个服务
+                </Badge>
+              </div>
+              <p className="text-muted-foreground">{profile.description}</p>
+            </div>
             
-            <CardContent className="pt-6">
-              <div className="space-y-6">
+            {/* Key Profile Information */}
+            <Card className="mb-6">
+              <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Profile Name</h3>
-                    <p className="font-normal">{profile.name}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Share Mode</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">分享模式</h3>
                     <div className="flex items-center gap-2">
                       <Badge variant={profile.shareMode === "complete" ? "default" : "secondary"}>
-                        {profile.shareMode === "complete" ? "Complete Configuration" : "Basic Profile"}
+                        {profile.shareMode === "complete" ? "完整配置" : "基础配置"}
                       </Badge>
-                      {profile.shareMode === "complete" && <span className="text-xs text-muted-foreground">Includes all parameters</span>}
+                      {profile.shareMode === "complete" && <span className="text-xs text-muted-foreground">包含所有参数</span>}
                     </div>
                   </div>
                   
-                  {/* Share Link section */}
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Share Link</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">分享链接</h3>
                     <div className="flex items-center gap-2">
                       <span className="text-sm truncate flex-1">{shareUrl}</span>
                       <button onClick={handleCopyLink} className="text-primary hover:text-primary/80 p-1.5 rounded-full hover:bg-primary/10 transition-colors" aria-label="Copy link">
@@ -213,171 +241,150 @@ It contains server configurations and settings that you can import into MCP Now.
                   </div>
                   
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Created On</h3>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">创建于</h3>
                     <div className="space-y-1">
                       <p>{profile.createdAt}</p>
                       <div className="flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400">
                         <Clock className="h-3.5 w-3.5" />
-                        <span>Link expires on {formatDate(expiryDate)}</span>
+                        <span>链接将在 {formatDate(expiryDate)} 过期</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {daysRemaining > 0 ? (
+                          <span>还有 {daysRemaining} 天可用</span>
+                        ) : (
+                          <span className="text-red-500">已过期</span>
+                        )}
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="rounded-md bg-blue-50 dark:bg-blue-950/30 border p-4">
-                  <div className="flex gap-3">
-                    <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-                    <div>
-                      <h3 className="font-medium text-blue-600 dark:text-blue-400">About Shared Profiles</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Shared profiles allow you to quickly set up servers that have been configured by other users. 
-                        You can import this profile to your MCP Now installation to use these servers immediately.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Servers Section - Integrated within the same card */}
-                <div className="mt-8 border-t pt-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold tracking-tight">Included Servers</h2>
-                    {/* Added server count badge here */}
-                    <Badge variant="outline" className="bg-secondary/50">
-                      {profile.servers.length} Server{profile.servers.length !== 1 ? 's' : ''}
-                    </Badge>
-                  </div>
                   
-                  <div className="grid gap-4">
-                    {profile.servers.map(server => <Accordion type="single" collapsible className="w-full" key={server.id}>
-                        <AccordionItem value={server.id} className="border rounded-lg overflow-hidden">
-                          <AccordionTrigger className="px-6 py-4 hover:no-underline bg-muted/20">
-                            <div className="flex items-center gap-4 w-full">
-                              <ServerLogo name={server.name} />
-                              <div className="space-y-1 text-left">
-                                <div className="flex items-center gap-2 text-xl font-semibold">
-                                  {server.name}
-                                  <EndpointLabel type={server.type as EndpointType} />
-                                </div>
-                                {server.description && <p className="text-muted-foreground text-sm">{server.description}</p>}
-                              </div>
-                            </div>
-                          </AccordionTrigger>
-                          
-                          <AccordionContent className="p-0 border-t">
-                            {/* Modified tab navigation style to match the design */}
-                            <div className="px-6 pt-4 pb-0">
-                              <Tabs defaultValue="configuration" className="w-full">
-                                <div className="border-b">
-                                  <div className="flex overflow-x-auto">
-                                    {/* Updated tabs to match the design in image 2 */}
-                                    <TabsList className="bg-transparent h-10 p-0 space-x-4">
-                                      <TabsTrigger value="configuration" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
-                                        Configuration
-                                      </TabsTrigger>
-                                      
-                                      <TabsTrigger value="environment" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
-                                        Environment Variables
-                                      </TabsTrigger>
-                                      
-                                      {server.type === "HTTP_SSE" && <TabsTrigger value="headers" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
-                                          HTTP Headers
-                                        </TabsTrigger>}
-                                    </TabsList>
-                                  </div>
-                                </div>
-                                
-                                <TabsContent value="configuration" className="space-y-4 p-6">
-                                  {server.type === "STDIO" && server.arguments.length > 0 && <div>
-                                      <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
-                                      <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
-                                        {server.arguments.join(' ')}
-                                      </pre>
-                                    </div>}
-                                  
-                                  {server.type === "HTTP_SSE" && <div>
-                                      <h3 className="text-sm font-medium mb-2">URL</h3>
-                                      <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
-                                        {server.url}
-                                      </pre>
-                                    </div>}
-                                </TabsContent>
-                                
-                                <TabsContent value="environment" className="p-6">
-                                  {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                      {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
-                                          <div className="font-mono text-xs font-medium mb-1">{key}</div>
-                                          <div className="font-mono text-xs text-muted-foreground truncate">
-                                            {value}
-                                          </div>
-                                        </div>)}
-                                    </div> : <div className="text-center text-muted-foreground py-4">
-                                      No environment variables configured
-                                    </div>}
-                                </TabsContent>
-                                
-                                {server.type === "HTTP_SSE" && <TabsContent value="headers" className="p-6">
-                                    {Object.keys(server.headers).length > 0 ? <div className="space-y-4">
-                                        {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
-                                            <div className="font-mono text-xs font-medium mb-1">{key}</div>
-                                            <div className="font-mono text-xs text-muted-foreground truncate">
-                                              {value}
-                                            </div>
-                                          </div>)}
-                                      </div> : <div className="text-center text-muted-foreground py-4">
-                                        No headers configured
-                                      </div>}
-                                  </TabsContent>}
-                              </Tabs>
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>)}
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">创建者</h3>
+                    <p>{profile.createdBy}</p>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* About MCP Now Section - Kept but removed the bottom Download CTA */}
-          <div className="space-y-6 text-center">
-            <h2 className="text-2xl font-semibold tracking-tight text-center">About MCP Now</h2>
-            
-            <Card className="overflow-hidden">
-              <div className="md:flex">
-                <div className="md:w-2/3 p-6 md:p-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <h3 className="text-xl font-semibold">All in one MCP management platform</h3>
-                  </div>
-                  
-                  <p className="text-muted-foreground mb-6">MCP Now helps you config and manage MCP servers with minimal effort. Connect your favorite hosts and start building right away.</p>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Explore and Add MCP Servers quickly</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Built-in dashboard for MCP hosts</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Share servers with the community </span>
-                    </div>
-                    
-                  </div>
-                </div>
-                <div className="md:w-1/3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 flex items-center justify-center">
-                  <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-3/4 h-auto" />
-                </div>
-              </div>
+              </CardContent>
             </Card>
             
-            {/* Bottom Download CTA removed as requested */}
+            {/* Server List - The main focus */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
+                <Server className="h-5 w-5" /> 
+                包含的服务
+              </h2>
+              
+              <div className="space-y-4">
+                {profile.servers.map(server => (
+                  <Accordion type="single" collapsible className="w-full" key={server.id}>
+                    <AccordionItem value={server.id} className="border rounded-lg overflow-hidden">
+                      <AccordionTrigger className="px-6 py-4 hover:no-underline bg-muted/20">
+                        <div className="flex items-center gap-4 w-full">
+                          <ServerLogo name={server.name} />
+                          <div className="space-y-1 text-left">
+                            <div className="flex items-center gap-2 text-xl font-semibold">
+                              {server.name}
+                              <EndpointLabel type={server.type as EndpointType} />
+                            </div>
+                            {server.description && <p className="text-muted-foreground text-sm">{server.description}</p>}
+                          </div>
+                        </div>
+                      </AccordionTrigger>
+                      
+                      <AccordionContent className="p-0 border-t">
+                        <div className="px-6 pt-4 pb-0">
+                          <Tabs defaultValue="configuration" className="w-full">
+                            <div className="border-b">
+                              <div className="flex overflow-x-auto">
+                                <TabsList className="bg-transparent h-10 p-0 space-x-4">
+                                  <TabsTrigger value="configuration" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
+                                    配置信息
+                                  </TabsTrigger>
+                                  
+                                  <TabsTrigger value="environment" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
+                                    环境变量
+                                  </TabsTrigger>
+                                  
+                                  {server.type === "HTTP_SSE" && (
+                                    <TabsTrigger value="headers" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-blue-600 rounded-none px-1 h-10">
+                                      HTTP 头信息
+                                    </TabsTrigger>
+                                  )}
+                                </TabsList>
+                              </div>
+                            </div>
+                            
+                            <TabsContent value="configuration" className="space-y-4 p-6">
+                              {server.type === "STDIO" && server.arguments.length > 0 && (
+                                <div>
+                                  <h3 className="text-sm font-medium mb-2">命令参数</h3>
+                                  <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
+                                    {server.arguments.join(' ')}
+                                  </pre>
+                                </div>
+                              )}
+                              
+                              {server.type === "HTTP_SSE" && (
+                                <div>
+                                  <h3 className="text-sm font-medium mb-2">URL</h3>
+                                  <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
+                                    {server.url}
+                                  </pre>
+                                </div>
+                              )}
+                            </TabsContent>
+                            
+                            <TabsContent value="environment" className="p-6">
+                              {Object.keys(server.environment).length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {Object.entries(server.environment).map(([key, value]) => (
+                                    <div key={key} className="bg-muted/30 border rounded-md p-3">
+                                      <div className="font-mono text-xs font-medium mb-1">{key}</div>
+                                      <div className="font-mono text-xs text-muted-foreground truncate">
+                                        {value}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="text-center text-muted-foreground py-4">
+                                  没有配置环境变量
+                                </div>
+                              )}
+                            </TabsContent>
+                            
+                            {server.type === "HTTP_SSE" && (
+                              <TabsContent value="headers" className="p-6">
+                                {Object.keys(server.headers).length > 0 ? (
+                                  <div className="space-y-4">
+                                    {Object.entries(server.headers).map(([key, value]) => (
+                                      <div key={key} className="bg-muted/30 border rounded-md p-3">
+                                        <div className="font-mono text-xs font-medium mb-1">{key}</div>
+                                        <div className="font-mono text-xs text-muted-foreground truncate">
+                                          {value}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="text-center text-muted-foreground py-4">
+                                    没有配置 HTTP 头信息
+                                  </div>
+                                )}
+                              </TabsContent>
+                            )}
+                          </Tabs>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </main>
       
       <Footer />
-    </div>;
+    </div>
+  );
 }
