@@ -14,6 +14,7 @@ import Footer from "@/components/marketing/Footer";
 import { ServerLogo } from "@/components/servers/ServerLogo";
 import { toast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { EndpointType } from "@/data/mockData";
 
 // Mock data for the shared profile - In a real app, you would fetch this from an API
@@ -68,6 +69,7 @@ export default function ProfileLandingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   // Get the full URL for sharing
   const shareUrl = window.location.origin + location.pathname;
@@ -149,55 +151,57 @@ export default function ProfileLandingPage() {
         {/* Two-column layout: Download CTA on left, Profile details on right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Left column - Download CTA and MCP Info */}
+          {/* Left column - Download CTA and MCP Info - Now with sticky positioning */}
           <div className="lg:col-span-5 space-y-8">
-            {/* Download CTA Card */}
-            <Card className="overflow-hidden border-blue-100 dark:border-blue-800">
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 px-6 py-8">
-                <div className="flex flex-col items-center text-center space-y-4">
-                  <div className="w-20 h-20 mb-2">
-                    <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
-                  </div>
-                  
-                  <h2 className="text-2xl font-bold tracking-tight">Import this profile with MCP Now</h2>
-                  
-                  <p className="text-muted-foreground">Download the MCP Now client to import the <span className="font-medium text-blue-600 dark:text-blue-400">{profile.name}</span> configuration with one click and use these AI services instantly</p>
-                  
-                  <motion.div animate={pulseAnimation} className="w-full max-w-xs">
-                    <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
-                      <Download className="h-5 w-5" />
-                      Import Now
-                    </Button>
-                  </motion.div>
-                  
-                  <p className="text-xs text-muted-foreground">Available for macOS • Free download</p>
-                </div>
-              </div>
-              
-              <CardContent className="py-6">
-                <div className="space-y-4">
-                  <h3 className="font-medium text-center">What is MCP Now?</h3>
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
-                      <Server className="h-5 w-5" />
+            <div className={isMobile ? "" : "sticky top-8"}>
+              {/* Download CTA Card */}
+              <Card className="overflow-hidden border-blue-100 dark:border-blue-800">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 px-6 py-8">
+                  <div className="flex flex-col items-center text-center space-y-4">
+                    <div className="w-20 h-20 mb-2">
+                      <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      MCP Now is a desktop tool that unifies AI service management, allowing you to easily configure, use, and share different AI model services
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
-                      <FileText className="h-5 w-5" />
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      With the configuration sharing feature, you can import service configurations shared by others with one click, without manual setup
-                    </p>
+                    
+                    <h2 className="text-2xl font-bold tracking-tight">Import this profile with MCP Now</h2>
+                    
+                    <p className="text-muted-foreground">Download the MCP Now client to import the <span className="font-medium text-blue-600 dark:text-blue-400">{profile.name}</span> configuration with one click and use these AI services instantly</p>
+                    
+                    <motion.div animate={pulseAnimation} className="w-full max-w-xs">
+                      <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
+                        <Download className="h-5 w-5" />
+                        Import Now
+                      </Button>
+                    </motion.div>
+                    
+                    <p className="text-xs text-muted-foreground">Available for macOS • Free download</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                
+                <CardContent className="py-6">
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-center">What is MCP Now?</h3>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                        <Server className="h-5 w-5" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        MCP Now is a desktop tool that unifies AI service management, allowing you to easily configure, use, and share different AI model services
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        With the configuration sharing feature, you can import service configurations shared by others with one click, without manual setup
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
           
           {/* Right column - Profile and Servers */}
