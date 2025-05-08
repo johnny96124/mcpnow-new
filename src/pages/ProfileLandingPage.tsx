@@ -329,9 +329,7 @@ It contains server configurations and settings that you can import into MCP Now.
               <div className="md:flex">
                 <div className="md:w-2/3 p-6 md:p-8">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="bg-primary/10 p-2 rounded-full">
-                      <Server className="h-5 w-5 text-primary" />
-                    </div>
+                    
                     <h3 className="text-xl font-semibold">All in one MCP management platform</h3>
                   </div>
                   
@@ -340,20 +338,17 @@ It contains server configurations and settings that you can import into MCP Now.
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Quick integration with popular AI models</span>
+                      <span>Explore and Add MCP Servers quickly</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Built-in monitoring tools</span>
+                      <span>Built-in dashboard for MCP hosts</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Easy profile sharing</span>
+                      <span>Share servers with the community </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
-                      <span>Works locally or in the cloud</span>
-                    </div>
+                    
                   </div>
                 </div>
                 <div className="md:w-1/3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 flex items-center justify-center">
