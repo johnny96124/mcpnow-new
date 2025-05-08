@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
+import { ProfileStatusBadge } from "@/components/status/ProfileStatusBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Server, FileText, Download, Info, Copy, Check, ChevronDown, Clock } from "lucide-react";
@@ -90,6 +91,10 @@ export default function ProfileLandingPage() {
 
   // Calculate days remaining until expiration
   const daysRemaining = Math.max(0, Math.ceil((expiryDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)));
+  
+  // Check if the profile is valid (not expired)
+  const isProfileValid = daysRemaining > 0;
+
   useEffect(() => {
     // In a real application, you'd fetch the profile data using the shareId
     setIsLoading(true);
@@ -205,7 +210,10 @@ export default function ProfileLandingPage() {
                   <Badge variant="outline" className="bg-blue-100/50 dark:bg-blue-900/20 text-primary font-medium mb-2">
                     Shared Profile
                   </Badge>
-                  <h1 className="text-3xl font-bold tracking-tight">{profile.name}</h1>
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold tracking-tight">{profile.name}</h1>
+                    <ProfileStatusBadge isValid={isProfileValid} className="mt-1" />
+                  </div>
                 </div>
                 
               </div>
@@ -240,19 +248,18 @@ export default function ProfileLandingPage() {
                     <h3 className="text-sm font-medium text-muted-foreground mb-2">Created On</h3>
                     <div className="space-y-1">
                       <p>{profile.createdAt}</p>
-                      <div className="flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>Link expires on {formatDate(expiryDate)}</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {daysRemaining > 0 ? <span>{daysRemaining} days remaining</span> : <span className="text-red-500">Expired</span>}
-                      </div>
                     </div>
                   </div>
                   
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Created By</h3>
-                    <p>{profile.createdBy}</p>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Expired On</h3>
+                    <div className="space-y-1">
+                      <p>{formatDate(expiryDate)}</p>
+                      <div className="flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400">
+                        <Clock className="h-3.5 w-3.5" />
+                        <span>{isProfileValid ? `${daysRemaining} days remaining` : "Link has expired"}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardContent>
