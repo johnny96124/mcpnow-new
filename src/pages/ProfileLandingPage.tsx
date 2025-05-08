@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -338,7 +339,7 @@ It contains server configurations and settings that you can import into MCP Now.
             </CardContent>
           </Card>
           
-          {/* About MCP Now Section */}
+          {/* About MCP Now Section - Kept but removed the bottom Download CTA */}
           <div className="space-y-6 text-center">
             <h2 className="text-2xl font-semibold tracking-tight text-center">About MCP Now</h2>
             
@@ -346,7 +347,6 @@ It contains server configurations and settings that you can import into MCP Now.
               <div className="md:flex">
                 <div className="md:w-2/3 p-6 md:p-8">
                   <div className="flex items-center gap-3 mb-4">
-                    
                     <h3 className="text-xl font-semibold">All in one MCP management platform</h3>
                   </div>
                   
@@ -374,14 +374,7 @@ It contains server configurations and settings that you can import into MCP Now.
               </div>
             </Card>
             
-            {/* Bottom Download CTA */}
-            <motion.div animate={pulseAnimation} className="mt-10">
-              <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 px-8 min-w-[240px] shadow-md">
-                <Download className="h-5 w-5" />
-                Download MCP Now
-              </Button>
-            </motion.div>
-            <p className="text-sm text-muted-foreground">Available for macOS • Free download</p>
+            {/* Bottom Download CTA removed as requested */}
           </div>
         </div>
       </main>
