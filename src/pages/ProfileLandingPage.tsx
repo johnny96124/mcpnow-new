@@ -166,7 +166,7 @@ export default function ProfileLandingPage() {
                   <motion.div animate={pulseAnimation} className="w-full max-w-xs">
                     <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
                       <Download className="h-5 w-5" />
-                      Download MCP Now
+                      Import Now
                     </Button>
                   </motion.div>
                   
