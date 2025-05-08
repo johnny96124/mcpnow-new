@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Host } from "@/data/mockData";
+import { EmojiPicker } from "../hosts/EmojiPicker";
 
 const hostSchema = z.object({
   name: z.string().min(1, { message: "Host name is required" }),
@@ -42,7 +42,7 @@ export function AddHostDialog({
   onOpenChange,
   onAddHost,
 }: AddHostDialogProps) {
-  const [selectedIcon, setSelectedIcon] = useState<string>("💻");
+  const [selectedEmoji, setSelectedEmoji] = useState<string>("💻");
   
   const form = useForm<HostFormValues>({
     resolver: zodResolver(hostSchema),
@@ -56,25 +56,16 @@ export function AddHostDialog({
     const newHost: Host = {
       id: `host-${Date.now()}`,
       name: values.name,
-      icon: selectedIcon,
+      icon: selectedEmoji,
       connectionStatus: "disconnected",
       configStatus: "unknown",
     };
 
     onAddHost(newHost);
     form.reset();
-    setSelectedIcon("💻");
+    setSelectedEmoji("💻");
     onOpenChange(false);
   };
-
-  const iconOptions = [
-    { label: "Computer", value: "💻" },
-    { label: "Server", value: "🖥️" },
-    { label: "Cloud", value: "☁️" },
-    { label: "Network", value: "🌐" },
-    { label: "External", value: "🔌" },
-    { label: "Database", value: "🗄️" },
-  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -109,32 +100,13 @@ export function AddHostDialog({
                 <FormItem>
                   <FormLabel>Host Icon</FormLabel>
                   <FormControl>
-                    <Select 
-                      value={selectedIcon}
-                      onValueChange={(value) => {
-                        setSelectedIcon(value);
-                        field.onChange(value);
+                    <EmojiPicker
+                      selectedEmoji={selectedEmoji}
+                      onEmojiSelected={(emoji) => {
+                        setSelectedEmoji(emoji);
+                        field.onChange(emoji);
                       }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select an icon">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xl">{selectedIcon}</span>
-                            <span>{iconOptions.find(i => i.value === selectedIcon)?.label}</span>
-                          </div>
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {iconOptions.map(icon => (
-                          <SelectItem key={icon.value} value={icon.value}>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xl">{icon.value}</span>
-                              <span>{icon.label}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

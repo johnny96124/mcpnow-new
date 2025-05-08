@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
 import { type Host } from "@/data/mockData";
+import { EmojiPicker } from "./EmojiPicker";
 
 interface ManualHostDialogProps {
   open: boolean;
@@ -17,6 +18,7 @@ interface ManualHostDialogProps {
 export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDialogProps) {
   const [manualHostName, setManualHostName] = useState("");
   const [configPath, setConfigPath] = useState("");
+  const [selectedEmoji, setSelectedEmoji] = useState("💻");
   const { toast } = useToast();
 
   const validateConfigPath = (path: string) => {
@@ -45,7 +47,7 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
     const newHost: Host = {
       id: `host-${Date.now()}`,
       name: manualHostName,
-      icon: "🖥️",
+      icon: selectedEmoji,
       configPath,
       configStatus: "configured",
       connectionStatus: "connected",
@@ -73,6 +75,7 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
     if (!newOpenState) {
       setManualHostName("");
       setConfigPath("");
+      setSelectedEmoji("💻");
     }
     onOpenChange(newOpenState);
   };
@@ -94,6 +97,15 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
               placeholder="Enter host name"
             />
           </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="hostIcon">Host Icon</Label>
+            <EmojiPicker 
+              selectedEmoji={selectedEmoji}
+              onEmojiSelected={(emoji) => setSelectedEmoji(emoji)}
+            />
+          </div>
+          
           <div className="space-y-2">
             <Label htmlFor="configPath">Config Path <span className="text-destructive">*</span></Label>
             <Input
