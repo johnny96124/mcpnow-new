@@ -55,9 +55,12 @@ const mockSharedServer = {
   repository: "https://github.com/github/copilot-api",
   features: ["Code completion", "Code explanation", "Test generation", "Documentation"]
 };
-
 export default function ServerLandingPage() {
-  const { shareId } = useParams<{ shareId: string; }>();
+  const {
+    shareId
+  } = useParams<{
+    shareId: string;
+  }>();
   const [server, setServer] = useState(mockSharedServer);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -86,7 +89,6 @@ export default function ServerLandingPage() {
 
   // Check if the server link is valid (not expired)
   const isLinkValid = daysRemaining > 0;
-
   useEffect(() => {
     // In a real application, you'd fetch the server data using the shareId
     setIsLoading(true);
@@ -108,7 +110,6 @@ export default function ServerLandingPage() {
       return () => clearTimeout(timer);
     }
   }, [copied]);
-
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
@@ -134,9 +135,7 @@ export default function ServerLandingPage() {
       ease: "easeInOut"
     }
   };
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       <main className="flex-1 container mx-auto py-12 px-4 max-w-7xl">
@@ -214,12 +213,10 @@ export default function ServerLandingPage() {
               
               <div className="flex items-center gap-2 mt-2">
                 <EndpointLabel type={server.type} />
-                {server.officialStatus === "verified" && 
-                  <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                {server.officialStatus === "verified" && <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
                     <Shield className="h-3 w-3 mr-1" />
                     Verified
-                  </Badge>
-                }
+                  </Badge>}
               </div>
               <p className="text-gray-600 dark:text-gray-300 mt-2">{server.description}</p>
             </div>
@@ -311,8 +308,7 @@ export default function ServerLandingPage() {
                         <p className="text-sm">{server.version}</p>
                       </div>
                       
-                      {server.repository && (
-                        <div>
+                      {server.repository && <div>
                           <h3 className="text-sm font-medium flex items-center gap-1.5 mb-2">
                             <FileText className="h-4 w-4" /> Repository
                           </h3>
@@ -320,8 +316,7 @@ export default function ServerLandingPage() {
                             {server.repository}
                             <ExternalLink className="h-3.5 w-3.5" />
                           </a>
-                        </div>
-                      )}
+                        </div>}
                     </div>
                   </div>
                 </CardContent>
@@ -329,8 +324,7 @@ export default function ServerLandingPage() {
             </div>
             
             {/* Server Configuration Section - Only show if this is a complete share */}
-            {server.shareMode === "complete" && (
-              <div className="space-y-4">
+            {server.shareMode === "complete" && <div className="space-y-4">
                 <h2 className="text-xl font-semibold tracking-tight flex items-center gap-2">
                   <Server className="h-5 w-5" /> 
                   Configuration Details
@@ -347,110 +341,78 @@ export default function ServerLandingPage() {
                       </TabsList>
                       
                       <TabsContent value="general" className="space-y-4">
-                        {server.type === "HTTP_SSE" && (
-                          <div>
+                        {server.type === "HTTP_SSE" && <div>
                             <h3 className="text-sm font-medium mb-2">URL</h3>
                             <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm">
                               {server.url}
                             </pre>
                             
-                            {server.apiDocUrl && (
-                              <div className="mt-3">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={() => window.open(server.apiDocUrl, '_blank')} 
-                                  className="gap-1.5"
-                                >
-                                  <ExternalLink className="h-3.5 w-3.5" />
-                                  View API Documentation
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        )}
+                            {server.apiDocUrl && <div className="mt-3">
+                                
+                              </div>}
+                          </div>}
                         
-                        {server.type === "STDIO" && server.arguments.length > 0 && (
-                          <div>
+                        {server.type === "STDIO" && server.arguments.length > 0 && <div>
                             <h3 className="text-sm font-medium mb-2">Command Arguments</h3>
                             <pre className="bg-muted/40 p-3 rounded-md overflow-x-auto text-sm whitespace-pre-wrap">
                               {server.arguments.join(' ')}
                             </pre>
-                          </div>
-                        )}
+                          </div>}
                       </TabsContent>
                       
                       <TabsContent value="environment" className="space-y-4">
-                        {Object.keys(server.environment).length > 0 ? (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {Object.entries(server.environment).map(([key, value]) => (
-                              <div key={key} className="bg-muted/30 border rounded-md p-3">
+                        {Object.keys(server.environment).length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {Object.entries(server.environment).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                 <div className="font-mono text-xs font-medium mb-1">{key}</div>
                                 <div className="font-mono text-xs text-muted-foreground truncate">
                                   {value}
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center text-muted-foreground py-4">
+                              </div>)}
+                          </div> : <div className="text-center text-muted-foreground py-4">
                             No environment variables configured
-                          </div>
-                        )}
+                          </div>}
                       </TabsContent>
                       
-                      {server.type === "HTTP_SSE" && (
-                        <TabsContent value="headers" className="space-y-4">
-                          {Object.keys(server.headers).length > 0 ? (
-                            <div className="space-y-3">
-                              {Object.entries(server.headers).map(([key, value]) => (
-                                <div key={key} className="bg-muted/30 border rounded-md p-3">
+                      {server.type === "HTTP_SSE" && <TabsContent value="headers" className="space-y-4">
+                          {Object.keys(server.headers).length > 0 ? <div className="space-y-3">
+                              {Object.entries(server.headers).map(([key, value]) => <div key={key} className="bg-muted/30 border rounded-md p-3">
                                   <div className="font-mono text-xs font-medium mb-1">{key}</div>
                                   <div className="font-mono text-xs text-muted-foreground truncate">
                                     {value}
                                   </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center text-muted-foreground py-4">
+                                </div>)}
+                            </div> : <div className="text-center text-muted-foreground py-4">
                               No HTTP headers configured
-                            </div>
-                          )}
-                        </TabsContent>
-                      )}
+                            </div>}
+                        </TabsContent>}
                       
                       <TabsContent value="requirements" className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           {Object.entries(server.requirements).map(([key, value]) => {
-                            const label = {
-                              'apiKey': 'API Key Required',
-                              'localModel': 'Local Model Required',
-                              'internetAccess': 'Internet Access Required',
-                              'minimumMemory': 'Minimum Memory'
-                            }[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                            const valueDisplay = typeof value === 'boolean' ? value ? 'Yes' : 'No' : value;
-                            return (
-                              <div key={key} className="bg-muted/30 border rounded-md p-3">
+                        const label = {
+                          'apiKey': 'API Key Required',
+                          'localModel': 'Local Model Required',
+                          'internetAccess': 'Internet Access Required',
+                          'minimumMemory': 'Minimum Memory'
+                        }[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                        const valueDisplay = typeof value === 'boolean' ? value ? 'Yes' : 'No' : value;
+                        return <div key={key} className="bg-muted/30 border rounded-md p-3">
                                 <div className="text-xs font-medium mb-1">{label}</div>
                                 <div className="text-xs text-muted-foreground">
                                   {String(valueDisplay)}
                                 </div>
-                              </div>
-                            );
-                          })}
+                              </div>;
+                      })}
                         </div>
                       </TabsContent>
                     </Tabs>
                   </CardContent>
                 </Card>
-              </div>
-            )}
+              </div>}
           </div>
         </div>
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 }
