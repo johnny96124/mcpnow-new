@@ -169,6 +169,32 @@ export default function ServerLandingPage() {
             <p className="text-gray-600 dark:text-gray-300 mt-2">{server.description}</p>
           </div>
           
+          {/* Download CTA Card - Moved to the top */}
+          <Card className="overflow-hidden border-blue-100 dark:border-blue-800">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 px-6 py-8">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-20 h-20 mb-2">
+                  <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
+                </div>
+                
+                <h2 className="text-2xl font-bold tracking-tight">Import this server with MCP Now</h2>
+                
+                <p className="text-muted-foreground">
+                  Download the MCP Now client to import <span className="font-medium text-blue-600 dark:text-blue-400">{server.name}</span> with one click
+                </p>
+                
+                <motion.div animate={pulseAnimation} className="w-full max-w-xs">
+                  <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
+                    <Download className="h-5 w-5" />
+                    Import Now
+                  </Button>
+                </motion.div>
+                
+                <p className="text-xs text-muted-foreground">Available for macOS • Free download</p>
+              </div>
+            </div>
+          </Card>
+          
           {/* Sharing Details - Collapsible */}
           <Accordion type="single" collapsible defaultValue="sharing-details" className="w-full">
             <AccordionItem value="sharing-details" className="border rounded-lg overflow-hidden">
@@ -219,32 +245,6 @@ export default function ServerLandingPage() {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-          
-          {/* Download CTA Card - Simplified */}
-          <Card className="overflow-hidden border-blue-100 dark:border-blue-800">
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 px-6 py-8">
-              <div className="flex flex-col items-center text-center space-y-4">
-                <div className="w-20 h-20 mb-2">
-                  <img src="/lovable-uploads/84e5dfcb-d52e-4426-ac6c-0d731dfae35f.png" alt="MCP Now Logo" className="w-full h-full" />
-                </div>
-                
-                <h2 className="text-2xl font-bold tracking-tight">Import this server with MCP Now</h2>
-                
-                <p className="text-muted-foreground">
-                  Download the MCP Now client to import <span className="font-medium text-blue-600 dark:text-blue-400">{server.name}</span> with one click
-                </p>
-                
-                <motion.div animate={pulseAnimation} className="w-full max-w-xs">
-                  <Button size="lg" variant="default" className="bg-blue-600 hover:bg-blue-700 gap-2 text-md font-medium h-12 w-full shadow-md">
-                    <Download className="h-5 w-5" />
-                    Import Now
-                  </Button>
-                </motion.div>
-                
-                <p className="text-xs text-muted-foreground">Available for macOS • Free download</p>
-              </div>
-            </div>
-          </Card>
           
           {/* Server details section - Collapsible */}
           <Accordion type="single" collapsible className="w-full">
