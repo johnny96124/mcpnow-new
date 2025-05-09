@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 interface ConfigHighlightDialogProps {
   open: boolean;
@@ -54,6 +56,15 @@ export function ConfigHighlightDialog({ open, onOpenChange, configPath }: Config
         </DialogHeader>
         
         <div className="space-y-4">
+          {!configPath && (
+            <Alert variant="default" className="bg-muted/50 border-muted-foreground/20">
+              <AlertCircle className="h-4 w-4 text-muted-foreground" />
+              <AlertDescription className="text-muted-foreground">
+                No configuration path specified. Please copy this configuration to your host's configuration file manually.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <div className="relative">
             <ScrollArea className="h-[300px] w-full rounded-md border">
               <div className="absolute right-2 top-2 z-10">
