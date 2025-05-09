@@ -21,10 +21,6 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
   const [selectedEmoji, setSelectedEmoji] = useState("💻");
   const { toast } = useToast();
 
-  const validateConfigPath = (path: string) => {
-    return path.startsWith("/") && path.endsWith(".json");
-  };
-
   const handleAddManualHost = () => {
     if (!manualHostName.trim()) {
       toast({
@@ -35,7 +31,8 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
       return;
     }
 
-    if (!validateConfigPath(configPath)) {
+    // Config path validation is now optional
+    if (configPath && !validateConfigPath(configPath)) {
       toast({
         title: "Invalid config path",
         description: "Config path must start with / and end with .json",
@@ -48,9 +45,9 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
       id: `host-${Date.now()}`,
       name: manualHostName,
       icon: selectedEmoji,
-      configPath,
-      configStatus: "configured",
-      connectionStatus: "connected",
+      configPath: configPath || undefined, // Make configPath optional
+      configStatus: configPath ? "configured" : "unknown",
+      connectionStatus: configPath ? "connected" : "disconnected",
       profileId: `profile-${Date.now()}`
     };
 
@@ -69,6 +66,10 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
     });
     
     handleDialogReset(false);
+  };
+
+  const validateConfigPath = (path: string) => {
+    return path.startsWith("/") && path.endsWith(".json");
   };
 
   const handleDialogReset = (newOpenState: boolean) => {
@@ -107,7 +108,7 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="configPath">Config Path <span className="text-destructive">*</span></Label>
+            <Label htmlFor="configPath">Config Path <span className="text-muted-foreground text-sm">(optional)</span></Label>
             <Input
               id="configPath"
               value={configPath}
