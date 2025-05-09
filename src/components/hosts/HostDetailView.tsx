@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { FileText, Server, AlertTriangle, CheckCircle, Info, Plus, ChevronDown, ExternalLink, ArrowRight, Settings, MoreHorizontal, Trash2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -153,45 +154,7 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
     }
   };
   
-  if (host.configStatus === "unknown") {
-    return <div className="space-y-6">
-        <Card className="bg-white">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-muted/30 p-3 rounded-full">
-                  <span className="text-2xl">{host.icon || '🖥️'}</span>
-                </div>
-                <div>
-                  <h2 className="text-xl font-semibold">{host.name}</h2>
-                  <div className="flex items-center gap-2">
-                    <StatusIndicator status="inactive" label="Needs Configuration" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <Separator className="my-6" />
-            
-            <div className="text-center space-y-4 py-6">
-              <div className="mx-auto w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
-                <FileText className="h-6 w-6 text-blue-500" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-medium">Configuration Required</h3>
-                <p className="text-muted-foreground text-sm">
-                  This host needs to be configured before you can connect servers to it
-                </p>
-              </div>
-              <Button onClick={() => onCreateConfig(host.id)} className="bg-blue-500 hover:bg-blue-600">
-                Configure Host
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>;
-  }
-  
+  // Always show the normal host view, even if configStatus is "unknown"
   return <div className="space-y-6">
       <Card className="bg-white">
         <CardContent className="p-6">
@@ -216,10 +179,10 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {host.configPath && <DropdownMenuItem className="cursor-pointer" onClick={showConfigFile}>
+                  <DropdownMenuItem className="cursor-pointer" onClick={showConfigFile}>
                       <FileText className="h-4 w-4 mr-2" />
                       View Config
-                    </DropdownMenuItem>}
+                  </DropdownMenuItem>
                   <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={() => setDeleteHostDialogOpen(true)}>
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete Host
@@ -315,7 +278,7 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
       
       <ServerSelectionDialog open={serverSelectionDialogOpen} onOpenChange={setServerSelectionDialogOpen} onAddServers={handleAddServers} />
       
-      <ConfigHighlightDialog open={configDialogOpen} onOpenChange={setConfigDialogOpen} configPath={host.configPath || ""} />
+      <ConfigHighlightDialog open={configDialogOpen} onOpenChange={setConfigDialogOpen} configPath={host.configPath} />
 
       {/* Delete Host Confirmation Dialog */}
       <Dialog open={deleteHostDialogOpen} onOpenChange={setDeleteHostDialogOpen}>

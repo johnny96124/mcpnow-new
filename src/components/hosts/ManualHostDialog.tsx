@@ -31,7 +31,7 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
       return;
     }
 
-    // Config path validation is now optional
+    // Config path is optional now
     if (configPath && !validateConfigPath(configPath)) {
       toast({
         title: "Invalid config path",
@@ -45,9 +45,9 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
       id: `host-${Date.now()}`,
       name: manualHostName,
       icon: selectedEmoji,
-      configPath: configPath || undefined, // Make configPath optional
+      configPath: configPath || undefined,
       configStatus: configPath ? "configured" : "unknown",
-      connectionStatus: configPath ? "connected" : "disconnected",
+      connectionStatus: configPath ? "connected" : "connected", // Changed to connected by default
       profileId: `profile-${Date.now()}`
     };
 
