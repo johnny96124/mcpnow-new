@@ -44,7 +44,7 @@ export function ConfigHighlightDialog({ open, onOpenChange, configPath }: Config
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>
-            {configPath ? "Configuration File" : "Configuration Details"}
+            Configuration Details
           </DialogTitle>
           {configPath && (
             <p className="text-sm text-muted-foreground">
@@ -54,29 +54,23 @@ export function ConfigHighlightDialog({ open, onOpenChange, configPath }: Config
         </DialogHeader>
         
         <div className="space-y-4">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium">
-                {configPath ? "Configuration Details" : ""}
-              </h3>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="flex items-center gap-1"
-                onClick={handleCopyConfig}
-              >
-                <Copy className="h-4 w-4" />
-                {copied ? "Copied!" : "Copy"}
-              </Button>
-            </div>
-            
-            <div className="relative">
-              <ScrollArea className="h-[300px] w-full rounded-md border">
-                <pre className="p-4 text-sm">
-                  {configString}
-                </pre>
-              </ScrollArea>
-            </div>
+          <div className="relative">
+            <ScrollArea className="h-[300px] w-full rounded-md border">
+              <div className="absolute right-2 top-2 z-10">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1"
+                  onClick={handleCopyConfig}
+                >
+                  <Copy className="h-4 w-4" />
+                  {copied ? "Copied!" : "Copy"}
+                </Button>
+              </div>
+              <pre className="p-4 text-sm">
+                {configString}
+              </pre>
+            </ScrollArea>
           </div>
         </div>
         
