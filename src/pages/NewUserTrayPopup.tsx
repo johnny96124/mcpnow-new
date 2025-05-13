@@ -56,7 +56,7 @@ const NewUserTrayPopup = () => {
             <div className="text-center py-4">
               <h3 className="text-xl font-semibold mb-2">Welcome to MCP Now!</h3>
               <p className="text-muted-foreground">
-                Let's get you started with setting up your environment
+                Follow these simple steps to start configuring and using MCP Now.
               </p>
             </div>
             
@@ -64,55 +64,69 @@ const NewUserTrayPopup = () => {
               <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
                 <h4 className="font-medium mb-2">Getting Started Guide</h4>
                 <p className="text-sm text-muted-foreground">
-                  MCP Now helps you manage servers, profiles, and hosts. Follow these simple steps:
+                  MCP Now helps you manage and configure your MCP ecosystem. Follow these steps:
                 </p>
               </div>
               
               <div className="p-4 space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="bg-primary/10 rounded-full p-1 h-7 w-7 flex items-center justify-center text-primary text-sm font-medium mt-0.5">
-                    1
+                  <div className="bg-blue-100 dark:bg-blue-900/30 rounded-full p-1 h-10 w-10 flex items-center justify-center text-primary text-sm font-medium mt-0.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-blue-600">
+                      <rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M7 10H7.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M7 14H7.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
                   </div>
                   <div>
-                    <h5 className="font-medium text-sm">Install Servers from Discovery</h5>
+                    <h5 className="font-medium text-sm">Step 1: Add locally installed MCP Host</h5>
                     <p className="text-xs text-muted-foreground">
-                      Browse and install server definitions from the Discovery page
+                      Connect to available MCP hosts in your local network.
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="bg-primary/10 rounded-full p-1 h-7 w-7 flex items-center justify-center text-primary text-sm font-medium mt-0.5">
-                    2
+                  <div className="bg-purple-100 dark:bg-purple-900/30 rounded-full p-1 h-10 w-10 flex items-center justify-center text-primary text-sm font-medium mt-0.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-purple-600">
+                      <path d="M12 5V19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
                   <div>
-                    <h5 className="font-medium text-sm">Create Instances</h5>
+                    <h5 className="font-medium text-sm">Step 2: Add MCP Server to Host</h5>
                     <p className="text-xs text-muted-foreground">
-                      Create and configure server instances with custom parameters
+                      Select and configure servers for your host.
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="bg-primary/10 rounded-full p-1 h-7 w-7 flex items-center justify-center text-primary text-sm font-medium mt-0.5">
-                    3
+                  <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-1 h-10 w-10 flex items-center justify-center text-primary text-sm font-medium mt-0.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-green-600">
+                      <path d="M5 12L19 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M12 5L19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
                   <div>
-                    <h5 className="font-medium text-sm">Create Profiles</h5>
+                    <h5 className="font-medium text-sm">Step 3: Run and Manage Servers</h5>
                     <p className="text-xs text-muted-foreground">
-                      Create profiles and add instances to them
+                      Start, monitor, and manage your servers.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="bg-primary/10 rounded-full p-1 h-7 w-7 flex items-center justify-center text-primary text-sm font-medium mt-0.5">
-                    4
+                  <div className="bg-yellow-100 dark:bg-yellow-900/30 rounded-full p-1 h-10 w-10 flex items-center justify-center text-primary text-sm font-medium mt-0.5">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-yellow-600">
+                      <path d="M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M16 7L12 3L8 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M8 12H4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
                   <div>
-                    <h5 className="font-medium text-sm">Associate Hosts with Profiles</h5>
+                    <h5 className="font-medium text-sm">Step 4: Share MCP Now with Others</h5>
                     <p className="text-xs text-muted-foreground">
-                      Connect your profiles to hosts to deploy server instances
+                      Share your MCP configuration with others.
                     </p>
                   </div>
                 </div>
@@ -137,4 +151,3 @@ const NewUserTrayPopup = () => {
 };
 
 export default NewUserTrayPopup;
-
