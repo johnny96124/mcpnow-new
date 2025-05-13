@@ -8,5 +8,12 @@ interface ToastProps {
   type?: 'default' | 'success' | 'error' | 'warning' | 'info';
   duration?: number;
   variant?: 'default' | 'destructive';
+  id?: string | number;
+  open?: boolean;
+  action?: React.ReactNode;
 }
 
+type Toast = ToastProps & {
+  id: string | number;
+  open: boolean;
+}
