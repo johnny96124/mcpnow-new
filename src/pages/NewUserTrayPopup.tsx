@@ -56,7 +56,7 @@ const NewUserTrayPopup = () => {
                     </svg>
                   </div>
                   <div>
-                    <h5 className="font-medium text-sm">Step 1: Add Hosts</h5>
+                    <h5 className="font-medium text-sm">Add Hosts</h5>
                     <p className="text-xs text-muted-foreground">Connect to available MCP hosts in your local computer.</p>
                   </div>
                 </div>
@@ -84,7 +84,7 @@ const NewUserTrayPopup = () => {
                     </svg>
                   </div>
                   <div>
-                    <h5 className="font-medium text-sm">Step 3: Manage Servers</h5>
+                    <h5 className="font-medium text-sm">Manage Servers</h5>
                     <p className="text-xs text-muted-foreground">Start, monitor, and debug your servers.</p>
                   </div>
                 </div>
@@ -98,7 +98,7 @@ const NewUserTrayPopup = () => {
                     </svg>
                   </div>
                   <div>
-                    <h5 className="font-medium text-sm">Step 4: Share Profiles and Servers</h5>
+                    <h5 className="font-medium text-sm">Share Profiles and Servers</h5>
                     <p className="text-xs text-muted-foreground">
                       Share your MCP configuration with others.
                     </p>
