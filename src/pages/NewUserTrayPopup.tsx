@@ -43,9 +43,7 @@ const NewUserTrayPopup = () => {
             <Card className="overflow-hidden">
               <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50">
                 <h4 className="font-medium mb-2">Getting Started Guide</h4>
-                <p className="text-sm text-muted-foreground">
-                  MCP Now helps you manage and configure your MCP ecosystem. Follow these steps:
-                </p>
+                <p className="text-sm text-muted-foreground">MCP Now helps you manage and configure your MCP servers. Follow these steps to start with:</p>
               </div>
               
               <div className="p-4 space-y-4">
@@ -59,9 +57,7 @@ const NewUserTrayPopup = () => {
                   </div>
                   <div>
                     <h5 className="font-medium text-sm">Step 1: Add Hosts</h5>
-                    <p className="text-xs text-muted-foreground">
-                      Connect to available MCP hosts in your local network.
-                    </p>
+                    <p className="text-xs text-muted-foreground">Connect to available MCP hosts in your local computer.</p>
                   </div>
                 </div>
                 
