@@ -1,1 +1,12 @@
+
 /// <reference types="vite/client" />
+
+// Toast type declarations
+interface ToastProps {
+  title?: string;
+  description?: string;
+  type?: 'default' | 'success' | 'error' | 'warning' | 'info';
+  duration?: number;
+  variant?: 'default' | 'destructive';
+}
+

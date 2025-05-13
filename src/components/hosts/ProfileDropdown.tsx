@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { ImportProfileDialog } from "./ImportProfileDialog";
 
 interface ProfileDropdownProps {
@@ -34,6 +34,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   const [newProfileName, setNewProfileName] = useState("");
   const [profileToDelete, setProfileToDelete] = useState<Profile | null>(null);
   const currentProfile = profiles.find(p => p.id === currentProfileId);
+  const { toast } = useToast();
   
   const handleProfileCreate = () => {
     if (!newProfileName.trim()) {

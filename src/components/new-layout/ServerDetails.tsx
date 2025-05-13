@@ -99,7 +99,7 @@ export function ServerDetails({
     // would typically open the resource details in a new view
     toast({
       title: "Resource Details",
-      description: `Viewing details for ${definition?.name || "Unknown"} resource`,
+      description: `Viewing details for ${definition?.name || "Unknown"} resource`
     });
     
     // In a real application, this might navigate to a dedicated page
