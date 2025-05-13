@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -10,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ConnectionStatus } from "@/data/mockData";
 import { EmojiPicker } from "./EmojiPicker";
+import { useToast } from "@/hooks/use-toast";
 
 const hostSchema = z.object({
   name: z.string().min(1, {
@@ -39,6 +39,7 @@ export function AddHostDialog({
   onAddHost
 }: AddHostDialogProps) {
   const [selectedEmoji, setSelectedEmoji] = useState<string>("💻");
+  const { toast } = useToast();
 
   const form = useForm<HostFormValues>({
     resolver: zodResolver(hostSchema),
