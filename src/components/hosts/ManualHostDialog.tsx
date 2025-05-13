@@ -195,7 +195,7 @@ export function ManualHostDialog({ open, onOpenChange, onAddHost }: ManualHostDi
             <div className="space-y-2">
               <Alert className="bg-blue-50 border-blue-200">
                 <AlertDescription className="text-blue-800">
-                  Please copy this configuration and manually add it to your host's configuration file.
+                  Please copy this configuration and manually add it to your host's MCP configuration.
                 </AlertDescription>
               </Alert>
               
