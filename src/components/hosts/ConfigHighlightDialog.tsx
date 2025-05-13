@@ -18,12 +18,16 @@ export function ConfigHighlightDialog({ open, onOpenChange, configPath }: Config
   const { toast } = useToast();
   const [copied, setCopied] = useState(false);
   
-  // Example config in JSON format
+  // Complete example config in JSON format
   const configContent = {
     "mcpServers": {
       "mcpnow": {
         "command": "npx",
-        "args": ["-y", "@modelcontextprotocol/mcpnow", "http://localhost:8008/mcp"]
+        "args": [
+          "-y", 
+          "@modelcontextprotocol/mcpnow", 
+          "http://localhost:8008/mcp"
+        ]
       }
     }
   };
