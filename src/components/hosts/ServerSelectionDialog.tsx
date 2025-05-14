@@ -29,6 +29,7 @@ interface EnhancedServerInstance extends ServerInstance {
   addedAt?: Date;
   stars?: number;
   profileCount?: number;
+  profileNames?: string[]; // Added profile names array
 }
 
 const existingInstances: EnhancedServerInstance[] = [
@@ -42,7 +43,8 @@ const existingInstances: EnhancedServerInstance[] = [
     description: "Local PostgreSQL database server instance",
     addedAt: new Date(2025, 3, 20), // April 20, 2025
     stars: 1898,
-    profileCount: 3
+    profileCount: 3,
+    profileNames: ["Development", "Testing", "Staging"] // Example profile names
   },
   {
     id: "instance-2",
@@ -54,7 +56,8 @@ const existingInstances: EnhancedServerInstance[] = [
     description: "Development Redis cache server",
     addedAt: new Date(2025, 3, 25), // April 25, 2025
     stars: 5423,
-    profileCount: 1
+    profileCount: 1,
+    profileNames: ["Development"] // Example profile names
   }
 ];
 
@@ -72,11 +75,13 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
   
-  // Enhance server definitions with star counts
-  const enhancedServerDefinitions = serverDefinitions.map(def => ({
-    ...def,
-    stars: Math.floor(Math.random() * 10000) + 100 // Add random star counts for demonstration
-  }));
+  // Enhance server definitions with persistent star counts
+  const [enhancedServerDefinitions] = useState(() => 
+    serverDefinitions.map(def => ({
+      ...def,
+      stars: Math.floor(Math.random() * 10000) + 100 // Add persistent star counts for demonstration
+    }))
+  );
   
   // Filtered results based on search query
   const filteredExistingInstances = searchQuery 
@@ -191,6 +196,19 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
     navigate("/discovery");
   };
 
+  // Format profile display text
+  const formatProfileDisplay = (server: EnhancedServerInstance) => {
+    if (!server.profileNames || server.profileNames.length === 0) {
+      return "Not added to any profile";
+    }
+    
+    if (server.profileNames.length === 1) {
+      return `Added to ${server.profileNames[0]}`;
+    }
+    
+    return `Added to ${server.profileNames[0]} +${server.profileNames.length - 1}`;
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -281,12 +299,10 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                                   {instance.description && (
                                     <span>{instance.description}</span>
                                   )}
-                                  {instance.profileCount !== undefined && (
-                                    <span className="flex items-center">
-                                      <Users className="h-3 w-3 mr-1" /> 
-                                      Added to {instance.profileCount} {instance.profileCount === 1 ? 'profile' : 'profiles'}
-                                    </span>
-                                  )}
+                                  <span className="flex items-center">
+                                    <Users className="h-3 w-3 mr-1" /> 
+                                    {formatProfileDisplay(instance)}
+                                  </span>
                                 </div>
                               </div>
                             </div>

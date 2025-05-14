@@ -13,7 +13,7 @@ export const StarCount = ({ count, className = "" }: StarCountProps) => {
   return (
     <div className={`flex items-center text-xs text-muted-foreground ${className}`}>
       <Star className="h-3.5 w-3.5 mr-1 text-amber-400 fill-amber-400" />
-      <span>{formattedCount}</span>
+      <span className="min-w-[24px]">{formattedCount}</span>
     </div>
   );
 };
