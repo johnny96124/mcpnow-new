@@ -11,8 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { X, CheckCircle, Plus } from "lucide-react";
+import { X, CheckCircle, Plus, Users } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { StarCount } from "@/components/discovery/StarCount";
 
 interface AddServerDialogProps {
   open: boolean;
@@ -41,7 +42,9 @@ export const AddServerDialog = ({ open, onOpenChange, onAddServer }: AddServerDi
       definitionId: "custom-server",
       status: "stopped",
       connectionDetails: serverData.url,
-      enabled: false
+      enabled: false,
+      stars: 0, // Add stars field for custom servers
+      profileCount: 0 // Add profileCount for custom servers
     };
     
     // Mark server as installed

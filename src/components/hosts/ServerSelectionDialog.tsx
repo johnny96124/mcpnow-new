@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useRef } from "react";
-import { Search, Clock, ExternalLink, Plus, X } from "lucide-react";
+import { Search, Clock, ExternalLink, Plus, X, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -14,6 +15,7 @@ import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { CheckCircle } from "lucide-react";
+import { StarCount } from "@/components/discovery/StarCount";
 
 interface ServerSelectionDialogProps {
   open: boolean;
@@ -25,6 +27,8 @@ interface ServerSelectionDialogProps {
 interface EnhancedServerInstance extends ServerInstance {
   description?: string;
   addedAt?: Date;
+  stars?: number;
+  profileCount?: number;
 }
 
 const existingInstances: EnhancedServerInstance[] = [
@@ -36,7 +40,9 @@ const existingInstances: EnhancedServerInstance[] = [
     connectionDetails: "https://localhost:5432",
     enabled: false,
     description: "Local PostgreSQL database server instance",
-    addedAt: new Date(2025, 3, 20) // April 20, 2025
+    addedAt: new Date(2025, 3, 20), // April 20, 2025
+    stars: 1898,
+    profileCount: 3
   },
   {
     id: "instance-2",
@@ -46,7 +52,9 @@ const existingInstances: EnhancedServerInstance[] = [
     connectionDetails: "redis://localhost:6379",
     enabled: false,
     description: "Development Redis cache server",
-    addedAt: new Date(2025, 3, 25) // April 25, 2025
+    addedAt: new Date(2025, 3, 25), // April 25, 2025
+    stars: 5423,
+    profileCount: 1
   }
 ];
 
@@ -64,6 +72,12 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
   
+  // Enhance server definitions with star counts
+  const enhancedServerDefinitions = serverDefinitions.map(def => ({
+    ...def,
+    stars: Math.floor(Math.random() * 10000) + 100 // Add random star counts for demonstration
+  }));
+  
   // Filtered results based on search query
   const filteredExistingInstances = searchQuery 
     ? existingInstances.filter(server => 
@@ -71,7 +85,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
     : [];
     
   const filteredServerDefinitions = searchQuery
-    ? serverDefinitions.filter(server => 
+    ? enhancedServerDefinitions.filter(server => 
         server.name.toLowerCase().includes(searchQuery.toLowerCase()))
     : [];
     
@@ -120,7 +134,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   };
 
   // Handle discovery server setup
-  const handleSetupServer = (server: ServerDefinition) => {
+  const handleSetupServer = (server: any) => {
     setSelectedServer(server);
     setShowInstanceDialog(true);
   };
@@ -260,16 +274,17 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                                 <EndpointLabel 
                                   type={serverDefinitions.find(def => def.id === instance.definitionId)?.type || 'Custom'} 
                                 />
+                                <StarCount count={instance.stars || 0} />
                               </div>
                               <div className="text-xs text-muted-foreground mt-1">
                                 <div className="flex flex-col space-y-1">
                                   {instance.description && (
                                     <span>{instance.description}</span>
                                   )}
-                                  {instance.addedAt && (
+                                  {instance.profileCount !== undefined && (
                                     <span className="flex items-center">
-                                      <Clock className="h-3 w-3 mr-1" /> 
-                                      Added on {format(instance.addedAt, "MMM dd, yyyy")}
+                                      <Users className="h-3 w-3 mr-1" /> 
+                                      Added to {instance.profileCount} {instance.profileCount === 1 ? 'profile' : 'profiles'}
                                     </span>
                                   )}
                                 </div>
@@ -320,6 +335,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                               <div className="flex items-center gap-2">
                                 <h4 className="font-medium text-sm truncate">{server.name}</h4>
                                 <EndpointLabel type={server.type} />
+                                <StarCount count={server.stars || 0} />
                               </div>
                               <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                                 {server.description}
