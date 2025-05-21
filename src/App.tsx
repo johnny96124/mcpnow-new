@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import TrayPopup from "@/pages/TrayPopup";
 import HostNewLayout from "@/pages/Host-newlayout";
