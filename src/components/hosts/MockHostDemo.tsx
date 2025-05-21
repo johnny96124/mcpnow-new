@@ -37,7 +37,6 @@ export const MockHostDemo = () => {
   const [startingHost, setStartingHost] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
 
-  // 处理启动外部Host应用程序的函数
   const handleStartHost = (hostId: string) => {
     const host = hosts.find(h => h.id === hostId);
     if (!host) return;
@@ -49,9 +48,7 @@ export const MockHostDemo = () => {
       description: `正在启动外部Host应用: ${host.name}`
     });
     
-    // 模拟启动外部应用的过程
     setTimeout(() => {
-      // 更新Host连接状态
       setHosts(prev => prev.map(h => {
         if (h.id === hostId) {
           return { ...h, connectionStatus: "connected" as const };
@@ -77,49 +74,49 @@ export const MockHostDemo = () => {
       <div className="grid gap-6">
         {hosts.map((host) => (
           <Card key={host.id}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <div className="flex items-center space-x-4">
-                <div className="text-2xl">{host.icon}</div>
-                <div>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="text-2xl">{host.icon}</div>
                   <CardTitle>{host.name}</CardTitle>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <StatusIndicator 
-                      status={host.connectionStatus === "connected" ? "active" : "inactive"} 
-                      label={host.connectionStatus === "connected" ? "Connected" : "Disconnected"} 
-                      size="sm"
-                    />
+                </div>
+                <div className="flex gap-2">
+                  {host.connectionStatus !== "connected" && (
                     <Button 
-                      variant="link" 
-                      className="p-0 h-auto text-sm text-muted-foreground"
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-1 bg-green-500/10 border-green-500/20 text-green-600 hover:bg-green-500/20 hover:text-green-700"
+                      onClick={() => handleStartHost(host.id)}
+                      disabled={startingHost[host.id]}
                     >
-                      View Config
+                      {startingHost[host.id] ? (
+                        <span className="flex items-center">
+                          <span className="animate-spin mr-1">◌</span> 启动中
+                        </span>
+                      ) : (
+                        <>
+                          <Play className="h-3.5 w-3.5" /> 开启Host
+                        </>
+                      )}
                     </Button>
-                  </div>
+                  )}
+                  <Button variant="outline">
+                    {host.connectionStatus === "connected" ? "Current" : "Select"}
+                  </Button>
                 </div>
               </div>
               
-              <div className="flex gap-2">
-                {host.connectionStatus !== "connected" && (
-                  <Button 
-                    variant="outline"
-                    size="sm"
-                    className="flex items-center gap-1 bg-green-500/10 border-green-500/20 text-green-600 hover:bg-green-500/20 hover:text-green-700"
-                    onClick={() => handleStartHost(host.id)}
-                    disabled={startingHost[host.id]}
-                  >
-                    {startingHost[host.id] ? (
-                      <span className="flex items-center">
-                        <span className="animate-spin mr-1">◌</span> 启动中
-                      </span>
-                    ) : (
-                      <>
-                        <Play className="h-3.5 w-3.5" /> 开启Host
-                      </>
-                    )}
-                  </Button>
-                )}
-                <Button variant="outline">
-                  {host.connectionStatus === "connected" ? "Current" : "Select"}
+              <div className="flex items-center space-x-2 mt-1">
+                <StatusIndicator 
+                  status={host.connectionStatus === "connected" ? "active" : "inactive"} 
+                  label={host.connectionStatus === "connected" ? "Connected" : "Disconnected"} 
+                  size="sm"
+                />
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-sm text-muted-foreground"
+                >
+                  View Config
                 </Button>
               </div>
             </CardHeader>
