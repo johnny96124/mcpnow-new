@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
-import { Search, Clock, ExternalLink, Plus, X, Users } from "lucide-react";
+import { Search, Clock, ExternalLink, Plus, X, Users, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -209,6 +209,14 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
     return `Added to ${server.profileNames[0]} +${server.profileNames.length - 1}`;
   };
 
+  // Handle start host action
+  const handleStartHost = (serverName: string) => {
+    toast({
+      title: "Starting Host",
+      description: `Attempting to start host for ${serverName}`
+    });
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -307,13 +315,25 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                               </div>
                             </div>
                           </div>
-                          <Button 
-                            size="sm" 
-                            variant="secondary"
-                            onClick={() => handleAddExistingInstance(instance)}
-                          >
-                            Add
-                          </Button>
+                          <div className="flex items-center gap-2">
+                            {instance.status === "stopped" && (
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="bg-green-50 hover:bg-green-100 text-green-700 border-green-200"
+                                onClick={() => handleStartHost(instance.name)}
+                              >
+                                <Play className="h-4 w-4 mr-1" /> 开启Host
+                              </Button>
+                            )}
+                            <Button 
+                              size="sm" 
+                              variant="secondary"
+                              onClick={() => handleAddExistingInstance(instance)}
+                            >
+                              Add
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
