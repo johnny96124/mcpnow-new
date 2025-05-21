@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useRef } from "react";
-import { Search, Clock, ExternalLink, Plus, X, Users, Play } from "lucide-react";
+import { Search, Clock, ExternalLink, Plus, X, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
@@ -101,24 +102,25 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
     "instance-2": true,
     "def-http-sse": true
   });
-
-  // 处理启动外部Host应用程序的函数
-  const handleStartHost = (hostName: string) => {
-    toast({
-      title: "启动Host",
-      description: `正在启动外部Host应用: ${hostName}`,
-    });
-    
-    // 模拟启动外部应用的过程
-    // 在实际实现中，这里可能会使用Electron的API或其他方式来启动外部应用
-    setTimeout(() => {
-      toast({
-        title: "Host已启动",
-        description: `${hostName}已成功启动，请等待连接`,
-      });
-    }, 1500);
-  };
   
+  // Clear state when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setSearchQuery("");
+      setIsSearching(false);
+      setSelectedServer(null);
+      setShowInstanceDialog(false);
+      setShowCustomServerDialog(false);
+    } else {
+      // Focus search input when dialog opens
+      setTimeout(() => {
+        if (searchInputRef.current) {
+          searchInputRef.current.focus();
+        }
+      }, 100);
+    }
+  }, [open]);
+
   // Handle existing instance selection
   const handleAddExistingInstance = (instance: EnhancedServerInstance) => {
     onAddServers([instance]);

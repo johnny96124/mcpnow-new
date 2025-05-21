@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Server, Settings, AlertTriangle, ChevronDown, Play } from "lucide-react";
+import { Plus, Server, Settings, AlertTriangle, ChevronDown } from "lucide-react";
 import { StatusIndicator } from "@/components/status/StatusIndicator";
 import { ServerLogo } from "@/components/servers/ServerLogo";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
@@ -36,7 +35,6 @@ export default function HostNewLayout() {
   const [isServerDetailsOpen, setIsServerDetailsOpen] = useState(false);
   const [selectedServer, setSelectedServer] = useState<any | null>(null);
   const [errorDetails, setErrorDetails] = useState<string>("");
-  const [startingHost, setStartingHost] = useState<boolean>(false);
   const { toast } = useToast();
   const { hostProfiles, allProfiles, getProfileById, handleProfileChange, addInstanceToProfile } = useHostProfiles();
 
@@ -63,15 +61,6 @@ export default function HostNewLayout() {
         configPath: "/Users/dev/.mcp/hosts/local-dev.json",
         configStatus: "configured",
         connectionStatus: "connected"
-      },
-      // 添加一个断开连接的主机用于测试
-      {
-        id: "host-2",
-        name: "Claude Desktop",
-        icon: "🧠",
-        configPath: "/Users/dev/.mcp/hosts/claude.json",
-        configStatus: "configured",
-        connectionStatus: "disconnected"
       }
     ];
     
@@ -94,42 +83,6 @@ export default function HostNewLayout() {
       setSelectedProfile(defaultProfile);
     }
   }, []);
-
-  // 处理启动外部Host应用程序的函数
-  const handleStartHost = (hostId: string) => {
-    const host = hosts.find(h => h.id === hostId);
-    if (!host) return;
-    
-    setStartingHost(true);
-    
-    toast({
-      title: "启动Host",
-      description: `正在启动外部Host应用: ${host.name}`
-    });
-    
-    // 模拟启动外部应用的过程
-    setTimeout(() => {
-      // 更新Host连接状态
-      setHosts(prev => prev.map(h => {
-        if (h.id === hostId) {
-          return { ...h, connectionStatus: "connected" };
-        }
-        return h;
-      }));
-      
-      // 如果启动的Host是当前选中的Host，更新selectedHost
-      if (selectedHost && selectedHost.id === hostId) {
-        setSelectedHost(prev => ({ ...prev, connectionStatus: "connected" }));
-      }
-      
-      setStartingHost(false);
-      
-      toast({
-        title: "Host已启动",
-        description: `${host.name}已成功启动并连接`
-      });
-    }, 2500);
-  };
 
   const handleAddHosts = (newHosts: any[]) => {
     // Create new profiles for each host automatically
@@ -347,153 +300,124 @@ export default function HostNewLayout() {
         </Button>
       </div>
 
-      {hosts.map((host) => (
-        <Card key={host.id} className={`${selectedHost?.id === host.id ? 'ring-1 ring-primary' : ''}`}>
+      {selectedHost ? (
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <div className="flex items-center space-x-4">
-              <div className="text-2xl">{host.icon}</div>
+              <div className="text-2xl">{selectedHost.icon}</div>
               <div>
-                <CardTitle>{host.name}</CardTitle>
+                <CardTitle>{selectedHost.name}</CardTitle>
                 <div className="flex items-center space-x-2 mt-1">
                   <StatusIndicator 
-                    status={host.connectionStatus === "connected" ? "active" : "inactive"} 
-                    label={host.connectionStatus === "connected" ? "Connected" : "Disconnected"} 
+                    status={selectedHost.connectionStatus === "connected" ? "active" : "inactive"} 
+                    label={selectedHost.connectionStatus === "connected" ? "Connected" : "Disconnected"} 
                     size="sm"
                   />
                   <Button 
                     variant="link" 
                     className="p-0 h-auto text-sm text-muted-foreground"
-                    onClick={() => handleViewConfig(host.configPath)}
+                    onClick={() => handleViewConfig(selectedHost.configPath)}
                   >
                     View Config
                   </Button>
                 </div>
               </div>
             </div>
-            
-            <div className="flex gap-2">
-              {host.connectionStatus !== "connected" && (
-                <Button 
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-1 bg-green-500/10 border-green-500/20 text-green-600 hover:bg-green-500/20 hover:text-green-700"
-                  onClick={() => handleStartHost(host.id)}
-                  disabled={startingHost}
-                >
-                  {startingHost && host.id === selectedHost?.id ? (
-                    <span className="flex items-center">
-                      <span className="animate-spin mr-1">◌</span> 启动中
-                    </span>
-                  ) : (
-                    <>
-                      <Play className="h-3.5 w-3.5" /> 开启Host
-                    </>
-                  )}
-                </Button>
-              )}
-              <Button variant="outline" onClick={() => setSelectedHost(host)}>
-                {selectedHost?.id === host.id ? "Current" : "Select"}
-              </Button>
-            </div>
           </CardHeader>
           
-          {selectedHost?.id === host.id && host.connectionStatus === "connected" && (
-            <CardContent className="space-y-6 pt-0">
-              <div className="flex items-center justify-between border-b pb-4">
-                <h2 className="text-lg font-medium flex items-center">
-                  Connected Servers
-                  {selectedProfile && (
-                    <ProfileSelector 
-                      profiles={profiles} 
-                      selectedProfile={selectedProfile}
-                      onSelect={handleProfileSelect}
-                      className="ml-2"
-                    />
-                  )}
-                </h2>
-                <Button onClick={() => setIsServerSelectionOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Server
-                </Button>
-              </div>
+          <CardContent className="space-y-6 pt-0">
+            <div className="flex items-center justify-between border-b pb-4">
+              <h2 className="text-lg font-medium flex items-center">
+                Connected Servers
+                {selectedProfile && (
+                  <ProfileSelector 
+                    profiles={profiles} 
+                    selectedProfile={selectedProfile}
+                    onSelect={handleProfileSelect}
+                    className="ml-2"
+                  />
+                )}
+              </h2>
+              <Button onClick={() => setIsServerSelectionOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Server
+              </Button>
+            </div>
 
-              {servers.length === 0 ? (
-                <ServerListEmpty onAddServers={() => setIsServerSelectionOpen(true)} />
-              ) : (
-                <div className="grid gap-4">
-                  {servers.map((server) => (
-                    <div 
-                      key={server.id}
-                      className="p-4 border rounded-lg bg-card flex items-center justify-between"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <ServerLogo name={server.name} />
-                        <div>
-                          <h3 className="font-medium">{server.name}</h3>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <EndpointLabel type={server.type || "HTTP_SSE"} />
-                            {getStatusIndicator(server.status)}
-                            {server.status === "error" && (
-                              <Button
-                                variant="ghost" 
-                                size="sm"
-                                className="h-6 px-2 text-xs text-destructive"
-                                onClick={() => handleShowServerError(server)}
-                              >
-                                <AlertTriangle className="h-3 w-3 mr-1" />
-                                View Error
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id={`toggle-${server.id}`}
-                            checked={server.enabled}
-                            onChange={(e) => handleServerToggle(server.id, e.target.checked)}
-                            disabled={selectedHost.connectionStatus !== "connected"}
-                            className="sr-only peer"
-                          />
-                          <label
-                            htmlFor={`toggle-${server.id}`}
-                            className="relative inline-flex h-5 w-9 cursor-pointer rounded-full bg-muted peer-checked:bg-primary transition-colors peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
-                          >
-                            <span className="inline-block h-4 w-4 translate-x-0.5 translate-y-0.5 rounded-full bg-white transition-transform peer-checked:translate-x-4 shadow-sm" />
-                          </label>
-                        </div>
-                        
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleShowServerDebug(server)}
-                        >
-                          Debug
-                        </Button>
-                        
-                        <div className="relative">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveServer(server.id)}
-                          >
-                            Remove
-                          </Button>
+            {servers.length === 0 ? (
+              <ServerListEmpty onAddServers={() => setIsServerSelectionOpen(true)} />
+            ) : (
+              <div className="grid gap-4">
+                {servers.map((server) => (
+                  <div 
+                    key={server.id}
+                    className="p-4 border rounded-lg bg-card flex items-center justify-between"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <ServerLogo name={server.name} />
+                      <div>
+                        <h3 className="font-medium">{server.name}</h3>
+                        <div className="flex items-center space-x-2 mt-1">
+                          <EndpointLabel type={server.type || "HTTP_SSE"} />
+                          {getStatusIndicator(server.status)}
+                          {server.status === "error" && (
+                            <Button
+                              variant="ghost" 
+                              size="sm"
+                              className="h-6 px-2 text-xs text-destructive"
+                              onClick={() => handleShowServerError(server)}
+                            >
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              View Error
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          )}
+                    
+                    <div className="flex items-center space-x-2">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`toggle-${server.id}`}
+                          checked={server.enabled}
+                          onChange={(e) => handleServerToggle(server.id, e.target.checked)}
+                          disabled={selectedHost.connectionStatus !== "connected"}
+                          className="sr-only peer"
+                        />
+                        <label
+                          htmlFor={`toggle-${server.id}`}
+                          className="relative inline-flex h-5 w-9 cursor-pointer rounded-full bg-muted peer-checked:bg-primary transition-colors peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+                        >
+                          <span className="inline-block h-4 w-4 translate-x-0.5 translate-y-0.5 rounded-full bg-white transition-transform peer-checked:translate-x-4 shadow-sm" />
+                        </label>
+                      </div>
+                      
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleShowServerDebug(server)}
+                      >
+                        Debug
+                      </Button>
+                      
+                      <div className="relative">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveServer(server.id)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
         </Card>
-      ))}
-
-      {hosts.length === 0 && (
+      ) : (
         <Card className="text-center p-8">
           <CardContent className="flex flex-col items-center space-y-4">
             <div className="bg-muted/30 p-3 rounded-full">

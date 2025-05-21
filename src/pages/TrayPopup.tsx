@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   ExternalLink, 
@@ -6,8 +5,7 @@ import {
   ChevronUp,
   User,
   AlertTriangle,
-  Server,
-  Play
+  Server
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -60,36 +58,6 @@ const TrayPopup = () => {
   const [errorDialogOpen, setErrorDialogOpen] = useState(false);
   const [currentErrorServer, setCurrentErrorServer] = useState<string>("");
   const [expandedHosts, setExpandedHosts] = useState<Record<string, boolean>>({});
-  const [startingHosts, setStartingHosts] = useState<Record<string, boolean>>({});
-
-  // 处理启动外部Host应用程序的函数
-  const handleStartHost = (hostId: string, hostName: string) => {
-    // 设置正在启动状态
-    setStartingHosts(prev => ({ ...prev, [hostId]: true }));
-    
-    toast.info(`正在启动Host: ${hostName}`);
-    
-    // 模拟启动外部应用进程
-    setTimeout(() => {
-      toast.success(`${hostName}已成功启动，正在尝试连接...`);
-      
-      // 模拟连接过程
-      setTimeout(() => {
-        // 更新连接状态
-        const updatedHosts = displayHosts.map(host => {
-          if (host.id === hostId) {
-            return { ...host, connectionStatus: 'connected' as const };
-          }
-          return host;
-        });
-        
-        // 清除启动状态
-        setStartingHosts(prev => ({ ...prev, [hostId]: false }));
-        
-        toast.success(`${hostName}已成功连接`);
-      }, 2000);
-    }, 1500);
-  };
 
   const handleProfileChange = (hostId: string, profileId: string) => {
     setSelectedProfileIds(prev => ({
@@ -328,7 +296,6 @@ const TrayPopup = () => {
               const hasMoreInstances = instances.length > 3;
               const statusCounts = getInstanceStatusCounts(host.id);
               const shouldShowHostRefreshHint = showHostRefreshHint && lastChangedHostId === host.id && isConnected;
-              const isStarting = startingHosts[host.id] || false;
               
               return (
                 <Card key={host.id} className="overflow-hidden shadow-sm">
@@ -339,33 +306,11 @@ const TrayPopup = () => {
                       </div>
                       <h3 className="font-medium">{host.name}</h3>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <StatusIndicator 
-                        status={isConnected ? 'active' : 'inactive'} 
-                        label={isConnected ? 'Connected' : 'Disconnected'}
-                        className={!isConnected ? "text-neutral-500" : ""}
-                      />
-                      
-                      {!isConnected && (
-                        <Button 
-                          size="sm"
-                          variant="outline"
-                          className="flex items-center gap-1 bg-green-500/10 border-green-500/20 text-green-600 hover:bg-green-500/20 hover:text-green-700"
-                          onClick={() => handleStartHost(host.id, host.name)}
-                          disabled={isStarting}
-                        >
-                          {isStarting ? (
-                            <span className="flex items-center">
-                              <span className="animate-spin mr-1">◌</span> 启动中
-                            </span>
-                          ) : (
-                            <>
-                              <Play className="h-3 w-3" /> 开启Host
-                            </>
-                          )}
-                        </Button>
-                      )}
-                    </div>
+                    <StatusIndicator 
+                      status={isConnected ? 'active' : 'inactive'} 
+                      label={isConnected ? 'Connected' : 'Disconnected'}
+                      className={!isConnected ? "text-neutral-500" : ""}
+                    />
                   </div>
                   
                   {/* Only show profile content if the host is connected */}
