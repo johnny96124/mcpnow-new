@@ -45,7 +45,6 @@ interface EnhancedServerDefinition extends ServerDefinition {
     type: 'llm' | 'tool' | 'memory';
     value: string;
   }[];
-  multipleTypes?: string[];
 }
 const extendedItems: EnhancedServerDefinition[] = [...discoveryItems.map(item => ({
   ...item,
@@ -63,8 +62,7 @@ const extendedItems: EnhancedServerDefinition[] = [...discoveryItems.map(item =>
   forks: Math.floor(Math.random() * 100) + 30,
   watches: Math.floor(Math.random() * 1000) + 200,
   author: item.author || "API Team",
-  downloads: Math.floor(Math.random() * 5000) + 500,
-  multipleTypes: index === 0 ? (['HTTP_SSE', 'STDIO'] as EndpointType[]) : undefined
+  downloads: Math.floor(Math.random() * 5000) + 500
 })), ...discoveryItems.map((item, index) => ({
   ...item,
   id: `community-${item.id}-${index}`,
@@ -412,11 +410,7 @@ const Discovery = () => {
                             {server.name}
                           </CardTitle>
                           <div className="flex items-center gap-1.5 mt-1">
-                            {server.multipleTypes ? (
-                              <EndpointLabel type="Combined" types={server.multipleTypes} />
-                            ) : (
-                              <EndpointLabel type={server.type} />
-                            )}
+                            <EndpointLabel type={server.type} />
                             {server.isOfficial && <OfficialBadge />}
                           </div>
                         </div>
@@ -502,11 +496,7 @@ const Discovery = () => {
                           {selectedServer.name}
                         </DialogTitle>
                         <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                          {selectedServer.multipleTypes ? (
-                            <EndpointLabel type="Combined" types={selectedServer.multipleTypes} />
-                          ) : (
-                            <EndpointLabel type={selectedServer.type} />
-                          )}
+                          <EndpointLabel type={selectedServer.type} />
                           {selectedServer.isOfficial && <OfficialBadge />}
                         </div>
                       </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { Search, Clock, ExternalLink, Plus, X, Users, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -74,12 +75,10 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
   
-  // Enhance server definitions with persistent star counts and multiple types
+  // Enhance server definitions with persistent star counts
   const [enhancedServerDefinitions] = useState(() => 
-    serverDefinitions.map((def, index) => ({
+    serverDefinitions.map(def => ({
       ...def,
-      // Add multiple types to one test server
-      multipleTypes: index === 0 ? (['HTTP_SSE', 'STDIO'] as EndpointType[]) : undefined,
       stars: Math.floor(Math.random() * 10000) + 100 // Add persistent star counts for demonstration
     }))
   );
@@ -371,11 +370,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <h4 className="font-medium text-sm truncate">{server.name}</h4>
-                                {server.multipleTypes ? (
-                                  <EndpointLabel type="Combined" types={server.multipleTypes} />
-                                ) : (
-                                  <EndpointLabel type={server.type} />
-                                )}
+                                <EndpointLabel type={server.type} />
                                 <StarCount count={server.stars || 0} />
                               </div>
                               <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
