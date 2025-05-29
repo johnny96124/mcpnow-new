@@ -64,7 +64,7 @@ const extendedItems: EnhancedServerDefinition[] = [...discoveryItems.map(item =>
   watches: Math.floor(Math.random() * 1000) + 200,
   author: item.author || "API Team",
   downloads: Math.floor(Math.random() * 5000) + 500,
-  multipleTypes: index === 0 ? ['HTTP_SSE', 'STDIO'] : undefined
+  multipleTypes: index === 0 ? (['HTTP_SSE', 'STDIO'] as EndpointType[]) : undefined
 })), ...discoveryItems.map((item, index) => ({
   ...item,
   id: `community-${item.id}-${index}`,

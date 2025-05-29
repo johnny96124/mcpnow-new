@@ -79,7 +79,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
     serverDefinitions.map((def, index) => ({
       ...def,
       // Add multiple types to one test server
-      multipleTypes: index === 0 ? ['HTTP_SSE', 'STDIO'] : undefined,
+      multipleTypes: index === 0 ? (['HTTP_SSE', 'STDIO'] as EndpointType[]) : undefined,
       stars: Math.floor(Math.random() * 10000) + 100 // Add persistent star counts for demonstration
     }))
   );
