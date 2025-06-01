@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { Search, Clock, ExternalLink, Plus, X, Users, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { ServerLogo } from "@/components/servers/ServerLogo";
 import { EndpointLabel } from "@/components/status/EndpointLabel";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { serverDefinitions, type ServerInstance, type ServerDefinition } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { AddInstanceDialog } from "@/components/servers/AddInstanceDialog";
 import { AddServerDialog } from "@/components/new-layout/AddServerDialog";
@@ -20,17 +18,45 @@ import { StarCount } from "@/components/discovery/StarCount";
 interface ServerSelectionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddServers: (servers: ServerInstance[]) => void;
+  onAddServers: (servers: any[]) => void;
 }
 
 // Enhanced instance type with additional metadata
-interface EnhancedServerInstance extends ServerInstance {
+interface EnhancedServerInstance {
+  id: string;
+  name: string;
+  definitionId: string;
+  status: "running" | "stopped" | "error";
+  connectionDetails: string;
+  enabled: boolean;
   description?: string;
   addedAt?: Date;
   stars?: number;
   profileCount?: number;
-  profileNames?: string[]; // Added profile names array
+  profileNames?: string[];
 }
+
+// Mock server definitions
+const serverDefinitions = [
+  {
+    id: "def-http-sse",
+    name: "HTTP SSE Server",
+    type: "HTTP_SSE" as const,
+    description: "Server-Sent Events implementation"
+  },
+  {
+    id: "def-stdio", 
+    name: "STDIO Server",
+    type: "STDIO" as const,
+    description: "Standard input/output server"
+  },
+  {
+    id: "def-websocket",
+    name: "WebSocket Server", 
+    type: "WS" as const,
+    description: "WebSocket implementation"
+  }
+];
 
 const existingInstances: EnhancedServerInstance[] = [
   {
@@ -41,10 +67,10 @@ const existingInstances: EnhancedServerInstance[] = [
     connectionDetails: "https://localhost:5432",
     enabled: false,
     description: "Local PostgreSQL database server instance",
-    addedAt: new Date(2025, 3, 20), // April 20, 2025
+    addedAt: new Date(2025, 3, 20),
     stars: 1898,
     profileCount: 3,
-    profileNames: ["Development", "Testing", "Staging"] // Example profile names
+    profileNames: ["Development", "Testing", "Staging"]
   },
   {
     id: "instance-2",
@@ -54,10 +80,10 @@ const existingInstances: EnhancedServerInstance[] = [
     connectionDetails: "redis://localhost:6379",
     enabled: false,
     description: "Development Redis cache server",
-    addedAt: new Date(2025, 3, 25), // April 25, 2025
+    addedAt: new Date(2025, 3, 25),
     stars: 5423,
     profileCount: 1,
-    profileNames: ["Development"] // Example profile names
+    profileNames: ["Development"]
   }
 ];
 
@@ -68,7 +94,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedServer, setSelectedServer] = useState<ServerDefinition | null>(null);
+  const [selectedServer, setSelectedServer] = useState<any | null>(null);
   const [showInstanceDialog, setShowInstanceDialog] = useState(false);
   const [showCustomServerDialog, setShowCustomServerDialog] = useState(false);
   const { toast } = useToast();
@@ -79,7 +105,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   const [enhancedServerDefinitions] = useState(() => 
     serverDefinitions.map(def => ({
       ...def,
-      stars: Math.floor(Math.random() * 10000) + 100 // Add persistent star counts for demonstration
+      stars: Math.floor(Math.random() * 10000) + 100
     }))
   );
   
@@ -146,11 +172,11 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
 
   // Handle instance creation
   const handleCreateInstance = (data: any) => {
-    const newInstance: ServerInstance = {
+    const newInstance = {
       id: `instance-${Date.now()}`,
       name: data.name,
       definitionId: selectedServer?.id || "",
-      status: "stopped",
+      status: "stopped" as const,
       connectionDetails: data.url || data.args || "",
       enabled: false
     };
@@ -173,7 +199,7 @@ export const ServerSelectionDialog: React.FC<ServerSelectionDialogProps> = ({
   };
 
   // Handle custom server addition
-  const handleAddCustomServer = (server: ServerInstance) => {
+  const handleAddCustomServer = (server: any) => {
     onAddServers([server]);
     
     // Mark as installed

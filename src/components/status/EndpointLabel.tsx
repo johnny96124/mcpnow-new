@@ -1,9 +1,10 @@
 
 import { cn } from "@/lib/utils";
-import type { EndpointType } from "@/data/mockData";
+
+export type EndpointType = 'HTTP_SSE' | 'STDIO' | 'WS';
 
 interface EndpointLabelProps {
-  type: EndpointType | 'Custom';
+  type: EndpointType | 'Custom' | 'SSE';
   className?: string;
 }
 
@@ -13,7 +14,8 @@ export function EndpointLabel({ type, className }: EndpointLabelProps) {
   
   switch(type) {
     case 'HTTP_SSE':
-      labelText = 'HTTP SSE';
+    case 'SSE':
+      labelText = 'SSE';
       typeClasses = "text-blue-500 font-medium bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded";
       break;
     case 'STDIO':
