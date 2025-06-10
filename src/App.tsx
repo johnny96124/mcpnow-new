@@ -22,6 +22,10 @@ import ProfileLandingPage from "./pages/ProfileLandingPage";
 import ServerLandingPage from "./pages/ServerLandingPage";
 import ProfileExpiredPage from "./pages/ProfileExpiredPage";
 import ServerExpiredPage from "./pages/ServerExpiredPage";
+import TermsAcceptance from "./pages/TermsAcceptance";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const queryClient = new QueryClient();
@@ -33,8 +37,20 @@ function App() {
           <Toaster />
           <RouterProvider router={createBrowserRouter([
             {
+              path: "/terms-acceptance",
+              element: <TermsAcceptance />
+            },
+            {
+              path: "/terms",
+              element: <TermsOfService />
+            },
+            {
+              path: "/privacy",
+              element: <PrivacyPolicy />
+            },
+            {
               path: "/",
-              element: <DefaultLayout><Hosts /></DefaultLayout>
+              element: <ProtectedRoute><DefaultLayout><Hosts /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/index",
@@ -42,11 +58,11 @@ function App() {
             },
             {
               path: "/introduction-3",
-              element: <Introduction3 />
+              element: <ProtectedRoute><Introduction3 /></ProtectedRoute>
             },
             {
               path: "/dashboard",
-              element: <DefaultLayout><Dashboard /></DefaultLayout>
+              element: <ProtectedRoute><DefaultLayout><Dashboard /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/hosts",
@@ -54,27 +70,27 @@ function App() {
             },
             {
               path: "/hosts-new-user",
-              element: <DefaultLayout><HostsNewUser /></DefaultLayout>
+              element: <ProtectedRoute><DefaultLayout><HostsNewUser /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/servers",
-              element: <DefaultLayout><Servers /></DefaultLayout>
+              element: <ProtectedRoute><DefaultLayout><Servers /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/profiles",
-              element: <DefaultLayout><Profiles /></DefaultLayout>
+              element: <ProtectedRoute><DefaultLayout><Profiles /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/discovery",
-              element: <DefaultLayout><Discovery /></DefaultLayout>
+              element: <ProtectedRoute><DefaultLayout><Discovery /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/settings",
-              element: <DefaultLayout><Settings /></DefaultLayout>
+              element: <ProtectedRoute><DefaultLayout><Settings /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/host-new",
-              element: <DefaultLayout><HostNewLayout /></DefaultLayout>
+              element: <ProtectedRoute><DefaultLayout><HostNewLayout /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/shared-profile/:shareId",
@@ -94,15 +110,15 @@ function App() {
             },
             {
               path: "/tray",
-              element: <TrayPopup />
+              element: <ProtectedRoute><TrayPopup /></ProtectedRoute>
             },
             {
               path: "/tray-new-user",
-              element: <NewUserTrayPopup />
+              element: <ProtectedRoute><NewUserTrayPopup /></ProtectedRoute>
             },
             {
               path: "*",
-              element: <DefaultLayout><NotFound /></DefaultLayout>
+              element: <ProtectedRoute><DefaultLayout><NotFound /></DefaultLayout></ProtectedRoute>
             }
           ])} />
         </ServerProvider>
