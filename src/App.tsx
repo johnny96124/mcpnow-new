@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
 import { ServerProvider } from "@/context/ServerContext";
-import { AuthProvider } from "@/context/AuthContext";
 import DefaultLayout from "@/layouts/DefaultLayout";
 import Dashboard from "@/pages/Dashboard";
 import Hosts from "@/pages/Hosts";
@@ -26,7 +25,6 @@ import ServerExpiredPage from "./pages/ServerExpiredPage";
 import TermsAcceptance from "./pages/TermsAcceptance";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -35,101 +33,95 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <ServerProvider>
-            <Toaster />
-            <RouterProvider router={createBrowserRouter([
-              {
-                path: "/login",
-                element: <Login />
-              },
-              {
-                path: "/terms-acceptance",
-                element: <TermsAcceptance />
-              },
-              {
-                path: "/terms",
-                element: <TermsOfService />
-              },
-              {
-                path: "/privacy",
-                element: <PrivacyPolicy />
-              },
-              {
-                path: "/",
-                element: <ProtectedRoute><DefaultLayout><Hosts /></DefaultLayout></ProtectedRoute>
-              },
-              {
-                path: "/index",
-                element: <Navigate to="/" replace />
-              },
-              {
-                path: "/introduction-3",
-                element: <ProtectedRoute><Introduction3 /></ProtectedRoute>
-              },
-              {
-                path: "/dashboard",
-                element: <ProtectedRoute><DefaultLayout><Dashboard /></DefaultLayout></ProtectedRoute>
-              },
-              {
-                path: "/hosts",
-                element: <Navigate to="/" replace />
-              },
-              {
-                path: "/hosts-new-user",
-                element: <ProtectedRoute><DefaultLayout><HostsNewUser /></DefaultLayout></ProtectedRoute>
-              },
-              {
-                path: "/servers",
-                element: <ProtectedRoute><DefaultLayout><Servers /></DefaultLayout></ProtectedRoute>
-              },
-              {
-                path: "/profiles",
-                element: <ProtectedRoute><DefaultLayout><Profiles /></DefaultLayout></ProtectedRoute>
-              },
-              {
-                path: "/discovery",
-                element: <ProtectedRoute><DefaultLayout><Discovery /></DefaultLayout></ProtectedRoute>
-              },
-              {
-                path: "/settings",
-                element: <ProtectedRoute><DefaultLayout><Settings /></DefaultLayout></ProtectedRoute>
-              },
-              {
-                path: "/host-new",
-                element: <ProtectedRoute><DefaultLayout><HostNewLayout /></DefaultLayout></ProtectedRoute>
-              },
-              {
-                path: "/shared-profile/:shareId",
-                element: <ProfileLandingPage />
-              },
-              {
-                path: "/shared-server/:shareId",
-                element: <ServerLandingPage />
-              },
-              {
-                path: "/shared-profile-expired",
-                element: <ProfileExpiredPage />
-              },
-              {
-                path: "/shared-server-expired",
-                element: <ServerExpiredPage />
-              },
-              {
-                path: "/tray",
-                element: <ProtectedRoute><TrayPopup /></ProtectedRoute>
-              },
-              {
-                path: "/tray-new-user",
-                element: <ProtectedRoute><NewUserTrayPopup /></ProtectedRoute>
-              },
-              {
-                path: "*",
-                element: <ProtectedRoute><DefaultLayout><NotFound /></DefaultLayout></ProtectedRoute>
-              }
-            ])} />
-          </ServerProvider>
-        </AuthProvider>
+        <ServerProvider>
+          <Toaster />
+          <RouterProvider router={createBrowserRouter([
+            {
+              path: "/terms-acceptance",
+              element: <TermsAcceptance />
+            },
+            {
+              path: "/terms",
+              element: <TermsOfService />
+            },
+            {
+              path: "/privacy",
+              element: <PrivacyPolicy />
+            },
+            {
+              path: "/",
+              element: <ProtectedRoute><DefaultLayout><Hosts /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/index",
+              element: <Navigate to="/" replace />
+            },
+            {
+              path: "/introduction-3",
+              element: <ProtectedRoute><Introduction3 /></ProtectedRoute>
+            },
+            {
+              path: "/dashboard",
+              element: <ProtectedRoute><DefaultLayout><Dashboard /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/hosts",
+              element: <Navigate to="/" replace />
+            },
+            {
+              path: "/hosts-new-user",
+              element: <ProtectedRoute><DefaultLayout><HostsNewUser /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/servers",
+              element: <ProtectedRoute><DefaultLayout><Servers /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/profiles",
+              element: <ProtectedRoute><DefaultLayout><Profiles /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/discovery",
+              element: <ProtectedRoute><DefaultLayout><Discovery /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/settings",
+              element: <ProtectedRoute><DefaultLayout><Settings /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/host-new",
+              element: <ProtectedRoute><DefaultLayout><HostNewLayout /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/shared-profile/:shareId",
+              element: <ProfileLandingPage />
+            },
+            {
+              path: "/shared-server/:shareId",
+              element: <ServerLandingPage />
+            },
+            {
+              path: "/shared-profile-expired",
+              element: <ProfileExpiredPage />
+            },
+            {
+              path: "/shared-server-expired",
+              element: <ServerExpiredPage />
+            },
+            {
+              path: "/tray",
+              element: <ProtectedRoute><TrayPopup /></ProtectedRoute>
+            },
+            {
+              path: "/tray-new-user",
+              element: <ProtectedRoute><NewUserTrayPopup /></ProtectedRoute>
+            },
+            {
+              path: "*",
+              element: <ProtectedRoute><DefaultLayout><NotFound /></DefaultLayout></ProtectedRoute>
+            }
+          ])} />
+        </ServerProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );
