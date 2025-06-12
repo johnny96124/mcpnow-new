@@ -18,7 +18,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const { user, signInWithGoogle, signInWithGithub, signInWithEmail, signUpWithEmail } = useAuth();
+  const { user, isConfigured, signInWithGoogle, signInWithGithub, signInWithEmail, signUpWithEmail } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -27,6 +27,29 @@ const Login = () => {
       navigate('/');
     }
   }, [user, navigate]);
+
+  if (!isConfigured) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 flex items-center justify-center p-6">
+        <div className="w-full max-w-md text-center space-y-6">
+          <div className="text-yellow-600 text-6xl">⚠️</div>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+            Supabase Not Configured
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400">
+            Authentication requires Supabase environment variables to be set up.
+          </p>
+          <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg text-left text-sm font-mono">
+            <div>VITE_SUPABASE_URL=your_supabase_url</div>
+            <div>VITE_SUPABASE_ANON_KEY=your_anon_key</div>
+          </div>
+          <Button onClick={() => navigate('/')} className="w-full">
+            Continue Without Authentication
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const handleSocialLogin = async (provider: 'google' | 'github') => {
     setLoading(true);

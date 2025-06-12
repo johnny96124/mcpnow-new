@@ -1,12 +1,13 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session, AuthError } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
+  isConfigured: boolean
   signInWithGoogle: () => Promise<{ error: AuthError | null }>
   signInWithGithub: () => Promise<{ error: AuthError | null }>
   signInWithEmail: (email: string, password: string) => Promise<{ error: AuthError | null }>
@@ -30,6 +31,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setLoading(false)
+      return
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
@@ -50,6 +56,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [])
 
   const signInWithGoogle = async () => {
+    if (!isSupabaseConfigured) {
+      return { error: { message: 'Supabase not configured. Please set up environment variables.' } as AuthError }
+    }
     return await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -59,6 +68,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   const signInWithGithub = async () => {
+    if (!isSupabaseConfigured) {
+      return { error: { message: 'Supabase not configured. Please set up environment variables.' } as AuthError }
+    }
     return await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
@@ -68,14 +80,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   const signInWithEmail = async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      return { error: { message: 'Supabase not configured. Please set up environment variables.' } as AuthError }
+    }
     return await supabase.auth.signInWithPassword({ email, password })
   }
 
   const signUpWithEmail = async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      return { error: { message: 'Supabase not configured. Please set up environment variables.' } as AuthError }
+    }
     return await supabase.auth.signUp({ email, password })
   }
 
   const signOut = async () => {
+    if (!isSupabaseConfigured) {
+      return { error: { message: 'Supabase not configured. Please set up environment variables.' } as AuthError }
+    }
     return await supabase.auth.signOut()
   }
 
@@ -83,6 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     loading,
+    isConfigured: isSupabaseConfigured,
     signInWithGoogle,
     signInWithGithub,
     signInWithEmail,
