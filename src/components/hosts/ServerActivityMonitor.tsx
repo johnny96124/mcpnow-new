@@ -168,90 +168,77 @@ export function ServerActivityMonitor({ hostName, connectedServers, isHostConnec
 
   return (
     <>
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Server Activity (10 min)
-            </CardTitle>
-            {requestStats.total > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsHistoryOpen(true)}
-                className="h-7 px-2 text-xs"
-              >
-                View History
-              </Button>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          {requestStats.total === 0 ? (
-            <div className="text-center py-4 text-sm text-muted-foreground">
-              No server requests yet
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {/* 统计概览 */}
-              <div className="grid grid-cols-4 gap-3">
-                <div className="text-center p-2 bg-muted/30 rounded">
-                  <div className="text-lg font-semibold">{requestStats.total}</div>
-                  <div className="text-xs text-muted-foreground">Total</div>
-                </div>
-                <div className="text-center p-2 bg-green-50 dark:bg-green-950/20 rounded">
-                  <div className="text-lg font-semibold text-green-600">{requestStats.success}</div>
-                  <div className="text-xs text-muted-foreground">Success</div>
-                </div>
-                <div className="text-center p-2 bg-red-50 dark:bg-red-950/20 rounded">
-                  <div className="text-lg font-semibold text-red-600">{requestStats.error}</div>
-                  <div className="text-xs text-muted-foreground">Error</div>
-                </div>
-                <div className="text-center p-2 bg-blue-50 dark:bg-blue-950/20 rounded">
-                  <div className="text-lg font-semibold text-blue-600">{requestStats.avgResponseTime}ms</div>
-                  <div className="text-xs text-muted-foreground">Avg Time</div>
-                </div>
-              </div>
-              
-              {/* 最近5个请求的实时显示 */}
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium text-muted-foreground">Recent Requests</h4>
-                <div className="space-y-1">
-                  {serverRequests.slice(0, 5).map(request => (
-                    <div key={request.id} className={cn(
-                      "flex items-center justify-between p-2 rounded text-xs",
-                      request.status === 'success' ? "bg-green-50 dark:bg-green-950/10" :
-                      request.status === 'error' ? "bg-red-50 dark:bg-red-950/10" :
-                      "bg-yellow-50 dark:bg-yellow-950/10"
-                    )}>
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <StatusIndicator 
-                          status={
-                            request.status === 'success' ? 'active' :
-                            request.status === 'error' ? 'error' : 'warning'
-                          }
-                        />
-                        <span className="font-medium truncate max-w-[80px]">{request.serverName}</span>
-                        <span className="text-muted-foreground truncate">{request.method}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-muted-foreground shrink-0">
-                        <Clock className="h-3 w-3" />
-                        <span>{request.timestamp.toLocaleTimeString().slice(0, 5)}</span>
-                        {request.responseTime && (
-                          <Badge variant="secondary" className="ml-1 text-xs">
-                            {Math.round(request.responseTime)}ms
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+      {/* Compressed Server Activity Panel */}
+      <div className="bg-muted/30 rounded-lg border p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-medium flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Server Activity (10 min)
+          </h4>
+          {requestStats.total > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsHistoryOpen(true)}
+              className="h-6 px-2 text-xs"
+            >
+              Details
+            </Button>
           )}
-        </CardContent>
-      </Card>
+        </div>
+        
+        {requestStats.total === 0 ? (
+          <div className="text-center py-2 text-xs text-muted-foreground">
+            No recent activity
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {/* Compact stats overview */}
+            <div className="flex gap-4 text-xs">
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-muted-foreground/50"></div>
+                <span>{requestStats.total} total</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                <span>{requestStats.success} success</span>
+              </div>
+              {requestStats.error > 0 && (
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                  <span>{requestStats.error} errors</span>
+                </div>
+              )}
+              {requestStats.avgResponseTime > 0 && (
+                <div className="flex items-center gap-1">
+                  <TrendingUp className="h-3 w-3" />
+                  <span>{requestStats.avgResponseTime}ms avg</span>
+                </div>
+              )}
+            </div>
+            
+            {/* Latest 3 requests only */}
+            <div className="space-y-1">
+              {serverRequests.slice(0, 3).map(request => (
+                <div key={request.id} className="flex items-center justify-between text-xs py-1">
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <div className={cn(
+                      "w-1.5 h-1.5 rounded-full shrink-0",
+                      request.status === 'success' ? "bg-green-500" :
+                      request.status === 'error' ? "bg-red-500" : "bg-yellow-500"
+                    )} />
+                    <span className="font-medium truncate max-w-[60px]">{request.serverName}</span>
+                    <span className="text-muted-foreground truncate max-w-[60px]">{request.method}</span>
+                  </div>
+                  <div className="text-muted-foreground shrink-0 text-xs">
+                    {request.timestamp.toLocaleTimeString().slice(0, 5)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* 历史记录对话框 */}
       <Dialog open={isHistoryOpen} onOpenChange={setIsHistoryOpen}>
