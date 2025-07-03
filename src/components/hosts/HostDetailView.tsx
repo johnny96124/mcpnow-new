@@ -21,6 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { ShareProfileDialog } from "./ShareProfileDialog";
+import { ServerActivityMonitor } from "./ServerActivityMonitor";
 
 interface HostDetailViewProps {
   host: Host;
@@ -275,6 +276,18 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
           </div>
         </CardContent>
       </Card>
+      
+      {/* Server Activity Monitor */}
+      <ServerActivityMonitor 
+        hostName={host.name}
+        connectedServers={profileServers.map(server => ({
+          id: server.id,
+          name: server.name,
+          status: server.status,
+          enabled: server.enabled
+        }))}
+        isHostConnected={host.connectionStatus === "connected"}
+      />
       
       <ServerSelectionDialog open={serverSelectionDialogOpen} onOpenChange={setServerSelectionDialogOpen} onAddServers={handleAddServers} />
       
