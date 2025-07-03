@@ -22,6 +22,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { ShareProfileDialog } from "./ShareProfileDialog";
 import { ServerActivityMonitor } from "./ServerActivityMonitor";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface HostDetailViewProps {
   host: Host;
@@ -230,64 +231,79 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
             
             <Separator className="mb-6" />
             
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium">Connected Servers</h3>
+            {/* Tabs for Connected Servers and Server Activity */}
+            <Tabs defaultValue="servers" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="servers">Connected Servers</TabsTrigger>
+                <TabsTrigger value="activity">Server Activity</TabsTrigger>
+              </TabsList>
               
-              {/* Only show the Add Servers button in the header when there are servers */}
-              {profileServers.length > 0 && (
-                <Button 
-                  id="add-servers-button" 
-                  onClick={() => setServerSelectionDialogOpen(true)} 
-                  variant="outline" 
-                  size="sm" 
-                  className="whitespace-nowrap"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Servers
-                </Button>
-              )}
-            </div>
-            
-            {profileServers.length > 0 ? <div className="rounded-md border">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b bg-muted/50">
-                      <th className="h-10 px-4 text-left text-sm font-medium text-muted-foreground">Server</th>
-                      <th className="h-10 px-4 text-left text-sm font-medium text-muted-foreground">Type</th>
-                      <th className="h-10 px-4 text-left text-sm font-medium text-muted-foreground">Status</th>
-                      <th className="h-10 px-4 text-center text-sm font-medium text-muted-foreground">Active</th>
-                      <th className="h-10 px-4 text-right text-sm font-medium text-muted-foreground">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {profileServers.map(server => <ServerItem 
-                      key={server.id} 
-                      server={server} 
-                      hostConnectionStatus={host.connectionStatus} 
-                      onStatusChange={handleServerStatusChange} 
-                      load={getServerLoad(server.id)} 
-                      onRemoveFromProfile={handleRemoveServerFromProfile}
-                    />)}
-                  </tbody>
-                </table>
-              </div> : <div className="mt-4">
-                <ServerListEmpty onAddServers={() => setServerSelectionDialogOpen(true)} />
-              </div>}
+              <TabsContent value="servers" className="mt-6">
+                <div className="flex items-center justify-between mb-4">
+                  {/* Only show the Add Servers button in the header when there are servers */}
+                  {profileServers.length > 0 && (
+                    <Button 
+                      id="add-servers-button" 
+                      onClick={() => setServerSelectionDialogOpen(true)} 
+                      variant="outline" 
+                      size="sm" 
+                      className="whitespace-nowrap ml-auto"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Servers
+                    </Button>
+                  )}
+                </div>
+                
+                {profileServers.length > 0 ? (
+                  <div className="rounded-md border">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b bg-muted/50">
+                          <th className="h-10 px-4 text-left text-sm font-medium text-muted-foreground">Server</th>
+                          <th className="h-10 px-4 text-left text-sm font-medium text-muted-foreground">Type</th>
+                          <th className="h-10 px-4 text-left text-sm font-medium text-muted-foreground">Status</th>
+                          <th className="h-10 px-4 text-center text-sm font-medium text-muted-foreground">Active</th>
+                          <th className="h-10 px-4 text-right text-sm font-medium text-muted-foreground">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {profileServers.map(server => (
+                          <ServerItem 
+                            key={server.id} 
+                            server={server} 
+                            hostConnectionStatus={host.connectionStatus} 
+                            onStatusChange={handleServerStatusChange} 
+                            load={getServerLoad(server.id)} 
+                            onRemoveFromProfile={handleRemoveServerFromProfile}
+                          />
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="mt-4">
+                    <ServerListEmpty onAddServers={() => setServerSelectionDialogOpen(true)} />
+                  </div>
+                )}
+              </TabsContent>
+              
+              <TabsContent value="activity" className="mt-6">
+                <ServerActivityMonitor 
+                  hostName={host.name}
+                  connectedServers={profileServers.map(server => ({
+                    id: server.id,
+                    name: server.name,
+                    status: server.status,
+                    enabled: server.enabled
+                  }))}
+                  isHostConnected={host.connectionStatus === "connected"}
+                />
+              </TabsContent>
+            </Tabs>
           </div>
         </CardContent>
       </Card>
-      
-      {/* Server Activity Monitor */}
-      <ServerActivityMonitor 
-        hostName={host.name}
-        connectedServers={profileServers.map(server => ({
-          id: server.id,
-          name: server.name,
-          status: server.status,
-          enabled: server.enabled
-        }))}
-        isHostConnected={host.connectionStatus === "connected"}
-      />
       
       <ServerSelectionDialog open={serverSelectionDialogOpen} onOpenChange={setServerSelectionDialogOpen} onAddServers={handleAddServers} />
       
