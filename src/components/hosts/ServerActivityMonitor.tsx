@@ -41,17 +41,65 @@ export function ServerActivityMonitor({ hostName, connectedServers, isHostConnec
   const [requestStats, setRequestStats] = useState<RequestStats>({ total: 0, success: 0, error: 0, avgResponseTime: 0 });
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
+  // 初始化默认数据
+  useEffect(() => {
+    // 生成一些默认的历史数据
+    const now = Date.now();
+    const defaultRequests: ServerRequest[] = [
+      {
+        id: `${now - 1}`,
+        serverName: 'file-manager',
+        method: 'list_files',
+        timestamp: new Date(now - 30000),
+        status: 'success',
+        responseTime: 120
+      },
+      {
+        id: `${now - 2}`,
+        serverName: 'web-search',
+        method: 'search',
+        timestamp: new Date(now - 45000),
+        status: 'success',
+        responseTime: 450
+      },
+      {
+        id: `${now - 3}`,
+        serverName: 'data-processor',
+        method: 'process_file',
+        timestamp: new Date(now - 60000),
+        status: 'error',
+        errorMessage: 'File not found'
+      },
+      {
+        id: `${now - 4}`,
+        serverName: 'file-manager',
+        method: 'read_resource',
+        timestamp: new Date(now - 90000),
+        status: 'success',
+        responseTime: 85
+      },
+      {
+        id: `${now - 5}`,
+        serverName: 'web-search',
+        method: 'analyze',
+        timestamp: new Date(now - 120000),
+        status: 'success',
+        responseTime: 320
+      }
+    ];
+    
+    setServerRequests(defaultRequests);
+  }, []);
+
   // 模拟Server调用监控数据
   useEffect(() => {
     if (!isHostConnected) {
-      setServerRequests([]);
       return;
     }
 
     const activeServers = connectedServers.filter(s => s.enabled && s.status === 'running');
     
     if (activeServers.length === 0) {
-      setServerRequests([]);
       return;
     }
 
