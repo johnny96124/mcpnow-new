@@ -130,44 +130,35 @@ export function ServerRequestDetailsDialog({
             </div>
           </div>
 
-          {/* Request/Response tabs */}
-          <Tabs defaultValue="request" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="request">Request</TabsTrigger>
-              <TabsTrigger value="response">Response</TabsTrigger>
-            </TabsList>
+          {/* Request and Response combined */}
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                Request Payload
+              </h4>
+              <ScrollArea className="h-[200px] w-full">
+                <pre className="text-xs bg-muted/50 p-4 rounded-lg overflow-x-auto">
+                  {JSON.stringify(mockRequestData, null, 2)}
+                </pre>
+              </ScrollArea>
+            </div>
             
-            <TabsContent value="request" className="mt-4">
-              <div className="space-y-3">
-                <h4 className="text-sm font-medium flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                  Request Payload
-                </h4>
-                <ScrollArea className="h-[300px] w-full">
-                  <pre className="text-xs bg-muted/50 p-4 rounded-lg overflow-x-auto">
-                    {JSON.stringify(mockRequestData, null, 2)}
-                  </pre>
-                </ScrollArea>
-              </div>
-            </TabsContent>
-            
-            <TabsContent value="response" className="mt-4">
-              <div className="space-y-3">
-                <h4 className="text-sm font-medium flex items-center gap-2">
-                  <div className={cn(
-                    "w-2 h-2 rounded-full",
-                    request.status === 'success' ? "bg-green-500" : "bg-red-500"
-                  )}></div>
-                  Response Payload
-                </h4>
-                <ScrollArea className="h-[300px] w-full">
-                  <pre className="text-xs bg-muted/50 p-4 rounded-lg overflow-x-auto">
-                    {JSON.stringify(mockResponseData, null, 2)}
-                  </pre>
-                </ScrollArea>
-              </div>
-            </TabsContent>
-          </Tabs>
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium flex items-center gap-2">
+                <div className={cn(
+                  "w-2 h-2 rounded-full",
+                  request.status === 'success' ? "bg-green-500" : "bg-red-500"
+                )}></div>
+                Response Payload
+              </h4>
+              <ScrollArea className="h-[200px] w-full">
+                <pre className="text-xs bg-muted/50 p-4 rounded-lg overflow-x-auto">
+                  {JSON.stringify(mockResponseData, null, 2)}
+                </pre>
+              </ScrollArea>
+            </div>
+          </div>
         </div>
         
         <DialogFooter>
