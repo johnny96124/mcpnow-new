@@ -16,6 +16,7 @@ import { ProfileDropdown } from "./ProfileDropdown";
 import { ServerListEmpty } from "./ServerListEmpty";
 import { ServerItem } from "./ServerItem";
 import { ServerSelectionDialog } from "./ServerSelectionDialog";
+import { ServerRecommendations } from "./ServerRecommendations";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -67,6 +68,15 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
   
   const selectedProfile = profiles.find(p => p.id === selectedProfileId);
   const profileServers = serverInstances.filter(server => selectedProfile?.instances.includes(server.id));
+  
+  // Generate recommendations when profile is empty
+  const getRecommendations = () => {
+    // Filter popular and official servers for recommendations
+    return serverDefinitions
+      .filter(def => def.isOfficial || (def.downloads && def.downloads > 1000))
+      .sort((a, b) => (b.downloads || 0) - (a.downloads || 0))
+      .slice(0, 6); // Show top 6 recommendations
+  };
   
   const handleServerStatusChange = (serverId: string, enabled: boolean) => {
     onServerStatusChange(serverId, enabled ? host.connectionStatus === "connected" ? 'connecting' : 'stopped' : 'stopped');
@@ -271,7 +281,11 @@ export const HostDetailView: React.FC<HostDetailViewProps> = ({
                   </tbody>
                 </table>
               </div> : <div className="mt-4">
-                <ServerListEmpty onAddServers={() => setServerSelectionDialogOpen(true)} />
+                <ServerRecommendations 
+                  recommendations={getRecommendations()}
+                  onAddServers={handleAddServers}
+                  onShowAllServers={() => setServerSelectionDialogOpen(true)}
+                />
               </div>}
           </div>
         </CardContent>
