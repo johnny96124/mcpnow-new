@@ -7,6 +7,7 @@ import { StatusIndicator } from "@/components/status/StatusIndicator";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { ServerRequestDetailsDialog } from "./ServerRequestDetailsDialog";
 
 interface ServerRequest {
   id: string;
@@ -40,6 +41,8 @@ export function ServerActivityMonitor({ hostName, connectedServers, isHostConnec
   const [serverRequests, setServerRequests] = useState<ServerRequest[]>([]);
   const [requestStats, setRequestStats] = useState<RequestStats>({ total: 0, success: 0, error: 0, avgResponseTime: 0 });
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<ServerRequest | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   // 初始化默认数据
   useEffect(() => {
@@ -220,7 +223,14 @@ export function ServerActivityMonitor({ hostName, connectedServers, isHostConnec
             {/* Latest 3 requests only */}
             <div className="space-y-1">
               {serverRequests.slice(0, 3).map(request => (
-                <div key={request.id} className="flex items-center justify-between text-xs py-1">
+                <div 
+                  key={request.id} 
+                  className="flex items-center justify-between text-xs py-1 cursor-pointer hover:bg-muted/50 rounded px-1 -mx-1"
+                  onClick={() => {
+                    setSelectedRequest(request);
+                    setIsDetailsOpen(true);
+                  }}
+                >
                   <div className="flex items-center gap-2 flex-1 min-w-0">
                     <div className={cn(
                       "w-1.5 h-1.5 rounded-full shrink-0",
@@ -302,11 +312,15 @@ export function ServerActivityMonitor({ hostName, connectedServers, isHostConnec
                     <div 
                       key={request.id}
                       className={cn(
-                        "flex items-center justify-between p-3 rounded-lg border",
+                        "flex items-center justify-between p-3 rounded-lg border cursor-pointer hover:shadow-sm transition-shadow",
                         request.status === 'success' ? "bg-green-50 dark:bg-green-950/10 border-green-200 dark:border-green-800" :
                         request.status === 'error' ? "bg-red-50 dark:bg-red-950/10 border-red-200 dark:border-red-800" :
                         "bg-yellow-50 dark:bg-yellow-950/10 border-yellow-200 dark:border-yellow-800"
                       )}
+                      onClick={() => {
+                        setSelectedRequest(request);
+                        setIsDetailsOpen(true);
+                      }}
                     >
                       <div className="flex items-center gap-3">
                         <StatusIndicator 
@@ -350,6 +364,13 @@ export function ServerActivityMonitor({ hostName, connectedServers, isHostConnec
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Request Details Dialog */}
+      <ServerRequestDetailsDialog
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        request={selectedRequest}
+      />
     </>
   );
 }
