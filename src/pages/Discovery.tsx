@@ -32,6 +32,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { ShareServerDialog } from "@/components/discovery/ShareServerDialog";
 import { VersionHistoryDialog } from "@/components/discovery/VersionHistoryDialog";
 import { ServerRequirementsSection } from "@/components/discovery/ServerRequirementsSection";
+import { TutorialSection } from "@/components/discovery/TutorialSection";
+import { FeaturedSection } from "@/components/discovery/FeaturedSection";
 
 const ITEMS_PER_PAGE = 12;
 interface EnhancedServerDefinition extends ServerDefinition {
@@ -291,29 +293,68 @@ const Discovery = () => {
       });
     }
   };
+  // Get featured servers
+  const hostedServers = extendedItems.filter(server => server.isOfficial && Math.random() > 0.5).slice(0, 6);
+  const verifiedServers = extendedItems.filter(server => server.isOfficial).slice(0, 6);
+  
   return <div className="animate-fade-in">
-      <div className="mb-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-8 text-white relative overflow-hidden">
-        <div className="max-w-3xl relative z-10">
-          <h1 className="text-3xl font-bold mb-2">Discovery</h1>
-          <p className="text-blue-100 mb-6">Explore powerful MCP Servers from a centralized hub. Browse our curated collection of servers that can enhance your productivity, streamline your workflow, and meet all your development needs.</p>
-          
-          {/* My Servers button removed */}
+      {/* Simplified Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Discovery</h1>
+            <p className="text-muted-foreground">
+              Find the right MCP server — fast. Boost productivity and streamline your dev flow with our curated server list.
+            </p>
+          </div>
+          <Button variant="outline" className="gap-2">
+            <ExternalLink className="h-4 w-4" />
+            Need a server? Submit request
+          </Button>
         </div>
         
-        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 opacity-10">
-          <div className="w-64 h-64 rounded-full border-4 border-white absolute -right-16 -top-16"></div>
-          <div className="w-32 h-32 rounded-full border-4 border-white absolute right-24 top-8"></div>
-          <div className="w-48 h-48 rounded-full border-4 border-white absolute -right-8 top-16"></div>
+        {/* Search Bar */}
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input 
+            placeholder="Search by MCP server name or description" 
+            className="pl-10 bg-background border-input" 
+            value={searchQuery} 
+            onChange={e => setSearchQuery(e.target.value)} 
+          />
         </div>
       </div>
+
+      {/* Tutorial Section - Only show when not searching */}
+      {!isSearching && (
+        <div className="mb-10">
+          <TutorialSection />
+        </div>
+      )}
+
+      {/* Featured Section - Only show when not searching */}
+      {!isSearching && (
+        <div className="mb-10">
+          <FeaturedSection 
+            hostedServers={hostedServers}
+            verifiedServers={verifiedServers}
+            onServerClick={handleViewDetails}
+          />
+        </div>
+      )}
       
+      {/* Filters and Sort */}
       <div className="flex flex-col gap-4 mb-6">
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex-1 min-w-[280px]">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search servers, APIs, collections..." className="pl-10 bg-background border-input" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-            </div>
+          <div className="flex items-center gap-4">
+            <h2 className="text-lg font-semibold">
+              {isSearching ? '搜索结果' : '浏览服务器'}
+            </h2>
+            {isSearching && (
+              <span className="text-sm text-muted-foreground">
+                找到 {filteredServers.length} 个结果
+              </span>
+            )}
           </div>
           
           <div className="flex items-center gap-2">
