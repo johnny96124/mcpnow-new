@@ -12,6 +12,7 @@ import Servers from "@/pages/Servers";
 import Profiles from "@/pages/Profiles";
 import Discovery from "@/pages/Discovery";
 import TutorialDetail from "@/pages/TutorialDetail";
+import Academy from "@/pages/Academy";
 import Settings from "@/pages/Settings";
 import HostNewLayout from "./pages/Host-newlayout";
 import NotFound from "./pages/NotFound";
@@ -88,6 +89,10 @@ function App() {
             {
               path: "/tutorial/:id",
               element: <ProtectedRoute><DefaultLayout><TutorialDetail /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/academy",
+              element: <ProtectedRoute><DefaultLayout><Academy /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/settings",

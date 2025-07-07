@@ -51,7 +51,16 @@ export const TutorialCard: React.FC<TutorialCardProps> = ({
       onClick={handleClick}
     >
       <div className="relative">
-        <div className="h-32 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 relative overflow-hidden">
+        <div className="h-32 relative overflow-hidden rounded-t-lg">
+          {image ? (
+            <img 
+              src={image} 
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="h-full bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600" />
+          )}
           <div className="absolute inset-0 bg-black/20"></div>
           <div className="absolute top-3 left-3">
             <Badge variant="outline" className="bg-white/90 text-gray-700 border-white/50">

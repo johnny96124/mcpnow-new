@@ -68,7 +68,11 @@ export const TutorialSection: React.FC = () => {
           </div>
         </div>
         
-        <Button variant="outline" className="gap-2">
+        <Button 
+          variant="outline" 
+          className="gap-2"
+          onClick={() => window.location.href = '/academy'}
+        >
           查看全部教程
           <ExternalLink className="h-4 w-4" />
         </Button>
