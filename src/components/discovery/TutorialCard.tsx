@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,16 @@ export const TutorialCard: React.FC<TutorialCardProps> = ({
   category,
   onClick
 }) => {
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    }
+    // Navigate to tutorial detail page with a generated ID based on title
+    const tutorialId = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+    navigate(`/tutorial/${tutorialId}`);
+  };
   const getDifficultyColor = (level: string) => {
     switch (level) {
       case 'Beginner': return 'bg-green-100 text-green-700 border-green-200';
@@ -37,7 +48,7 @@ export const TutorialCard: React.FC<TutorialCardProps> = ({
   return (
     <Card 
       className="group cursor-pointer overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50"
-      onClick={onClick}
+      onClick={handleClick}
     >
       <div className="relative">
         <div className="h-32 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 relative overflow-hidden">

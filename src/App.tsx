@@ -11,6 +11,7 @@ import Hosts from "@/pages/Hosts";
 import Servers from "@/pages/Servers";
 import Profiles from "@/pages/Profiles";
 import Discovery from "@/pages/Discovery";
+import TutorialDetail from "@/pages/TutorialDetail";
 import Settings from "@/pages/Settings";
 import HostNewLayout from "./pages/Host-newlayout";
 import NotFound from "./pages/NotFound";
@@ -83,6 +84,10 @@ function App() {
             {
               path: "/discovery",
               element: <ProtectedRoute><DefaultLayout><Discovery /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/tutorial/:id",
+              element: <ProtectedRoute><DefaultLayout><TutorialDetail /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/settings",
