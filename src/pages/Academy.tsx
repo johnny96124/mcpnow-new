@@ -26,6 +26,9 @@ import aiTutorial2 from "@/assets/ai-tutorial-2.jpg";
 import aiTutorial3 from "@/assets/ai-tutorial-3.jpg";
 import aiTutorial4 from "@/assets/ai-tutorial-4.jpg";
 import aiTutorial5 from "@/assets/ai-tutorial-5.jpg";
+import socialPost1 from "@/assets/social-post-1.jpg";
+import socialPost2 from "@/assets/social-post-2.jpg";
+import socialPost3 from "@/assets/social-post-3.jpg";
 
 const tutorialCategories = [
   {
@@ -51,6 +54,24 @@ const tutorialCategories = [
         students: 956,
         image: aiTutorial4,
         category: "平台指南"
+      },
+      {
+        title: "配置文件管理入门",
+        description: "学习如何创建、修改和管理MCP Server配置文件，掌握基础配置技巧",
+        duration: "10分钟",
+        difficulty: "Beginner" as const,
+        students: 1089,
+        image: aiTutorial2,
+        category: "配置教程"
+      },
+      {
+        title: "常用Server推荐与安装",
+        description: "介绍最受欢迎的MCP Server及其安装配置方法，快速开始你的第一个项目",
+        duration: "18分钟",
+        difficulty: "Beginner" as const,
+        students: 1324,
+        image: aiTutorial3,
+        category: "推荐教程"
       }
     ]
   },
@@ -86,6 +107,24 @@ const tutorialCategories = [
         students: 524,
         image: aiTutorial3,
         category: "开发教程"
+      },
+      {
+        title: "多Server集成与管理",
+        description: "学习如何同时管理多个MCP Server，实现复杂的工作流程自动化",
+        duration: "30分钟",
+        difficulty: "Advanced" as const,
+        students: 678,
+        image: aiTutorial1,
+        category: "高级教程"
+      },
+      {
+        title: "错误处理与监控",
+        description: "掌握MCP Server的错误处理机制和监控方法，确保系统稳定运行",
+        duration: "28分钟",
+        difficulty: "Intermediate" as const,
+        students: 456,
+        image: aiTutorial4,
+        category: "运维教程"
       }
     ]
   },
@@ -112,6 +151,24 @@ const tutorialCategories = [
         students: 1156,
         image: aiTutorial1,
         category: "安全教程"
+      },
+      {
+        title: "常见问题与解决方案",
+        description: "汇总新手使用过程中最常遇到的问题及其解决方案，避免常见陷阱",
+        duration: "16分钟",
+        difficulty: "Beginner" as const,
+        students: 1445,
+        image: aiTutorial5,
+        category: "问题解答"
+      },
+      {
+        title: "社区资源与支持",
+        description: "了解如何利用社区资源，获取帮助，以及为社区贡献你的力量",
+        duration: "14分钟",
+        difficulty: "Beginner" as const,
+        students: 987,
+        image: aiTutorial2,
+        category: "社区指南"
       }
     ]
   }
@@ -126,7 +183,8 @@ const socialPosts = [
     likes: 156,
     shares: 24,
     timestamp: "2小时前",
-    serverName: "File Manager Pro"
+    serverName: "File Manager Pro",
+    image: socialPost1
   },
   {
     id: 2,
@@ -136,7 +194,8 @@ const socialPosts = [
     likes: 89,
     shares: 12,
     timestamp: "4小时前",
-    serverName: "Database Query"
+    serverName: "Database Query",
+    image: socialPost2
   },
   {
     id: 3,
@@ -146,7 +205,8 @@ const socialPosts = [
     likes: 203,
     shares: 45,
     timestamp: "6小时前",
-    serverName: "Automation Suite"
+    serverName: "Automation Suite",
+    image: socialPost3
   }
 ];
 
@@ -186,35 +246,34 @@ export default function Academy() {
           </Button>
           
           {/* Hero Section */}
-          <div className="text-center space-y-6 mb-12">
-            <div className="flex justify-center">
-              <div className="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
-                <GraduationCap className="h-12 w-12 text-white" />
+          <div className="text-center space-y-8 mb-16">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 blur-3xl"></div>
+              <div className="relative">
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl blur-xl opacity-50"></div>
+                    <div className="relative p-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl shadow-2xl">
+                      <GraduationCap className="h-16 w-16 text-white" />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    MCP Server 学院
+                  </h1>
+                  <p className="text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
+                    让所有人通过 MCP Now 快速上手 MCP Server
+                  </p>
+                  <div className="flex justify-center gap-2 mt-8">
+                    <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+                    <div className="w-8 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"></div>
+                    <div className="w-4 h-1 bg-pink-500 rounded-full"></div>
+                  </div>
+                </div>
               </div>
             </div>
-            
-            <div className="space-y-4">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                MCP Server 学院
-              </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                让所有人通过 MCP Now 快速上手 MCP Server
-              </p>
-            </div>
-
-            {/* Mission Statement */}
-            <Card className="max-w-4xl mx-auto bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 border-blue-200 dark:border-blue-800">
-              <CardContent className="p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <Target className="h-8 w-8 text-blue-600" />
-                  <h2 className="text-2xl font-semibold">我们的使命</h2>
-                </div>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  通过系统化的教程和实践指导，帮助每一位用户从零基础到熟练掌握 MCP Server 的使用。
-                  无论你是开发新手还是经验丰富的工程师，这里都有适合你的学习路径。
-                </p>
-              </CardContent>
-            </Card>
           </div>
         </div>
 
@@ -265,15 +324,25 @@ export default function Academy() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {socialPosts.map((post) => (
-              <Card key={post.id} className="hover:shadow-lg transition-shadow">
+              <Card key={post.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                <div className="h-32 relative">
+                  <img 
+                    src={post.image} 
+                    alt="Social post preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <div className="absolute top-3 left-3">
+                    <img 
+                      src={getPlatformIcon(post.platform)} 
+                      alt={getPlatformName(post.platform)}
+                      className="h-6 w-6 bg-white rounded-full p-1"
+                    />
+                  </div>
+                </div>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <img 
-                        src={getPlatformIcon(post.platform)} 
-                        alt={getPlatformName(post.platform)}
-                        className="h-6 w-6"
-                      />
                       <div>
                         <p className="font-semibold text-sm">{post.author}</p>
                         <p className="text-xs text-muted-foreground">{getPlatformName(post.platform)}</p>
