@@ -18,6 +18,9 @@ import {
   ExternalLink
 } from "lucide-react";
 import { ServerLogo } from "@/components/servers/ServerLogo";
+import xLogo from "@/assets/x-logo.png";
+import facebookLogo from "@/assets/facebook-logo.png";
+import redditLogo from "@/assets/reddit-logo.png";
 
 interface TutorialData {
   id: string;
@@ -201,16 +204,13 @@ export default function TutorialDetail() {
             {/* Share Buttons */}
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={() => handleShare('x')}>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                分享到 X
+                <img src={xLogo} alt="X" className="h-4 w-4" />
               </Button>
               <Button variant="outline" size="sm" onClick={() => handleShare('facebook')}>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Facebook
+                <img src={facebookLogo} alt="Facebook" className="h-4 w-4" />
               </Button>
               <Button variant="outline" size="sm" onClick={() => handleShare('reddit')}>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Reddit
+                <img src={redditLogo} alt="Reddit" className="h-4 w-4" />
               </Button>
             </div>
           </div>
