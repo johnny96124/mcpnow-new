@@ -13,6 +13,7 @@ import Profiles from "@/pages/Profiles";
 import Discovery from "@/pages/Discovery";
 import TutorialDetail from "@/pages/TutorialDetail";
 import Academy from "@/pages/Academy";
+import FeaturedServers from "@/pages/FeaturedServers";
 import Settings from "@/pages/Settings";
 import HostNewLayout from "./pages/Host-newlayout";
 import NotFound from "./pages/NotFound";
@@ -93,6 +94,10 @@ function App() {
             {
               path: "/academy",
               element: <ProtectedRoute><DefaultLayout><Academy /></DefaultLayout></ProtectedRoute>
+            },
+            {
+              path: "/featured-servers",
+              element: <ProtectedRoute><DefaultLayout><FeaturedServers /></DefaultLayout></ProtectedRoute>
             },
             {
               path: "/settings",

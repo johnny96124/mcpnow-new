@@ -71,7 +71,14 @@ export const FeaturedSection: React.FC<FeaturedSectionProps> = ({
           </div>
         ))}
         
-        <Button variant="outline" className="w-full mt-4">
+        <Button 
+          variant="outline" 
+          className="w-full mt-4"
+          onClick={() => {
+            const serverType = title.includes('云端托管') ? 'hosted' : 'verified';
+            window.location.href = `/featured-servers?type=${serverType}`;
+          }}
+        >
           查看全部 {servers.length} 个服务器
         </Button>
       </CardContent>
